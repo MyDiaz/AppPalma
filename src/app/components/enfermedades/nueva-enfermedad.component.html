@@ -1,0 +1,34 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col">
+            <h4> Nuevo enfermedad </h4>
+            <p> Ingresa los datos necesarios:</p>
+        </div>
+    </div>
+
+    <form #FormNewEnfermedad="ngForm">
+        <div class="form-group">
+            <label class="col-form-label"> Nombre</label>
+            <input type="text" class="form-control" name="nombre" ngModel required>
+        </div>
+        <div class="form-group">
+            <label> Estados </label>
+            <input type="text" class="form-control" #newEtapa (keyup.enter)="addEtapa(newEtapa.value)" (blur)="addEtapa(newEtapa.value); newEtapa.value='' " required>
+            <div class="position-static mt-2">
+                <button type="button" class="btn btn-outline-success btn-sm" (click)="addEtapa(newEtapa.value)"> + </button> <br>
+                <input type="checkbox" id="check" name="check" (click)="setBandera()">
+                <label class="form-check-label ml-2">
+                    <small> Ingresé todas los estados para esta enfermedad </small> 
+                </label> <br>
+                <span *ngFor="let etapa of etapas" class="badge badge-success mr-2 mt-2"> {{ etapa }} </span>
+            </div>
+        </div>
+        <!--[routerLink]="['/listado-enfermedad']"-->
+        <button type="submit" *ngIf="bandera == true" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop"> 
+            Guardar 
+        </button>
+    </form>
+
+    <app-modal> </app-modal>
+
+</div>

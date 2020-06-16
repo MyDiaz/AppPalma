@@ -1,0 +1,37 @@
+<div class="container mt-3">
+
+    <h4> Agroquímicos </h4>
+
+    <p>Estas son los agroquímicos registrados hasta el momento </p>
+    <div class="row">
+        <div class="col-md-3">
+            <!---->
+            <ul class="list-group">
+                <li class="list-group-item active"> Fungicidas </li>
+                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <ul class="list-group">
+                <li class="list-group-item active"> Insecticidas </li>
+                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <ul class="list-group">
+                <li class="list-group-item active"> Herbicidas </li>
+                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
+            </ul>
+        </div>
+        <div class="col-md-3">
+            <ul class="list-group">
+                <li class="list-group-item active"> Bactericidas </li>
+                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
+            </ul>
+        </div>
+    </div>
+    <br>
+    <a type="button" class="btn btn-info btn-block" [routerLink]="['nuevo-agroquimico']"> Agregar nuevo agroquimico </a>
+</div>
+
+<router-outlet></router-outlet>

@@ -1,0 +1,70 @@
+<div class="container">
+    <div class="row mt-5 mb-3">
+        <div class="col-md-9">
+            <h3> Estado fitosanitario </h3>
+        </div>
+        <div class="col-md-3">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+
+    <div class="form row ">
+        <select class="col-1 form-control form-control-sm mr-2">
+            <option>Enero</option>
+            <option>Febrero</option>
+            <option>Marzo</option>
+            <option>Abril</option>
+            <option>Mayo</option>
+            <option>Junio</option>
+            <option>Julio</option>
+            <option>Agosto</option>
+            <option>Septiembre</option>
+            <option>Octubre</option>
+            <option>Noviembre</option>
+            <option>Diciembre</option>
+        </select>
+        <select class="col-1 form-control form-control-sm">
+            <option> 2020 </option>
+        </select>
+        <br>
+        <button class="ml-3 btn btn-info btn-sm font-weight-bold"> Consultar </button>
+    </div>
+
+    <div *ngFor="let enfermedad of enfermedades" class="mt-3">
+        <h4> {{ enfermedad.nombre }}</h4>
+
+
+
+        <div class="chart-container" style="height:200px; width:500px; display: block;">
+            <canvas class="mb-5" baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions" [legend]="barChartLegend" [chartType]="barChartType">
+                </canvas>
+        </div>
+
+
+        <div class="mt-6">
+            <table class="table table-sm text-center">
+                <tr>
+                    <td>
+                        <h4> 45 </h4>
+                    </td>
+                    <td>
+                        <h4> 20 </h4>
+                    </td>
+                    <td>
+                        <h4> 3% </h4>
+                    </td>
+                    <td>
+                        <h4> 2% </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td> Total casos mes </td>
+                    <td> Total casos acumulados </td>
+                    <td> Incidencia acumulada </td>
+                    <td> Incidencia real </td>
+                </tr>
+            </table>
+        </div>
+        <br>
+    </div>
+</div>

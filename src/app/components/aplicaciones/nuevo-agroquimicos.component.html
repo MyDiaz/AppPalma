@@ -1,0 +1,32 @@
+<div class="container mt-4">
+
+    <h4> Nuevo agroquímico </h4>
+    <p> Ingresa los datos necesarios:</p>
+
+    <form>
+        <div class="form-group">
+            <label for="InputNombreComun">Nombre comercial</label>
+            <input type="text" class="form-control">
+        </div>
+        <div class="form-group">
+            <label> Tipo de agroquímico </label>
+            <select class="form-control">
+              <option selected> Seleccionar </option>
+              <option> Funjicida </option>
+              <option> Insectisida </option>
+              <option> Herbicida</option>
+              <option> Bactericida </option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label> Presentación agroquímico </label>
+            <input type="number" class="form-control">
+        </div>
+        <div class="form-group">
+            <label> Ingrediente activo </label>
+            <input type="text" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop"> Guardar </button>
+    </form>
+    <app-modal> </app-modal>
+</div>

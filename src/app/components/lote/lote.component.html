@@ -1,0 +1,64 @@
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-9">
+            <h2> Lote: {{ lotes.nombre }} </h2>
+        </div>
+        <div class="col-md-3">
+            <app-fecha></app-fecha>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-4">
+            <img src="assets/img/palma.PNG" alt="" style="width: max-content;">
+        </div>
+        <div class="col-md-8">
+            <b> Datos del lote </b>
+            <p> Lorem ipsum dolor, sit amet consectetur adipisicing elit. In ipsum omnis fugiat, ad temporibus dolorum eos voluptas eius maiores laborum nostrum, debitis repudiandae alias eaque reprehenderit corporis rerum odio. Sint! </p>
+        </div>
+    </div>
+    <hr>
+
+    <br>
+    <!--row justify-content-center align-items-center minh-100-->
+    <p> Dar click en el botón para ver el: </p>
+    <div class="container">
+        <div class="row justify-content-center align-items-center btn-group mb-2" role="group">
+            <button [routerLink]="['estado-fitosanitario']" (click)="verEstado('estado-fitosanitario')" type="button" class="btn btn-success mr-2 text-center"> 
+                Estado Fitosanitario
+            </button>
+            <button [routerLink]="['estado-productivo']" (click)="verEstado('estado-productivo')" type="button" class="btn btn-success mr-2 text-center"> 
+                Estado Productivo
+            </button>
+        </div>
+    </div>
+
+
+    <hr>
+    <br> <br>
+    <h4> Gestión fitosanitaria </h4>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['aplicaciones']"> Aplicaciones </button>
+        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['registros-plagas']"> Plagas </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Enfermedades y hongos </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Tratamientos </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Fertilizaciones </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Podas </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Plateos </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Enfermedades y hongos </button>
+    </div>
+    <br> <br>
+    <!--Renderiza los componentes del "btn-group"-->
+    <router-outlet></router-outlet>
+
+    <br> <br>
+    <h4> Gestión productiva </h4>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-info mr-2" (click)="bandera = verRegistro('Aplicaciones')"> Cosecha </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="bandera = verRegistro('Plagas')"> Viajes </button>
+    </div>
+    <br> <br>
+    <a [routerLink]="['/lotes']" class="btn btn-outline-danger"> Regresar </a>
+</div>

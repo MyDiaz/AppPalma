@@ -1,0 +1,14 @@
+.lote {
+    height: 100px;
+    width: 130px;
+    background-color: #45b39d;
+    font-size: medium;
+    border-color: #45b39d;
+    color: #ffffff;
+    text-align: center;
+}
+
+.plus {
+    height: 100px;
+    width: 130px;
+}
