@@ -15,8 +15,8 @@
     <h2 class="text-center"> Lotes </h2>
     <hr>
 
-    <button (click)="verLote(i)" type="button" class="lote btn btn-light btn-lg mr-2 mb-2" *ngFor="let lote of lotes; let i = index"> 
-            <b> {{ lote.nombre }} </b>
+    <button (click)="verLote(lote.nombre_lote)" type="button" class="lote btn btn-light btn-lg mr-2 mb-2" *ngFor="let lote of lotes"> 
+            <b> {{ lote.nombre_lote }} </b>
         </button>
 
     <button class="plus btn btn-light" (click)="agregarNuevoLote()">
@@ -25,7 +25,7 @@
                 <path fill-rule="evenodd" d="M7.5 8a.5.5 0 01.5-.5h4a.5.5 0 010 1H8.5V12a.5.5 0 01-1 0V8z" clip-rule="evenodd"/>
                 <path fill-rule="evenodd" d="M8 15A7 7 0 108 1a7 7 0 000 14zm0 1A8 8 0 108 0a8 8 0 000 16z" clip-rule="evenodd"/>
             </svg>
-        </button>
+    </button>
 </div>
 
 

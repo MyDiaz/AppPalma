@@ -9,17 +9,24 @@ import { Router } from '@angular/router';
 })
 export class LotesComponent implements OnInit {
 
-  lotes:any[] = [];
+  lotes:any = [];
 
   constructor( private _loteService:LoteService,
     private router:Router ) { }
 
   ngOnInit() {
-    this.lotes = this._loteService.getLotes();
+    this._loteService.getLotes().subscribe(
+      data => {
+        this.lotes = data;
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      });
   }
-
-  verLote( idx:number ){
-    this.router.navigate(['/lote',idx]);
+   
+  verLote( nombre:string ){
+    this.router.navigate(['/lote',nombre]);
   }
 
   agregarNuevoLote(){

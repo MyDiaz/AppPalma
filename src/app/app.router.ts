@@ -23,10 +23,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { UsuariosComponent} from './components/usuarios/usuarios.component';
 
 const APP_ROUTES: Routes = [
-    //{ path: 'home', component: HomeComponent,  , canActivate: [AuthGuard]},
+    //{ path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
     { path: 'lotes', component: LotesComponent},
     { path: 'nuevo-lote', component: NuevoLoteComponent },
-    { path: 'lote/:id', component: LoteComponent,
+    { path: 'lote/:?id', component: LoteComponent,
       children: [
         { path: 'estado-productivo', component: EstadoProductivoComponent },
         { path: 'aplicaciones', component: AplicacionesComponent },

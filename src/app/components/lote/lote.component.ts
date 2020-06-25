@@ -8,14 +8,29 @@ import { LoteService } from '../../Servicios/lote.service';
   templateUrl: './lote.component.html',
   styles: []
 })
-export class LoteComponent {
+export class LoteComponent implements OnInit{
   
-  lotes:any = {};
+  lote:any = {};
+  nombre_lote:string;
 
-  constructor( private activatedRoute:ActivatedRoute, private _loteService:LoteService, private router:Router ) { 
-    this.activatedRoute.params.subscribe( params => {
-      this.lotes = this._loteService.getLote( params['id']);
+  constructor( private activatedRoute:ActivatedRoute, private _loteService:LoteService, private router:Router ) 
+  { 
+    this.activatedRoute.paramMap.subscribe(params => {
+      this.nombre_lote = params.get('id');
     });
+  }
+
+  ngOnInit() {
+    console.log(this.nombre_lote);
+    this._loteService.getLote(this.nombre_lote).subscribe(
+      data => {
+        this.lote = data;
+        console.log(data);
+      },
+      error => {
+        console.log(error);
+      });
+      
   }
 
   verRegistro( registro:string ):string{

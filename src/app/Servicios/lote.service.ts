@@ -1,8 +1,32 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
  
 @Injectable()
 export class LoteService{
-    private lotes:any[] = 
+
+    private url_lote:string = 'http://localhost:3000/lote';
+
+    constructor( private http: HttpClient ) { }
+
+        getLotes(){
+            return this.http.get(this.url_lote);
+        }
+
+        getLote( nombre:string ) {
+            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
+        }
+
+
+
+
+
+
+
+
+        
+
+        private lotes:any[] = 
         [
             { nombre: "Cementerio" },
             { nombre: "Casa vieja" },
@@ -60,14 +84,6 @@ export class LoteService{
         {nombre: "Marchitez"},
         {nombre: "Marchitez sorpresiva"},
     ]
-
-        getLotes():any[]{
-            return this.lotes;
-        }
-
-        getLote( idx:string ) {
-            return this.lotes[idx];
-        }
 
         getPlagas():any[]{
             return this.plagas;

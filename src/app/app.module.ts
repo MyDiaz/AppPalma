@@ -2,8 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 //graficos
 import { ChartsModule } from 'ng2-charts';
@@ -73,6 +73,7 @@ registerLocaleData(localeEs);
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     APP_ROUTING,
     HttpClientModule,
     ChartsModule
