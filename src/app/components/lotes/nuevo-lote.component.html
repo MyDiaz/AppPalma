@@ -18,7 +18,7 @@
             <label> Año de siembra </label>
             <input class="form-control" type="datetime-local" formControlName="año_siembra" [class.is-invalid]="AnoSiembraNoValido">
             <small *ngIf="AnoSiembraNoValido" class="text-danger">
-                Ingrese un año valido
+                Ingrese un año válido, debe tener 4 dígitos y ser mayor a cero.
             </small>
         </div>
 
@@ -50,7 +50,14 @@
                 Debe ingresar el material de siembra 
             </small>
         </div>
-        <button type="submit" class="btn btn-success"> Guardar </button>
-        <button [routerLink]="['/lotes']" class="btn btn-outline-danger"> Cancelar </button>
+        <button type="submit" class="btn btn-outline-success mr-2"> 
+            Guardar </button>
+        <button [routerLink]="['/lotes']" class="btn btn-outline-danger"> 
+            <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M11.854 4.146a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708-.708l7-7a.5.5 0 0 1 .708 0z"/>
+                <path fill-rule="evenodd" d="M4.146 4.146a.5.5 0 0 0 0 .708l7 7a.5.5 0 0 0 .708-.708l-7-7a.5.5 0 0 0-.708 0z"/>
+            </svg>
+            Cancelar 
+        </button>
     </form>
 </div>

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl,FormBuilder, Validators } from '@angular/forms';
+import { LoteService } from 'src/app/Servicios/lote.service';
 
 @Component({
   selector: 'app-nuevo-lote',
@@ -9,6 +10,7 @@ import { FormGroup, FormControl,FormBuilder, Validators } from '@angular/forms';
 export class NuevoLoteComponent implements OnInit {
 
   NuevoLoteForm: FormGroup;
+  Año = new Date();
 
   get nombreLoteNoValido() {
     return this.NuevoLoteForm.get('nombre_lote').invalid && this.NuevoLoteForm.get('nombre_lote').touched
@@ -30,7 +32,7 @@ export class NuevoLoteComponent implements OnInit {
     return this.NuevoLoteForm.get('material_siembra').invalid && this.NuevoLoteForm.get('material_siembra').touched    
   }
   
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private LoteService:LoteService) {
     this.NuevoLoteForm = new FormGroup({
       nombre_lote      : new FormControl(),
       año_siembra      : new FormControl(),
@@ -48,17 +50,16 @@ export class NuevoLoteComponent implements OnInit {
   crearFormulario() {
     this.NuevoLoteForm = this.fb.group({
       nombre_lote     : ['', [ Validators.required, Validators.minLength(5) ]],
-      año_siembra     : ['', [ Validators.required, Validators.minLength(4) ]],
+      año_siembra     : [`${this.Año.getFullYear()}`, [ Validators.required, Validators.minLength(4), Validators.min(0) ]],
       hectareas       : ['', [ Validators.required ]],
-      numero_palmas   :    ['', [ Validators.required ]],
+      numero_palmas   : ['', [ Validators.required ]],
       material_siembra: ['', [ Validators.required ]]
     }); 
   }
 
   guardar() {
-    console.log( this.NuevoLoteForm );
-
-    
+    console.log(this.NuevoLoteForm.value);
+    this.LoteService.postLote(this.NuevoLoteForm.value);
   }
 
 }

@@ -17,6 +17,10 @@ export class LoteService{
             return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
         }
 
+        postLote( datosLote:any ){
+            this.http.post(this.url_lote, datosLote);
+        }
+
 
 
 

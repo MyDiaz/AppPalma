@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormGroup, FormControl,FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-nueva-enfermedad',
@@ -8,26 +8,32 @@ import { NgForm } from '@angular/forms';
 })
 export class NuevaEnfermedadComponent implements OnInit {
   
-  etapas:string[] = [];
-  etapa:string;
+  NuevaEnfermedadForm: FormGroup;
 
   bandera:boolean = false;
 
-  constructor() { }
-  
+  constructor(private fb: FormBuilder) { 
+    this.NuevaEnfermedadForm = new FormGroup({
+      nombre_enfermedad: new FormControl(),
+      etapa_enfermedad : new FormControl()
+    });
 
+  }
+
+  nombreEnfermedadNoValido() {
+    return this.NuevaEnfermedadForm.get('nombre_enfermedad').invalid && this.NuevaEnfermedadForm.get('nombre_enfermedad').touched;s
+  }
   ngOnInit() {
   }
-
-  addEtapa (newEtapa: string) {
-    if (newEtapa) {
-      this.etapas.push(newEtapa);
-    }
+  
+  crearFormulario(){
+    this.NuevaEnfermedadForm= this.fb.group({
+      nombre_enfermedad: ['',[ Validators.required, Validators.minLength(3)] ]
+    });
   }
+  
 
-  setBandera( bandera:boolean ){
-    this.bandera = !this.bandera;
-  }
+
 
 
 
