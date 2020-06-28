@@ -12,6 +12,17 @@ export class NuevoLoteComponent implements OnInit {
   NuevoLoteForm: FormGroup;
   Año = new Date();
 
+  constructor(private fb: FormBuilder, private LoteService:LoteService) {
+    this.NuevoLoteForm = new FormGroup({
+      nombre_lote      : new FormControl(),
+      año_siembra      : new FormControl(),
+      hectareas        : new FormControl(),
+      numero_palmas    : new FormControl(),
+      material_siembra : new FormControl(), 
+   });
+   this.crearFormulario();
+   }
+
   get nombreLoteNoValido() {
     return this.NuevoLoteForm.get('nombre_lote').invalid && this.NuevoLoteForm.get('nombre_lote').touched
   }
@@ -31,17 +42,6 @@ export class NuevoLoteComponent implements OnInit {
   get MaterialSiembraNoValido(){
     return this.NuevoLoteForm.get('material_siembra').invalid && this.NuevoLoteForm.get('material_siembra').touched    
   }
-  
-  constructor(private fb: FormBuilder, private LoteService:LoteService) {
-    this.NuevoLoteForm = new FormGroup({
-      nombre_lote      : new FormControl(),
-      año_siembra      : new FormControl(),
-      hectareas        : new FormControl(),
-      numero_palmas    : new FormControl(),
-      material_siembra : new FormControl(), 
-   });
-   this.crearFormulario();
-   }
 
   ngOnInit() {
 

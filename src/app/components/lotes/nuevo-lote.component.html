@@ -50,7 +50,7 @@
                 Debe ingresar el material de siembra 
             </small>
         </div>
-        <button type="submit" class="btn btn-outline-success mr-2"> 
+        <button type="submit" class="btn btn-outline-success mr-2" [disabled]="!NuevoLoteForm.valid"> 
             Guardar </button>
         <button [routerLink]="['/lotes']" class="btn btn-outline-danger"> 
             <svg class="bi bi-x" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -60,4 +60,7 @@
             Cancelar 
         </button>
     </form>
+    <!-- <p>
+        Form Status: {{ NuevoLoteForm.status }} {{ NuevoLoteForm.valid }}
+    </p> -->
 </div>
