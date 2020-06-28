@@ -1,37 +1,50 @@
-<div class="container mt-4">
+<div class="container-xl">
     <div class="row">
-        <div class="col">
-            <h4> Nuevo enfermedad </h4>
-            <p> Ingresa los datos necesarios:</p>
-        </div>
+        <h4> Nuevo enfermedad </h4>
     </div>
 
-    <form autocomplete="off" [formGroup]="NuevaEnfermedadForm" (ngSubmit)="guardar()">
-        <div class="form-group">
-            <label> Nombre </label>
-            <input class="form-control" type="text" formControlName="nombre_enfermedad" [class.is-invalid]="nombreEnfermedadNoValido">
-            <small *ngIf="nombreEnfermedadNoValido" class="text-danger">
-                Ingrese 5 letras
-            </small>
-        </div>
+    <div class="row">
+        <p> Ingresa los datos necesarios:</p>
+    </div>
 
-        <div class="form-group">
-            <label> Estados </label>
-            <input type="text" class="form-control" #newEtapa (keyup.enter)="addEtapa(newEtapa.value)" (blur)="addEtapa(newEtapa.value); newEtapa.value='' " required>
-            <div class="position-static mt-2">
-                <button type="button" class="btn btn-outline-success btn-sm" (click)="addEtapa(newEtapa.value)"> + </button> <br>
-                <input type="checkbox" id="check" name="check" (click)="setBandera()">
-                <label class="form-check-label ml-2">
-                    <small> Ingresé todas los estados para esta enfermedad </small> 
-                </label> <br>
-                <span *ngFor="let etapa of etapas" class="badge badge-success mr-2 mt-2"> {{ etapa }} </span>
+    <div class="row-2">
+        <form autocomplete="off" [formGroup]="NuevaEnfermedadForm" (ngSubmit)="guardar()">
+
+            <div class="form-group">
+                <label> Nombre </label>
+                <input class="form-control" type="text" formControlName="nombre_enfermedad" [class.is-invalid]="nombreEnfermedadNoValido">
+                <small *ngIf="nombreEnfermedadNoValido" class="text-danger">
+                    Ingrese un nombre 
+                </small>
             </div>
-        </div>
-        <!--[routerLink]="['/listado-enfermedad']"-->
-        <button type="submit" *ngIf="bandera == true" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop"> 
-            Guardar 
-        </button>
-    </form>
+
+            <div class="form-group" formArrayName="etapas_enfermedad">
+                <small> Click  </small>
+                <button type="button" class="btn btn-outline-success btn-sm" (click)="addEtapa()"> + </button>
+                <small> para agregar una etapa. </small>
+                <div *ngFor="let etapa of etapasEnfermedad.controls; let i=index">
+                    <!-- The repeated alias template  -->
+                    <label> Etapa {{ i+1 }}: </label>
+                    <input class="form-control" type="text" [formControlName]="i">
+                </div>
+                <!--<div class="position-static mt-2">
+                    <input type="text" class="form-control" #newEtapa (blur)="addEtapa(newEtapa.value); newEtapa.value='' ">
+                    <button type="button"  (click)="addEtapa(newEtapa.value)"> + </button> <br>
+                    <input type="checkbox" id="check" name="check">
+                    <label class="form-check-label ml-2">
+                        <small> Ingresé todas los estados para esta enfermedad </small> 
+                    </label> <br>
+                    <span *ngFor="let etapa of etapas" class="badge badge-success mr-2 mt-2"> {{ etapa }} </span>
+                </div>-->
+            </div>
+
+            <!--[routerLink]="['/listado-enfermedad']"  *ngIf="bandera == true"-->
+            <button type="submit" data-toggle="modal" class="btn btn-outline-success" data-target="#staticBackdrop" (click)="guardar()" [disabled]="!NuevaEnfermedadForm.valid">
+                 Guardar 
+            </button>
+
+        </form>
+    </div>
 
     <app-modal> </app-modal>
 
