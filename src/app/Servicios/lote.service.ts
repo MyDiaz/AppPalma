@@ -1,13 +1,22 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
- 
+import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
+//import { LoteModel } from '../models/lote.models';
+import { respuesta } from '../models/resp.model';
+
+import { map, catchError, retry } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+
+const httpOptions = { 
+    headers: new HttpHeaders({
+        'Content-type': 'application/json'
+    })
+}
 @Injectable()
 export class LoteService{
 
     private url_lote:string = 'http://localhost:3000/lote';
 
-    constructor( private http: HttpClient ) { }
+    constructor( private http: HttpClient, private handleError:HttpHandler) { }
 
         getLotes(){
             return this.http.get(this.url_lote);
@@ -17,8 +26,8 @@ export class LoteService{
             return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
         }
 
-        postLote( datosLote:any ){
-            this.http.post(this.url_lote, datosLote);
+        postLote(datosLote): Observable<respuesta> {
+            return this.http.post<respuesta>(this.url_lote, datosLote).pipe(map( data => data ));
         }
 
 

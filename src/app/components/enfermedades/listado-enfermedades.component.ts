@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoteService } from '../../Servicios/lote.service';
+import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-listado-enfermedades',
