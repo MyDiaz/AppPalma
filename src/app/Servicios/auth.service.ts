@@ -26,14 +26,12 @@ export class AuthService {
 
     return this.http.post(
       `${ this.url }/accounts:signInWithPassword?key=${ this.api_key}`,
-      authData
-    ).pipe(
+      authData).pipe(
       map( resp => {
         this.guardarToken(resp['idToken']);
         return resp;
       })
     );
-
   }
 
   nuevoUsuario ( usuario:UsuarioModel ) {

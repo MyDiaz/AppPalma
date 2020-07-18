@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 export class LotesComponent implements OnInit {
 
   lotes:any = [];
+  bandera_error:boolean = false;
+  mensaje_error:string;
 
   constructor( private _loteService:LoteService,
     private router:Router ) { }
@@ -18,10 +20,17 @@ export class LotesComponent implements OnInit {
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
-        console.log(data);
+        
       },
       error => {
+        this.bandera_error = true;
+        this.mensaje_error = error.error.message;
+        console.log("error.status", error.status);
+        if( error.status == 0 ){
+          this.mensaje_error = "Servicio no disponible"
+        }
         console.log(error);
+
       });
   }
    

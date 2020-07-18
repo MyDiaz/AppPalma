@@ -1,8 +1,9 @@
 import { RouterModule, Routes } from '@angular/router';
 //import { HomeComponent } from './components/home/home.component';
 import { LotesComponent } from './components/lotes/lotes.component';
-import { LoteComponent } from './components/lote/lote.component';
-import { NuevoLoteComponent } from './components/lotes/nuevo-lote.component';
+import { PerfilLoteComponent } from './components/lotes/perfil-lote/perfil-lote.component';
+import { NuevoLoteComponent } from './components/lotes/nuevo-lote/nuevo-lote.component';
+import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
 import { ListadoPlagasComponent } from './components/plagas/listado-plagas.component';
 import { ListadoAgroquimicosComponent } from './components/aplicaciones/listado-agroquimicos.component';
 import { ListadoEnfermedadesComponent } from './components/enfermedades/listado-enfermedades.component';
@@ -26,7 +27,8 @@ const APP_ROUTES: Routes = [
     //{ path: 'home', component: HomeComponent, canActivate: [AuthGuard]},
     { path: 'lotes', component: LotesComponent},
     { path: 'nuevo-lote', component: NuevoLoteComponent },
-    { path: 'lote/:?id', component: LoteComponent,
+    { path: 'editar-lote/:id', component: EditarLoteComponent },
+    { path: 'lote/:id', component: PerfilLoteComponent,
       children: [
         { path: 'estado-productivo', component: EstadoProductivoComponent },
         { path: 'aplicaciones', component: AplicacionesComponent },

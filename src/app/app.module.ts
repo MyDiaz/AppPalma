@@ -17,7 +17,7 @@ import { LoteService } from './Servicios/lote.service';
 
 //components
 import { AppComponent } from './app.component';
-import { LoteComponent } from './components/lote/lote.component';
+import { PerfilLoteComponent } from './components/lotes/perfil-lote/perfil-lote.component';
 import { LotesComponent } from './components/lotes/lotes.component';
 import { NavbarComponent } from './components/shared/navbar/navbar.component';
 import { PalmaComponent } from './components/palma/palma.component';
@@ -26,7 +26,7 @@ import { EstadoProductivoComponent } from './components/estado-productivo/estado
 import { RegistroPlagasComponent } from './components/plagas/registro-plagas.component';
 import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.component';
 import { FechaComponent } from './components/utilidades/fecha/fecha.component';
-import { NuevoLoteComponent } from './components/lotes/nuevo-lote.component';
+import { NuevoLoteComponent } from './components/lotes/nuevo-lote/nuevo-lote.component';
 import { NuevaPlagaComponent } from './components/plagas/nueva-plaga.component';
 import { ListadoPlagasComponent } from './components/plagas/listado-plagas.component';
 import { ListadoAgroquimicosComponent } from './components/aplicaciones/listado-agroquimicos.component';
@@ -39,15 +39,16 @@ import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enferm
 import { RegistroComponent } from './acceso/registro/registro.component';
 import { LoginComponent } from './acceso/login/login.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
-import { ModalComponent } from './components/utilidades/modal/modal.component';
 import { RendimientoProductivoComponent } from './components/rendimiento-productivo/rendimiento-productivo.component';
+import { FormularioLoteComponent } from './components/lotes/formulario-lote/formulario-lote.component';
+import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
 
 registerLocaleData(localeEs);
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoteComponent,
+    PerfilLoteComponent,
     LotesComponent,
     NavbarComponent,
     PalmaComponent,
@@ -67,8 +68,9 @@ registerLocaleData(localeEs);
     RegistroComponent,
     LoginComponent,
     UsuariosComponent,
-    ModalComponent,
-    RendimientoProductivoComponent
+    RendimientoProductivoComponent,
+    FormularioLoteComponent,
+    EditarLoteComponent
   ],
   imports: [
     BrowserModule,

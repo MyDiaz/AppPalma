@@ -23,13 +23,16 @@ export class LoteService{
         }
 
         getLote( nombre:string ) {
-            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
+            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));8
         }
 
         postLote(datosLote): Observable<respuesta> {
             return this.http.post<respuesta>(this.url_lote, datosLote).pipe(map( data => data ));
         }
 
+        putLote(datosLote, nombre:string): Observable<respuesta> {
+            return this.http.put<respuesta>(`${this.url_lote}/${nombre}`, datosLote).pipe(map( data => data ));
+        }
 
 
 
@@ -38,26 +41,6 @@ export class LoteService{
 
 
         
-
-        private lotes:any[] = 
-        [
-            { nombre: "Cementerio" },
-            { nombre: "Casa vieja" },
-            { nombre: "Electrificadora Baja" },
-            { nombre: "Electrificadora Alto" },
-            { nombre: "Acueducto" },
-            { nombre: "Ganaderia" },
-            { nombre: "Bogota A" },
-            { nombre: "Bogota B" },
-            { nombre: "Caño Cotiza"},
-            { nombre: "Vivero" },
-            { nombre: "Infierno" },
-            { nombre: "Vega del río" },
-            { nombre: "La Ceiba" },
-            { nombre: "Bella Isla" },
-            { nombre: "Guamo" },
-            { nombre: "Lomitas"}
-        ];
 
     private plagas:any[] = [
         { nombre: "Arañita roja"},
