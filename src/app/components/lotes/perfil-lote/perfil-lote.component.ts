@@ -12,6 +12,8 @@ export class PerfilLoteComponent implements OnInit{
   
   lote:any = {};
   nombre_lote:string;
+  bandera_error:boolean = false;
+  mensaje_error:string;
 
   constructor( private activatedRoute:ActivatedRoute, private _loteService:LoteService, private router:Router ) 
   { 
@@ -21,14 +23,19 @@ export class PerfilLoteComponent implements OnInit{
   }
 
   ngOnInit() {
-    console.log("nombre lote",this.nombre_lote);
+
     this._loteService.getLote(this.nombre_lote).subscribe(
       data => {
         this.lote = data;
-        //console.log("data recibida en lote", data);
       },
       error => {
-        console.log("error en lote", error);
+        this.bandera_error = true;
+        if( error.status == 0 ){
+          this.mensaje_error = "Servicio no disponible"
+        }else{ 
+          this.mensaje_error = error.error.message
+          console.log("errror", error);
+        }
       });
       
   }

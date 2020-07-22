@@ -138,4 +138,12 @@ export class FormularioLoteComponent implements OnInit {
     });
   }
 
+  regresar( ) {
+    if( this.id_lote ){
+      this.router.navigateByUrl(`lote/${this.id_lote}`)
+    }else{
+      this.router.navigateByUrl('lotes')
+    }
+  }
+
 }

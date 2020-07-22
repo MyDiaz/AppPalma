@@ -12,9 +12,12 @@ export class LotesComponent implements OnInit {
   lotes:any = [];
   bandera_error:boolean = false;
   mensaje_error:string;
+  changeText: boolean;
 
   constructor( private _loteService:LoteService,
-    private router:Router ) { }
+    private router:Router ) {
+      this.changeText = false;
+     }
 
   ngOnInit() {
     this._loteService.getLotes().subscribe(

@@ -1,4 +1,13 @@
-.user {
-    float: right;
-    background-color: blueviolet;
+.dropdown:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropright:hover>.dropdown-menu {
+    display: block;
+}
+
+@media (min-width: 992px) {
+    #user_menu {
+        margin-left: -2.5em;
+    }
 }

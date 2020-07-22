@@ -10,9 +10,13 @@
 
     <hr>
 
+    <div *ngIf="bandera_error" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
+    </div>
+
     <a class="btn btn-light btn-sm" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-        Información del lote
-    </a>
+            Información del lote
+        </a>
     <div class="collapse" id="collapseExample">
         <div class="card card-body">
             <div class="row">
@@ -29,14 +33,15 @@
                         <li> <b> Material siembra:</b> {{ lote.material_siembra }} </li>
                     </ul>
 
-                    <button class="mt-2 btn btn-info" (click)="verLoteEditar(nombre_lote)"> 
-                     
-                    Editar 
-                    </button>
+                    <button class="mt-2 btn btn-info" (click)="verLoteEditar(nombre_lote)">
+                            <i class="fas fa-pencil-alt"></i> Editar 
+                        </button>
                 </div>
             </div>
         </div>
     </div>
+
+
     <hr>
 
     <br>
