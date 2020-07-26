@@ -96,21 +96,21 @@ export class FormularioLoteComponent implements OnInit {
       text: 'Estás seguro de agregarlo?',
       icon: 'question',
       showCancelButton: true,
-      showConfirmButton: true}).then( a => {
+      showConfirmButton: true}).then( () => {
       if ( !this.id_lote){
         this.LoteService.postLote(this.lote_req).subscribe(
           resp => {
             this.rta = resp;
             Swal.fire({
               title: this.lote_req.nombre_lote,
-              text: this.rta.message,
+              html: this.rta.message,
               icon: 'success'
             });
             this.NuevoLoteForm.reset({});
           }, (error) => {
             Swal.fire({
               title: this.lote_req.nombre_lote,
-              text: error.error.message,
+              html: error.error.message,
               icon: 'error'
             });
           });
@@ -121,7 +121,7 @@ export class FormularioLoteComponent implements OnInit {
             this.rta = resp;
             Swal.fire({
               title: this.lote_req.nombre_lote,
-              text: this.rta.message,
+              html: this.rta.message,
               icon: 'success'
             }).then( () => {
               this.router.navigateByUrl(`lote/${this.lote_req.nombre_lote}`) 
@@ -130,7 +130,7 @@ export class FormularioLoteComponent implements OnInit {
           console.log('error put', error);
           Swal.fire({
             title: this.lote_req.nombre_lote,
-            text: error.error.message,
+            html: error.error.message,
             icon: 'error'
           })
         });

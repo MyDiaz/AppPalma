@@ -20,44 +20,11 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     //si recarga la pagiina y que el correo se mantega
-    if(localStorage.getItem('email')){
-      this.usuario.email = localStorage.getItem('email');
-      this.recuerdame = true;
-    }
+    
   }
 
   //login
   login( form:NgForm ){
-    if( form.invalid ){ return; }
-    else{
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        text: 'Espere por favor...'
-      });
-      Swal.showLoading();
-
-      this.auth.login( this.usuario )
-        .subscribe( resp => {
-          //login valido
-          console.log(resp);
-          Swal.close();
-          
-          //recoradar contraseña
-          if(this.recuerdame){
-            localStorage.setItem('email', this.usuario.email);
-          }
-
-          this.router.navigateByUrl('/lotes'); 
-
-        }, (err)=> {
-          console.log(err.error.error.message);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al autenticar',
-            text: 'err.error.error.message'
-          });
-        });
-    }
-  }
+    
+}
 }

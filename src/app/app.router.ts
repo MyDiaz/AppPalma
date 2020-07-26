@@ -19,7 +19,7 @@ import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enferm
 //rutas para el acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
 import { LoginComponent } from './acceso/login/login.component';
-import { AuthGuard } from './guards/auth.guard';
+
 //usuarios
 import { UsuariosComponent} from './components/usuarios/usuarios.component';
 

@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
-//import { LoteModel } from '../models/lote.models';
 import { respuesta } from '../models/resp.model';
-
 import { map, catchError, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 

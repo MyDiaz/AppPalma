@@ -15,7 +15,7 @@ export class NavbarComponent implements OnInit {
   }
 
   salir(){
-    this.auth.logout();
+    //this.auth.logout();
     this.router.navigateByUrl('/login');
   }
 
