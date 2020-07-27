@@ -82,7 +82,8 @@ export class RegistroComponent implements OnInit {
                 icon: 'error'
               });
             }     
-          )}
-        )}
+          )
+        })
+    }
   }
 }
