@@ -1,9 +1,11 @@
 import { RouterModule, Routes } from '@angular/router';
 //import { HomeComponent } from './components/home/home.component';
+//Lotes
 import { LotesComponent } from './components/lotes/lotes.component';
 import { PerfilLoteComponent } from './components/lotes/perfil-lote/perfil-lote.component';
 import { NuevoLoteComponent } from './components/lotes/nuevo-lote/nuevo-lote.component';
 import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
+
 import { ListadoPlagasComponent } from './components/plagas/listado-plagas.component';
 import { ListadoAgroquimicosComponent } from './components/aplicaciones/listado-agroquimicos.component';
 import { ListadoEnfermedadesComponent } from './components/enfermedades/listado-enfermedades.component';
@@ -15,7 +17,8 @@ import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.co
 import { RegistroPlagasComponent } from './components/plagas/registro-plagas.component';
 import { NuevaPlagaComponent } from './components/plagas/nueva-plaga.component';
 import { NuevoAgroquimicosComponent } from './components/aplicaciones/nuevo-agroquimicos.component';
-import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enfermedad.component';
+import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enfermedad/nueva-enfermedad.component';
+import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
 //rutas para el acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
 import { LoginComponent } from './acceso/login/login.component';
@@ -45,8 +48,9 @@ const APP_ROUTES: Routes = [
     ]},
     { path: 'listado-enfermedad', component: ListadoEnfermedadesComponent,
       children:[
-        { path: 'nueva-enfermedad', component: NuevaEnfermedadComponent}
+        { path: 'editar-enfermedad', component: EditarEnfermedadComponent}
     ]},
+    { path: 'nueva-enfermedad', component: NuevaEnfermedadComponent },
     { path: 'rendimiento-productivo', component: RendimientoProductivoComponent},
     { path: 'registro', component: RegistroComponent },
     { path: 'login'   , component: LoginComponent},

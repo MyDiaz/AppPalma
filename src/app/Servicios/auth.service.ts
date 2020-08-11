@@ -16,7 +16,6 @@ export class AuthService {
   registrarUsuario ( usuario ): Observable<respuesta> {
     return this.http.post<respuesta>(`${this.url_autenticacion}/registro`, usuario)
     .pipe(map (resp =>{
-        this.guardarToken(resp);
         return resp;
       })
     );
@@ -25,14 +24,15 @@ export class AuthService {
   login( cc_usuario: string, contrasena_usuario:string ){
     return this.http.post(`${this.url_autenticacion}/login`, {cc_usuario, contrasena_usuario})
     .pipe( map (resp => {
-       return resp; 
+      this.guardarToken(resp);
+      return resp; 
     }))
   }
 
   private guardarToken( authResult ){
     localStorage.setItem('token', authResult.token);
     localStorage.setItem('expira', authResult.vence);
-    localStorage.setItem('expira', authResult.creacion);
+    localStorage.setItem('creacion', authResult.creacion);
   }
 
   

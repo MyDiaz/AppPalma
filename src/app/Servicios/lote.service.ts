@@ -21,7 +21,7 @@ export class LoteService{
         }
 
         getLote( nombre:string ) {
-            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));8
+            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
         }
 
         postLote(datosLote): Observable<respuesta> {

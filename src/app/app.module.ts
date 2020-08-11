@@ -31,9 +31,9 @@ import { NuevaPlagaComponent } from './components/plagas/nueva-plaga.component';
 import { ListadoPlagasComponent } from './components/plagas/listado-plagas.component';
 import { ListadoAgroquimicosComponent } from './components/aplicaciones/listado-agroquimicos.component';
 import { NuevoAgroquimicosComponent } from './components/aplicaciones/nuevo-agroquimicos.component';
-import { RegistroEnfermedadesComponent } from './components/enfermedades/registro-enfermedades.component';
+import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enfermedad/nueva-enfermedad.component';
 import { ListadoEnfermedadesComponent } from './components/enfermedades/listado-enfermedades.component';
-import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enfermedad.component';
+import { FormularioEnfermedadComponent } from './components/enfermedades/formulario-enfermedad/formulario-enfermedad.component';
 
 //acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
@@ -42,6 +42,7 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { RendimientoProductivoComponent } from './components/rendimiento-productivo/rendimiento-productivo.component';
 import { FormularioLoteComponent } from './components/lotes/formulario-lote/formulario-lote.component';
 import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
+import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
 
 registerLocaleData(localeEs);
 
@@ -62,15 +63,16 @@ registerLocaleData(localeEs);
     ListadoPlagasComponent,
     ListadoAgroquimicosComponent,
     NuevoAgroquimicosComponent,
-    RegistroEnfermedadesComponent,
-    ListadoEnfermedadesComponent,
     NuevaEnfermedadComponent,
+    ListadoEnfermedadesComponent,
+    FormularioEnfermedadComponent,
     RegistroComponent,
     LoginComponent,
     UsuariosComponent,
     RendimientoProductivoComponent,
     FormularioLoteComponent,
-    EditarLoteComponent
+    EditarLoteComponent,
+    EditarEnfermedadComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoteService } from '../../Servicios/lote.service';
+import { EnfermedadesService } from '../../Servicios/enfermedades.service';
 import { FormGroup, FormControl } from '@angular/forms';
 
 @Component({
@@ -9,13 +9,33 @@ import { FormGroup, FormControl } from '@angular/forms';
 })
 export class ListadoEnfermedadesComponent implements OnInit {
 
-  enfermedades:any[] = [];
+  enfermedad:any = [];
+  NombreEnfermedadForm:FormGroup;
+  NombreEnfermedadEditar:string;
+  bandera:boolean = false;
+  mensaje_error:string;
 
-  constructor(private _loteService:LoteService) {
-    this.enfermedades = _loteService.getEnfermedades();
+  constructor(private EnfermedadesService:EnfermedadesService) {
+    this.EnfermedadesService.getEnfermedades().subscribe( data => {
+      this.enfermedad = data;
+    }, err => {
+      this.bandera = true;
+      this.mensaje_error = err.error.mensaje;
+      console.log(err);
+      if( err.status == 0 ) this.mensaje_error = "Servicio no disponible"
+    })
+    this.NombreEnfermedadForm = new FormGroup({
+      nombre_enfermedad: new FormControl()
+    }) 
+    
    }
 
   ngOnInit() {
+  }
+
+  enviarEnfermedad(){
+
+    console.log(this.NombreEnfermedadForm);
   }
 
 }
