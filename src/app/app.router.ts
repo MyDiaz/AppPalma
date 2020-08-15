@@ -47,9 +47,10 @@ const APP_ROUTES: Routes = [
         { path: 'nuevo-agroquimico', component: NuevoAgroquimicosComponent}
     ]},
     { path: 'listado-enfermedad', component: ListadoEnfermedadesComponent,
-      children:[
-        { path: 'editar-enfermedad', component: EditarEnfermedadComponent}
-    ]},
+      children: [
+        { path: 'editar-enfermedad/:id_enfermedad', component: EditarEnfermedadComponent}
+      ]
+    },    
     { path: 'nueva-enfermedad', component: NuevaEnfermedadComponent },
     { path: 'rendimiento-productivo', component: RendimientoProductivoComponent},
     { path: 'registro', component: RegistroComponent },
