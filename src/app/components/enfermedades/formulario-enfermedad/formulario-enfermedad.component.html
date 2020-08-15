@@ -1,4 +1,4 @@
-<button class="btn btn-outline-dark" (click)="hayEtapas = !hayEtapas"> 
+<button class="btn btn-outline-info mt-3" (click)="hayEtapas = !hayEtapas"> 
     <span *ngIf="!hayEtapas"> Registrar la enfermedad con etapas? </span>
     <span *ngIf="hayEtapas"> Registrar la enfermedad sin etapas? </span>
 </button>
@@ -9,7 +9,7 @@
 
         <div class="form-group">
             <label> Nombre </label>
-            <input class="form-control" type="text" formControlName="nombre_enfermedad_etapas" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
+            <input class="form-control" type="text" formControlName="nombre_enfermedad" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
             <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger">
                 Ingrese un nombre 
             </small>
@@ -64,8 +64,14 @@
         </div>
     
         <!--[routerLink]="['/listado-enfermedad']"  *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
+        <button (click)="regresar()" class="btn btn-outline-danger mr-2"> 
+            <i class="fas fa-arrow-circle-left"></i> Cancelar 
+        </button>
+        
         <button type="submit" class="btn btn-outline-success">
             <i class="fas fa-save"></i> Guardar 
         </button>
+
+        
     </form>
 </div>

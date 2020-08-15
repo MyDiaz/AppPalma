@@ -22,25 +22,13 @@ export class FormularioEnfermedadComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private enfermedadService:EnfermedadesService, 
     private router:Router) { 
-
-    /*this.NuevaEnfermedadEtapasForm = new FormGroup({
-      nombre_enfermedad_etapas    : new FormControl(),
-      etapas_enfermedad           : this.fb.array([]),
-      tratamiento_etapa_enfermedad: this.fb.array([])
-    });
-
-    this.NuevaEnfermedadForm = new FormGroup({
-      nombre_enfermedad                   : new FormControl(),
-      procedimiento_tratamiento_enfermedad: new FormControl()
-    })*/
-
       this.crearFormularioEnfermedadEtapas();
       this.crearFormularioEnfermedad();
   }
 
   //  VALIDACIONES PARA ENFERMEDAD CON ETAPAS
   get nombreEnfermedadEtapasNoValido() {
-    return this.NuevaEnfermedadEtapasForm.get('nombre_enfermedad_etapas').invalid && this.NuevaEnfermedadEtapasForm.get('nombre_enfermedad_etapas').touched;
+    return this.NuevaEnfermedadEtapasForm.get('nombre_enfermedad').invalid && this.NuevaEnfermedadEtapasForm.get('nombre_enfermedad').touched;
   }
   
   get etapasEnfermedad() {
@@ -65,7 +53,7 @@ export class FormularioEnfermedadComponent implements OnInit {
   
   crearFormularioEnfermedadEtapas(){
     this.NuevaEnfermedadEtapasForm= this.fb.group({
-      nombre_enfermedad_etapas    : [, [Validators.required, Validators.minLength(3)]],
+      nombre_enfermedad          : [, [Validators.required, Validators.minLength(3)]],
       etapas_enfermedad           : this.fb.array([]),
       tratamiento_etapa_enfermedad: this.fb.array([])
     });
@@ -144,5 +132,9 @@ export class FormularioEnfermedadComponent implements OnInit {
             });
           })
       })  
+    }
+
+    regresar(){
+      this.router.navigateByUrl(`listado-enfermedad`);
     }
 }
