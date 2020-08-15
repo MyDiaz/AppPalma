@@ -1,4 +1,5 @@
 <div  class="container-xl">
+    <form [formGroup]="NombreEnfermedadForm" (ngSubmit)="enviarEnfermedad()">
     <app-fecha> </app-fecha>
 
     <div class="row">
@@ -11,6 +12,7 @@
     <div *ngIf="bandera" class="alert alert-danger" role="alert">
         <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
     </div>
+
     <div class="row" *ngIf="!bandera">
         <table class="table table-hover" >
             <thead>
@@ -22,20 +24,34 @@
             </thead>
             
             <tbody>
-                <tr *ngFor="let enfermedad of enfermedad; index as i">
+                
+                <tr *ngFor="let enfermedad of enfermedades; let i=index">
                     <td>
-                        <form [formGroup]="NombreEnfermedadForm" (ngSubmit)="enviarEnfermedad()">
-                            <input type="checkbox" class="form-check-input" id="i" value="enfermedad.nombre_enfermedad">
-                            <label class="form-check-label" for="enfermedad.nombre_enfermedad">
-                                    {{ enfermedad.nombre_enfermedad }}   
-                            </label>
-                        </form>
+                        <input type="radio" class="form-check-input" id={{i}} 
+                        value="{{enfermedad.id_enfermedad}}"  name="id_enfermedad" 
+                        formControlName="id_enfermedad">
 
+                        <label class="form-check-label" for="enfermedad.nombre_enfermedad">
+                                {{ enfermedad.nombre_enfermedad }}   
+                        </label>
                     </td>
                     <td> {{ enfermedad.etapa_enfermedad }} </td>
                     <td> {{ enfermedad.tratamiento_etapa_enfermedad }} </td>
                 </tr>
+                
+                <tr *ngFor="let enfermedad of enfermedadesEtapas; let i=index">
+                    <td>
+                        <input type="radio" class="form-check-input" id={{i}} 
+                        value="{{enfermedad.id_enfermedad}}"  name="id_enfermedad" 
+                        formControlName="id_enfermedad">
 
+                        <label class="form-check-label" for="enfermedad.nombre_enfermedad">
+                                {{ enfermedad.nombre_enfermedad }}   
+                        </label>
+                    </td>
+                    <td> {{ enfermedad.etapa_enfermedad }} </td>
+                    <td> {{ enfermedad.tratamiento_etapa_enfermedad }} </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -51,14 +67,13 @@
             </button>
         </div>
         <div class="col">
-            <!--[routerLink]="['editar-enfermedad']"-->
-
-            <button type="submit" class="btn btn-outline-warning btn-block" routerLinkActive="router-link-active"> 
+            <button type="submit" class="btn btn-outline-warning btn-block" (click)="editarEnfermedad()">
                 <i class="fas fa-pencil-alt"></i>
                 Editar 
             </button>
         </div>
     </div>
+</form>
 </div>
 
 
