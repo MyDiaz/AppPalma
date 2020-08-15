@@ -17,6 +17,10 @@ export class EnfermedadesService {
     return this.http.get(`${this.url_enfermedades}`);
   }
 
+  getEnfermedadesEtapas(){
+    return this.http.get(`${this.url_enfermedades}-etapas`);
+  }
+
   postEnfermedadEtapas(formEnfermedadEtapas): Observable<respuesta>{
     return this.http.post<respuesta>(`${this.url_enfermedades}-etapas`,formEnfermedadEtapas)
     .pipe(map( data => data ));
