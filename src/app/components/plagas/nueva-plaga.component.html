@@ -1,22 +1,60 @@
-<div class="container mt-4">
+<div class="container mt-5 mb-5">
     <div class="row">
-        <div class="col-md-10">
-            <h4> Nueva plaga </h4>
+        <h4 *ngIf="!hayPlaga"> Nueva plaga </h4>
+        <h4 *ngIf="hayPlaga"> Editar plaga: {{ nombrePlaga | titlecase}} </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
         </div>
     </div>
+    <hr class="row mt-1">
 
-    <p> Ingresa los datos necesarios:</p>
+    <div class="row mb-5">
+        <p *ngIf="!hayPlaga"> Ingresa los datos necesarios:</p>
+    </div>
 
-    <form>
+    <form autocomplete="off" [formGroup]="NuevaPlagaForm">
         <div class="form-group">
-            <label required>Nombre común</label>
-            <input type="text" class="form-control">
+            <label> Nombre común </label>
+            <input type="text" class="form-control" formControlName="nombre_comun_plaga">
         </div>
-        <div class="form-group">
-            <label for="InputNombreCientifico">Nombre científico</label>
-            <input type="text" class="form-control">
+
+        <div class="row">
+            <table class="table">
+                <thead class="text-center font-weight-bold">
+                    <tr class="table-success">
+                        <td> Etapa </td>
+                        <td> Procedimiento </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="form-group" formArrayName="nombre_etapa_plaga">
+                            <div *ngFor="let etapa of etapasPlaga.controls; let i=index">
+                                <input class="form-control mt-2" type="text" [formControlName]="i">
+                            </div>
+                        </td>
+                        <td class="form-group" formArrayName="procedimiento_etapa_plaga">
+                            <div *ngFor="let procedimiento of ProcedimientoEtapasPlaga.controls; let j=index">
+                                <input class="form-control mt-2" type="text" [formControlName]="j">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-block" (click)="addProcedimientoEtapa(); addEtapa(); addID()"> 
+                                <small> Click </small> <i class="fas fa-plus-circle"></i> <small> para agregar una etapa. </small> 
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger btn-block" (click)="borrarFila()"> 
+                                <small> Click </small> <i class="fas fa-minus-circle"></i> <small> para eliminar una etapa. </small> 
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-        <div class="form-group">
+        <!--<div class="form-group">
             <label> Etapas de desarrollo </label>
             <input type="text" class="form-control" #newEtapa (keyup.enter)="addEtapa(newEtapa.value)" (blur)="addEtapa(newEtapa.value); newEtapa.value='' " required>
             <div class="position-static mt-2">
@@ -27,8 +65,18 @@
                 </label> <br>
                 <span *ngFor="let etapa of etapas" class="badge badge-success mr-2 mt-2"> {{ etapa }} </span>
             </div>
-        </div>
-        <button type="submit" *ngIf="bandera == true" data-toggle="modal" class="btn btn-primary" data-target="#staticBackdrop"> Guardar </button>
+        </div>-->
+        <button (click)="regresar()" class="btn btn-danger mr-2"> 
+            <i class="fas fa-arrow-circle-left"></i> Cancelar 
+        </button>
+
+        <button *ngIf="!hayPlaga" type="submit" class="btn btn-success" (click)="guardarPlaga()">
+                <i class="fas fa-save"></i> Guardar 
+            </button>
+
+        <button *ngIf="hayPlaga" type="submit" class="btn btn-success mr-2" (click)="actualizarPlaga()"> 
+                <i class="fas fa-pencil-alt"></i> Actualizar
+            </button>
     </form>
-    
+
 </div>

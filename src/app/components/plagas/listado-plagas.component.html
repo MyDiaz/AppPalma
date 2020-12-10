@@ -1,26 +1,89 @@
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-6">
-            <h4> Plagas </h4>
-            <p>Estas son la plagas registradas hasta el momento </p>
-
-            <table class="table table-hover">
-                <thead>
-                    <!--<tr class="table-info">
-                        <th scope="col">Plagas </th>
-                    </tr>-->
-                </thead>
-                <tbody>
-                    <tr *ngFor="let plaga of plagas;">
-                        <td> {{ plaga.nombre}} </td>
-                    </tr>
-                </tbody>
-            </table>
-            <br>
-            <button type="button" class="btn btn-info btn-block" [routerLink]="['nueva-plaga']">Agregar nueva plaga </button>
-        </div>
-        <div class="col-md-6">
-            <router-outlet> </router-outlet>
+<div *ngIf="!cargando" class="container mt-5" style="height: 80%">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="sr-only">Loading...</span>
         </div>
     </div>
+</div>
+
+<div *ngIf="cargando" class="container mt-5 mb-5">
+    <div class="row">
+        <h4> Plagas </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+    <hr class="row mt-1">
+    <div *ngIf="hayPlagas" class="row mb-5">
+        <p>Estas son la plagas registradas hasta el momento </p>
+    </div>
+
+    <div *ngIf="bandera" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ mensajeError }}
+    </div>
+
+    <div *ngIf="!hayPlagas" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay plagas registradas
+    </div>
+
+    <form [formGroup]="NombrePlagaForm">
+        <table *ngIf="hayPlagas" class="table table-hover">
+            <thead>
+                <tr class="table-success row">
+                    <th class="col-1"></th>
+                    <th class="col-3"> Nombre </th>
+                    <th class="col-3"> Etapa </th>
+                    <th class="col-5"> Procedimiento </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let plaga of plagas; let i=index" class="row">
+                    <td class="col-1">
+                        <input type="radio" id={{i+plagas.length}} value={{plaga[0].nombre_comun_plaga}} name="nombre_comun_plaga" formControlName="nombre_comun_plaga">
+                    </td>
+                    <td class="col-3">
+                        <label class="form-check-label" for="plaga.nombre_comun_plaga">
+                        {{ plaga[0].nombre_comun_plaga | titlecase }} 
+                    </label>
+                    </td>
+                    <td class="col-8">
+                        <table class="container-fluid">
+                            <tbody>
+                                <tr class="row" *ngFor="let etapaTratamiento of plaga">
+                                    <td class="col-5" style=" border: transparent; padding-top: unset;"> {{ etapaTratamiento.nombre_etapa_plaga | titlecase }} </td>
+                                    <td class="col-7" style=" border: transparent; padding-top: unset; padding-left: unset;"> {{ etapaTratamiento.procedimiento_etapa_plaga }} </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="row mt-1">
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-outline-info btn-block" [routerLink]="['/nueva-plaga']">
+            <i class="fas fa-plus-circle"></i>
+            Añadir plaga 
+            </button>
+            </div>
+        </div>
+        <div *ngIf="hayPlagas" class="row m-2">
+            <i class="mr-2 fas fa-exclamation-circle"></i> <small> Para eliminar o editar debe seleccionar primero una plaga.</small>
+        </div>
+        <div *ngIf="hayPlagas" class="row mt-2">
+            <div class="col">
+                <button type="submit" class="btn btn-outline-danger btn-block" (click)="eliminarPlaga()" [disabled]="!esValido()"> 
+                <i class="fas fa-trash"></i>
+                Eliminar 
+            </button>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-outline-warning btn-block" (click)="editarPlaga()" [disabled]="!esValido()">
+                <i class="fas fa-pencil-alt"></i>
+                Editar
+            </button>
+            </div>
+        </div>
+    </form>
 </div>
