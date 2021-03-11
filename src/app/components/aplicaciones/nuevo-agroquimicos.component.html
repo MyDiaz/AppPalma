@@ -1,31 +1,92 @@
-<div class="container mt-4">
+<div class="container mt-5">
+    <div class="row">
+        <h4 *ngIf="!hayProducto"> Nuevo producto </h4>
+        <h4 *ngIf="hayProducto"> Editar producto: {{agroquimicoAEditar.nombre_producto_agroquimico}} </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+    <hr class="row mt-1">
+    <div class="row mb-5">
+        <p *ngIf="!hayProducto"> Ingresa los datos necesarios:</p>
+    </div>
 
-    <h4> Nuevo agroquímico </h4>
-    <p> Ingresa los datos necesarios:</p>
+    <form class="form-row mb-3" autocomplete="off" [formGroup]="agroquimicoForm">
+        <div class="col-12">
+            <div class="form-group">
+                <label> Nombre comercial </label>
+                <input type="text" class="form-control" formControlName="nombre_producto_agroquimico" [class.is-invalid]="nombreProductoAgroquimicoNoValido">
+                <small *ngIf="nombreProductoAgroquimicoNoValido" class="text-danger">
+                    Ingrese un nombre, mínimo 3 carácteres.
+                </small>
+            </div>
+            <div class="form-group">
+                <label> Tipo de producto </label>
+                <select class="form-control" formControlName="tipo_producto_agroquimico" [class.is-invalid]="tipoProductoAgroquimicoNoValido">
+                  <option selected>  </option>
+                  <option> Funjicida </option>
+                  <option> Insectisida </option>
+                  <option> Herbicida</option>
+                  <option> Bactericida </option>
+                </select>
+                <small *ngIf="tipoProductoAgroquimicoNoValido" class="text-danger">
+                    Seleccione un tipo de producto.
+                </small>
+            </div>
+            <div class="form-group">
+                <label> Clase  </label>
+                <select class="form-control" formControlName="clase_producto" [class.is-invalid]="claseProductoNoValido">
+                  <option selected>  </option>
+                  <option> Químico </option>
+                  <option> Biologico </option>
+                </select>
+                <small *ngIf="claseProductoNoValido" class="text-danger">
+                    Seleccione una clase de producto.
+                </small>
+            </div>
+            <div class="form-group">
+                <label> Presentación producto </label>
 
-    <form>
-        <div class="form-group">
-            <label for="InputNombreComun">Nombre comercial</label>
-            <input type="text" class="form-control">
+                <input type="text" class="form-control" formControlName="presentacion_producto_agroquimico" [class.is-invalid]="presentacionProductoAgroquimicoNoValido">
+
+            </div>
+            <small *ngIf="presentacionProductoAgroquimicoNoValido" class="text-danger">
+                    Ingrese una presentación válida.
+                </small>
+
+            <div class="form-group">
+                <label> Ingrediente activo </label>
+                <input type="text" class="form-control" formControlName="ingrediente_activo_producto_agroquimico" [class.is-invalid]="ingredienteActivoProductoAgroquimicoNoValido">
+                <small *ngIf="presentacionProductoAgroquimicoNoValido" class="text-danger">
+                    Ingrese una ingrediente activo.
+                </small>
+            </div>
+            <div class="form-group">
+                <label> Periodo de carencia </label>
+                <div class="row">
+                    <div class="col-11">
+                        <input type="number" class="form-control" formControlName="periodo_carencia_producto_agroquimico" [class.is-invalid]="periodoCarenciaProductoAgroquimicoNoValido">
+                    </div>
+                    <div class="col-1">
+                        días
+                    </div>
+                </div>
+
+                <small *ngIf="periodoCarenciaProductoAgroquimicoNoValido" class="text-danger">
+                    Ingrese un periodo de carencia válido, solo números. Si el producto es biológico ingrese 0 (cero).
+                </small>
+            </div>
         </div>
-        <div class="form-group">
-            <label> Tipo de agroquímico </label>
-            <select class="form-control">
-              <option selected> Seleccionar </option>
-              <option> Funjicida </option>
-              <option> Insectisida </option>
-              <option> Herbicida</option>
-              <option> Bactericida </option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label> Presentación agroquímico </label>
-            <input type="number" class="form-control">
-        </div>
-        <div class="form-group">
-            <label> Ingrediente activo </label>
-            <input type="text" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop"> Guardar </button>
+
+        <button (click)="regresar()" class="btn btn-danger mr-2"> 
+            <i class="fas fa-arrow-circle-left"></i> Cancelar 
+        </button>
+
+        <button *ngIf="!hayProducto" type="submit" class="btn btn-success" (click)="guardar()">
+            <i class="fas fa-save"></i> Guardar 
+        </button>
+        <button *ngIf="hayProducto" type="submit" class="btn btn-success mr-2" (click)="actualizarProducto()"> 
+            <i class="fas fa-pencil-alt"></i> Actualizar
+        </button>
     </form>
 </div>

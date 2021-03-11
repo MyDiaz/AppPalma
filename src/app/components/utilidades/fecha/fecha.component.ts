@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-fecha',
   template: `
-    <p class="text-right">
+    <p class="mt-2 text-right">
       {{fecha | date:'fullDate':'es'}}
     </p>
   `,

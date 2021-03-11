@@ -21,10 +21,8 @@
 
                 <span *ngIf="cargoNoValido" class="text-danger ">Debe ingresar el cargo</span>
                 <div class="wrap-input100 m-b-16">
-                    <label> Cargo: </label>
                     <span class="focus-input100"></span>
-                    <select class="form-control" formControlName="cargo" [class.is-invalid]="cargoNoValido">
-                        <option> </option>
+                    <select class="form-control input100" formControlName="cargo_empresa" [class.is-invalid]="cargoNoValido" placeholder="Cargo">
                         <option value="Administrador"> Administrador </option>
                         <option value="Supervisor de campo"> Supervisor de campo </option>
                     </select>
@@ -35,14 +33,6 @@
                     <input class="input100 form-control" type="password" formControlName="contrasena_usuario" [class.is-invalid]="contrasenaUsuarioNoValido" placeholder="Contraseña">
                     <span class="focus-input100"></span>
                 </div>
-
-                <div class="flex-sb-m w-full p-t-3 p-b-24">
-                    <div class="contact100-form-checkbox">
-                        <input type="checkbox" value="false" formControlName="rol">
-                        <label> Marque si el usuario se va a registrar como administrador </label>
-                    </div>
-                </div>
-
 
                 <div class="container-login100-form-btn m-t-17">
                     <button class="login100-form-btn" type="submit">

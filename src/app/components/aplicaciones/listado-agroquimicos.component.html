@@ -1,37 +1,64 @@
-<div class="container mt-3">
-
-    <h4> Agroquímicos </h4>
-
-    <p>Estas son los agroquímicos registrados hasta el momento </p>
-    <div class="row">
-        <div class="col-md-3">
-            <!---->
-            <ul class="list-group">
-                <li class="list-group-item active"> Fungicidas </li>
-                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
-            </ul>
-        </div>
-        <div class="col-md-3">
-            <ul class="list-group">
-                <li class="list-group-item active"> Insecticidas </li>
-                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
-            </ul>
-        </div>
-        <div class="col-md-3">
-            <ul class="list-group">
-                <li class="list-group-item active"> Herbicidas </li>
-                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
-            </ul>
-        </div>
-        <div class="col-md-3">
-            <ul class="list-group">
-                <li class="list-group-item active"> Bactericidas </li>
-                <li *ngFor="let aq of agroquimicos;" class="list-group-item"> {{ aq.nombre }} </li>
-            </ul>
+<div *ngIf="cargando" class="container mt-5" style="height: 80%">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="sr-only">Loading...</span>
         </div>
     </div>
-    <br>
-    <a type="button" class="btn btn-info btn-block" [routerLink]="['nuevo-agroquimico']"> Agregar nuevo agroquimico </a>
 </div>
 
-<router-outlet></router-outlet>
+<div *ngIf="!cargando" class="container mt-5 mb-5">
+    <div class="row">
+        <h4> Productos </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+    <hr class="row mt-1">
+
+    <div class="row mb-5">
+        <p>Estas son los productos registrados hasta el momento </p>
+    </div>
+
+    <div *ngIf="bandera" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ mensajeError }}
+    </div>
+
+    <div *ngIf="!hayProducto" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay productos registrados
+    </div>
+
+    <form [formGroup]="NombreAgroquimicoForm" (ngSubmit)="eliminarAgroquimico()">
+        <div class="row mb-5">
+            <div *ngFor="let agroquimico of agroquimicos" class="col-md-3">
+                <ul class="list-group">
+                    <li class="list-group-item active text-center"> {{ agroquimico[0].tipo_producto_agroquimico }} </li>
+                    <li class="list-group-item" *ngFor="let nombre of agroquimico">
+                        <input type="radio" value="{{nombre.id_producto_agroquimico}}" name="id_producto_agroquimico" formControlName="id_producto_agroquimico" id="{{nombre.id_producto_agroquimico}}">
+                        <span class="ml-2"> {{ nombre.nombre_producto_agroquimico }} </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="btn btn-outline-info btn-block" [routerLink]="['/nuevo-agroquimico']"> 
+                <i class="fas fa-plus-circle"></i> agregar nuevo producto 
+            </button>
+        </div>
+        <div *ngIf="hayProducto" class="row m-2">
+            <i class="mr-2 fas fa-exclamation-circle"></i> <small> Para eliminar o editar debe seleccionar primero un producto.</small>
+        </div>
+        <div *ngIf="hayProducto" class="row mt-2">
+            <div class="col-6">
+                <button type="submit" class="btn btn-outline-danger btn-block" (click)="eliminarAgroquimico()" [disabled]="!esValido()"> 
+                    <i class="fas fa-trash"></i> Eliminar 
+                </button>
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-outline-warning btn-block" (click)="editarAgroquimico()" (click)="editarAgroquimico()" [disabled]="!esValido()">
+                    <i class="fas fa-pencil-alt"></i> Editar 
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

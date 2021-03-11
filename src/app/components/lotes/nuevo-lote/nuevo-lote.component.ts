@@ -1,22 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormControl,FormBuilder, Validators } from '@angular/forms';
 import { LoteService } from 'src/app/Servicios/lote.service';
 import { LoteModel } from '../../../models/lote.models';
 import { respuesta } from '../../../models/resp.model';
-
 import Swal from 'sweetalert2';
-import { title } from 'process';
 
 @Component({
   selector: 'app-nuevo-lote',
   templateUrl: './nuevo-lote.component.html',
   styleUrls: ['./nuevo-lote.component.css']
 })
-export class NuevoLoteComponent implements OnInit {
+export class NuevoLoteComponent {
 
-  NuevoLoteForm: FormGroup;
+  /*NuevoLoteForm: FormGroup;
   Año  = new Date();
-  Lote = new LoteModel();
   rta = new respuesta();
 
   constructor(private fb: FormBuilder, private LoteService:LoteService) {
@@ -49,14 +46,6 @@ export class NuevoLoteComponent implements OnInit {
   get MaterialSiembraNoValido(){
     return this.NuevoLoteForm.get('material_siembra').invalid && this.NuevoLoteForm.get('material_siembra').touched    
   }
-
-  ngOnInit() {
-    //$('button').click(function(){
-  
-      
-      
-    //})
-  }
   
   crearFormulario() {
     this.NuevoLoteForm = this.fb.group({
@@ -70,20 +59,24 @@ export class NuevoLoteComponent implements OnInit {
 
   guardar() {
     console.log("valor", this.NuevoLoteForm.value);
-    this.Lote = this.NuevoLoteForm.value;
-        
+    let nuevoLote = {
+      nombre_lote     : encodeURIComponent(this.NuevoLoteForm.value),
+      año_siembra     : this.NuevoLoteForm.value.año_siembra,
+      hectareas       : this.NuevoLoteForm.value.hectareas,
+      numero_palmas   : this.NuevoLoteForm.value.numero_palmas,
+      material_siembra: encodeURIComponent(this.NuevoLoteForm.value.material_siembra)
+    };
         Swal.fire({
           text: 'Estás seguro de agregarlo?',
           icon: 'question',
           showCancelButton: true,
           showConfirmButton: true
         }).then( a => {
-          
-          this.LoteService.postLote(this.Lote).subscribe(
+          this.LoteService.postLote(nuevoLote).subscribe(
             resp => {
               this.rta = resp;
               Swal.fire({
-                title: this.Lote.nombre_lote,
+                title: nuevoLote.nombre_lote,
                 text: this.rta.message,
                 icon: 'success'
               });
@@ -96,6 +89,5 @@ export class NuevoLoteComponent implements OnInit {
             });
           });
      this.NuevoLoteForm.reset({});
-  }
-
+  }*/
 }

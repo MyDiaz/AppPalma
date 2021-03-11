@@ -1,77 +1,128 @@
-<button class="btn btn-outline-info mt-3" (click)="hayEtapas = !hayEtapas"> 
-    <span *ngIf="!hayEtapas"> Registrar la enfermedad con etapas? </span>
-    <span *ngIf="hayEtapas"> Registrar la enfermedad sin etapas? </span>
-</button>
+<style>
+    .btn-outline-palma {
+        color: #1a936f;
+        border-color: #1a936f;
+        border-radius: 0px;
+    }
+    
+    .btn-outline-palma:hover {
+        background: #1a936f;
+        color: #fff !important;
+    }
+    
+    .bg-palma {
+        background: #1a936f;
+    }
+</style>
 
+<div class="row mt-5 mb-5">
+    <div class="col-6">
+        <button class="btn btn-block btn-outline-palma bg-palma" [ngClass]="{'bg-palma': noEtapas == true, 'text-white': noEtapas == true}" (click)="hayEtapas = false; noEtapas = true"> 
+            <!--<span *ngIf="!hayEtapas"> Registrar la enfermedad con etapas? </span>-->
+            <span> Registrar la enfermedad sin etapas </span>
+        </button>
+    </div>
+    <div class="col-6">
+        <button class="btn btn-block btn-outline-palma bg-palma" [ngClass]="{'bg-palma': hayEtapas == true, 'text-white': hayEtapas == true}" (click)="hayEtapas = true; noEtapas = false"> 
+            <span> Registrar la enfermedad con etapas </span>
+            <!--<span *ngIf="hayEtapas"> Registrar la enfermedad sin etapas? </span>-->
+        </button>
+    </div>
+</div>
 <!--FORMULARIO PARA ENFERMEDAD CON ETAPAS-->
-<div class="container mt-3" *ngIf="hayEtapas">
-    <form autocomplete="off" [formGroup]="NuevaEnfermedadEtapasForm" (ngSubmit)="guardarEnfermedadEtapas()">
-
+<div class="col-12">
+    <form *ngIf="hayEtapas" autocomplete="off" [formGroup]="NuevaEnfermedadEtapasForm" (ngSubmit)="guardarEnfermedadEtapas()">
         <div class="form-group">
             <label> Nombre </label>
             <input class="form-control" type="text" formControlName="nombre_enfermedad" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
             <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger">
-                Ingrese un nombre 
-            </small>
+                        Ingrese un nombre 
+                    </small>
         </div>
-    
-        <small> Click  </small>    
-        <button type="button" class="btn text-success btn-link btn-sm" (click)="addTratamientoEtapa(); addEtapa()"> <i class="fas fa-plus-circle"> </i> </button>
-        <small> para agregar una etapa. </small>
-    
+
+        <!-- <small> Click  </small>
+            <button type="button" class="btn text-success btn-link btn-sm" (click)="addTratamientoEtapa(); addEtapa()"> <i class="fas fa-plus-circle"> </i> </button>
+            <small> para agregar una etapa. </small> -->
+
         <div class="row">
-            <div class="col form-group" formArrayName="etapas_enfermedad">   
-                <div *ngFor="let etapa of etapasEnfermedad.controls; let i=index">
-                    <!-- The repeated alias template  -->
-                    <label> Etapa {{ i+1 }} </label>
-                    <input class="form-control" type="text" [formControlName]="i">
-                </div>
-            </div>
-            <div class="col form-group" formArrayName="tratamiento_etapa_enfermedad">
-                <div *ngFor="let tratamiento of TratamientoEtapaEnfermedad.controls; let j=index">
-                    <!-- The repeated alias template  -->
-                    <label> Tratamiento etapa {{ j+1 }} </label>
-                    <input class="form-control" type="text" [formControlName]="j">
-                </div>
-            </div>
+            <table class="table">
+                <thead class="text-center font-weight-bold">
+                    <tr class="table-success">
+                        <td> Etapa </td>
+                        <td> Procedimiento </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="form-group" formArrayName="etapas_enfermedad">
+                            <div *ngFor="let etapa of etapasEnfermedad.controls; let i=index">
+                                <input class="form-control mt-2" type="text" value="etapa" [formControlName]="i">
+                            </div>
+                        </td>
+                        <td class="form-group" formArrayName="tratamiento_etapa_enfermedad">
+                            <div *ngFor="let tratamiento of TratamientoEtapaEnfermedad.controls; let j=index">
+                                <input class="form-control mt-2" type="text" value="tratamiento" [formControlName]="j">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-outline-info btn-block" (click)="addTratamientoEtapa(); addEtapa()"> 
+                                <small> Click </small> <i class="fas fa-plus-circle"></i> <small> para agregar una etapa. </small> 
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger btn-block" (click)="borrarFila()"> 
+                                <small> Click </small> <i class="fas fa-minus-circle"></i> <small> para eliminar una etapa. </small> 
+                            </button>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
         </div>
+
         <!--[routerLink]="['/listado-enfermedad']"  *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
+
+        <button (click)="regresar()" class="btn btn-outline-danger mr-2"> 
+                <i class="fas fa-arrow-circle-left"></i> Cancelar 
+            </button>
+
         <button type="submit" class="btn btn-outline-success">
-            <i class="fas fa-save"></i> Guardar 
-        </button>
-    
+                    <i class="fas fa-save"></i> Guardar 
+                </button>
     </form>
 </div>
 
-<!--FORMULARIO PARA ENFERMEDAD SIN ETAPAS-->
-<div class="container mt-3"  *ngIf="!hayEtapas">
-    <form autocomplete="off" [formGroup]="NuevaEnfermedadForm" (ngSubmit)="guardarEnfermedad()">
 
+<!--FORMULARIO PARA ENFERMEDAD SIN ETAPAS-->
+<form *ngIf="noEtapas" class="form-row" autocomplete="off" [formGroup]="NuevaEnfermedadForm" (ngSubmit)="guardarEnfermedad()">
+    <div class="col-12">
         <div class="form-group">
             <label> Nombre </label>
             <input class="form-control" type="text" formControlName="nombre_enfermedad" [class.is-invalid]="nombreEnfermedadNoValido">
             <small *ngIf="nombreEnfermedadNoValido" class="text-danger">
-                Ingrese un nombre 
-            </small>
+                        Ingrese un nombre 
+                    </small>
         </div>
-        
+
         <div class="form-group">
             <label> Tratamiento </label>
-            <input class="form-control" type="text" formControlName="procedimiento_tratamiento_enfermedad" [class.is-invalid]="ProcedimientoTratamientoEnfermedadNoValido">
+            <textarea class="form-control" formControlName="procedimiento_tratamiento_enfermedad" rows="3" [class.is-invalid]="ProcedimientoTratamientoEnfermedadNoValido">
+                </textarea>
             <small *ngIf="ProcedimientoTratamientoEnfermedadNoValido" class="text-danger">
-                Ingrese un tratamiento para esta enfermedad
-            </small>
+                        Ingrese un tratamiento para esta enfermedad, mínimo 10 carácteres.
+                    </small>
         </div>
-    
-        <!--[routerLink]="['/listado-enfermedad']"  *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
-        <button (click)="regresar()" class="btn btn-outline-danger mr-2"> 
-            <i class="fas fa-arrow-circle-left"></i> Cancelar 
-        </button>
-        
-        <button type="submit" class="btn btn-outline-success">
-            <i class="fas fa-save"></i> Guardar 
-        </button>
+    </div>
 
-        
-    </form>
-</div>
+    <!--[routerLink]="['/listado-enfermedad']"  *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
+    <button (click)="regresar()" class="btn btn-outline-danger mr-2"> 
+                    <i class="fas fa-arrow-circle-left"></i> Cancelar 
+                </button>
+
+    <button type="submit" class="btn btn-outline-success">
+                    <i class="fas fa-save"></i> Guardar 
+                </button>
+
+</form>

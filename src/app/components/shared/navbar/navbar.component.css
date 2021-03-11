@@ -1,3 +1,16 @@
+.navbar-green {
+    background-color: #1a936f;
+}
+
+.nav-item{
+    color: white;
+}
+
+.navbar-brand {
+    /*color: #FDE0D9;*/
+    color: #F9A18B;
+}
+
 .dropdown:hover>.dropdown-menu {
     display: block;
 }

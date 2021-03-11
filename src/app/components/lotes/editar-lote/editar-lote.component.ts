@@ -14,11 +14,8 @@ export class EditarLoteComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe(params => {
       this.nombre_lote = params.get('id');
     });
-    console.log("desde constructor");
    }
 
-  ngOnInit() {
-    console.log("desde de ngoninit");
-  }
+  ngOnInit() {}
 
 }

@@ -1,5 +1,5 @@
 <!-- *ngIf="estaLogueado" -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav *ngIf="estaAutenticado$ | async as estaAutenticado" class="navbar navbar-expand-lg navbar-green ">
     <a class="navbar-brand" routerLink="/lotes">AppPalma </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -15,8 +15,8 @@
                     Gestión fitosanitaria
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" [routerLink]="['/listado-plaga']"> Plagas </a>
-                    <a class="dropdown-item" [routerLink]="['/listado-agroquimico']"> Agroquímicos </a>
+                    <a class="dropdown-item" [routerLink]="['/listado-plagas']"> Plagas </a>
+                    <a class="dropdown-item" [routerLink]="['/listado-agroquimicos']"> Productos </a>
                     <a class="dropdown-item" [routerLink]="['/listado-enfermedad']"> Enfermedades </a>
                     <!--<div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="#">Something else here</a>-->
@@ -26,33 +26,26 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Gestión productiva
                 </a>
-                <!-- <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" [routerLink]="['/listado-plaga']"> Plagas </a>
-                    <a class="dropdown-item" [routerLink]="['/listado-agroquimico']"> Agroquímicos </a>
-                    <a class="dropdown-item" [routerLink]="['/listado-enfermedad']"> Enfermedades </a>
-                    <div class="dropdown-divider"></div>
-                    a class="dropdown-item" href="#">Something else here</a>
-                </div>-->
             </li>
             <li class="nav-item active">
-                <a class="nav-link" [routerLink]="['/rendimiento-productivo']"> Rendimiento productivo </a>
+                <a class="nav-link" [routerLink]="['/rendimiento-productivo']" style="color: white;"> Rendimiento productivo </a>
             </li>
-            <li class="nav-item active">
+            <!--<li class="nav-item active">
                 <button type="button" class="btn btn-info"> SINCRONIZACIÓN </button>
-            </li>
+            </li>-->
         </ul>
 
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="user_icon" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user"></i> Usuario
+                    <i class="fas fa-user mr-2"></i> {{ usuario.nombre_usuario | titlecase }}
                 </a>
                 <div id="user_menu" class="dropdown-menu" aria-labelledby="user_icon">
                     <a class="dropdown-item btn-secondary" [routerLink]='["/usuario"]' routerLinkActive="active"> 
                         Mi perfil 
                     </a>
                     <div class="dropdown-divider"></div>
-                    <button class="dropdown-item btn-secondary"> 
+                    <button class="dropdown-item btn-secondary" (click)="salir()"> 
                         Cerrar sesión
                     </button>
                 </div>

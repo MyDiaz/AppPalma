@@ -1,33 +1,61 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { respuesta } from '../models/resp.model';
-import { map, catchError, retry } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class EnfermedadesService {
   
-  private url_enfermedades:string = 'http://localhost:3000/enfermedad';
+  private url:string = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) { }
-
+  constructor(private http: HttpClient) { 
+  }
+  
+  //enfermedades
   getEnfermedades(){
-    return this.http.get(`${this.url_enfermedades}`);
+    return this.http.get(`${this.url}/enfermedades`);
   }
 
-  getEnfermedadesEtapas(){
-    return this.http.get(`${this.url_enfermedades}-etapas`);
-  }
-
-  postEnfermedadEtapas(formEnfermedadEtapas): Observable<respuesta>{
-    return this.http.post<respuesta>(`${this.url_enfermedades}-etapas`,formEnfermedadEtapas)
-    .pipe(map( data => data ));
+  getEnfermedad(nombre_enfermedad){
+    return this.http.get(`${this.url}/enfermedad/${nombre_enfermedad}`);
   }
 
   postEnfermedad(formEnfermedad):Observable<respuesta>{
-    return this.http.post<respuesta>(`${this.url_enfermedades}`,formEnfermedad)
+    return this.http.post<respuesta>(`${this.url}/enfermedades`, formEnfermedad)
     .pipe(map( data => data ));
   }
+
+  putEnfermedad(formEnfermedad, nombre_enfermedad):Observable<respuesta>{
+    return this.http.put<respuesta>(`${this.url}/enfermedad/${nombre_enfermedad}`, formEnfermedad)
+    .pipe(data => data);
+  }
+
+  //enfermedades con etapas 
+  getEnfermedadesEtapas(){
+    return this.http.get(`${this.url}/enfermedad-etapas`);
+  }
+
+  getEnfermedadEtapas(id_enfermedad){
+    return this.http.get(`${this.url}/enfermedad-etapas/${id_enfermedad}`);
+  }
+
+  postEnfermedadEtapas(formEnfermedadEtapas):Observable<respuesta>{
+    return this.http.post<respuesta>(`${this.url}/enfermedad-etapas`, formEnfermedadEtapas)
+    .pipe(map( data => data ));
+  }
+
+  eliminarEnfermedad(nombre_enfermedad){
+    return this.http.delete(`${this.url}/enfermedad/${nombre_enfermedad}`)
+    .pipe(map( data => data ));
+  }
+
+  actualizarEnfermedadConEtapas(nombre_enfermedad,formEnfermedadEtapas):Observable<respuesta>{
+    return this.http.post<respuesta>(`${this.url}/enfermedad-etapas/${nombre_enfermedad}`, formEnfermedadEtapas)
+    .pipe(map( data => data ));
+  }
+
 }

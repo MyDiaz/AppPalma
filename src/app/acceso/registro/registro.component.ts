@@ -18,18 +18,12 @@ export class RegistroComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private auth: AuthService, 
     private router:Router) { 
-      this.NuevoUserForm = new FormGroup({
-        cc_usuario         : new FormControl(),
-        nombre_usuario     : new FormControl(),
-        rol                : new FormControl(),
-        cargo              : new FormControl(),
-        contrasena_usuario : new FormControl(), 
-     });
+      this.crearFormulario();
     }
 
   ngOnInit( ) { 
     this.usuario = new UsuarioModel();
-    this.crearFormulario();
+    
   }
   
   get ccUsuarioNoValido() {
@@ -41,7 +35,7 @@ export class RegistroComponent implements OnInit {
   }
 
   get cargoNoValido() {
-    return this.NuevoUserForm.get('cargo').invalid && this.NuevoUserForm.get('cargo').touched
+    return this.NuevoUserForm.get('cargo_empresa').invalid && this.NuevoUserForm.get('cargo_empresa').touched
   }
 
   get contrasenaUsuarioNoValido() {
@@ -52,32 +46,35 @@ export class RegistroComponent implements OnInit {
     this.NuevoUserForm = this.fb.group({
       cc_usuario        : [ , [ Validators.required, Validators.minLength(7)]],
       nombre_usuario    : [ , [ Validators.required, Validators.minLength(7)]],
-      rol               : [ , [ ] ],
-      cargo             : [ , [ Validators.required]],
+      cargo_empresa     : [ , [ Validators.required]],
       contrasena_usuario: [ , [ Validators.required, Validators.minLength(8)]],
     })
   }
   
   guardar(){
-    this.usuario = this.NuevoUserForm.value; 
-    
+    let usuario = {
+      cc_usuario        : this.NuevoUserForm.value.cc_usuario, 
+      nombre_usuario    : encodeURIComponent(this.NuevoUserForm.value.nombre_usuario),
+      cargo_empresa     : encodeURIComponent(this.NuevoUserForm.value.cargo_empresa),
+      contrasena_usuario: encodeURIComponent(this.NuevoUserForm.value.contrasena_usuario)
+    }
     if( this.NuevoUserForm.invalid ){ return; }
     else{
       Swal.fire({
-        text: 'Estás seguro de agregarlo?',
+        text: 'Estás seguro?',
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true}).then( () => {
-          this.auth.registrarUsuario(this.usuario).subscribe(
+          this.auth.registrarUsuario(usuario).subscribe(
             resp => { resp;
               Swal.fire({
-                title: this.usuario.nombre_usuario,
-                html: resp.message,
+                title: decodeURIComponent(usuario.nombre_usuario),
+                html: `${resp.message}. Debes esperar hasta que el administrador te valide.`,
                 icon: 'success'
               });
             }, (error) => {
               Swal.fire({
-                title: this.usuario.nombre_usuario,
+                title: decodeURIComponent(usuario.nombre_usuario),
                 html: error.error.message,
                 icon: 'error'
               });

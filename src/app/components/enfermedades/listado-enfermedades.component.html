@@ -1,31 +1,40 @@
-<div class="container mt-3">
+<div *ngIf="!cargando" class="container mt-5" style="height: 80%">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="container mt-5 mb-5">
+    <div class="row">
+        <h4> Enfermedades </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+    <hr class="row mt-1">
+
+    <div *ngIf="hayEnfermedades || hayEnfermedadesEtapas" class="row mb-3">
+        <p>Estas son la enfermedades registradas hasta el momento </p>
+    </div>
+
+    <div *ngIf="bandera" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ mensaje_error }}
+    </div>
+
+    <div *ngIf="!hayEnfermedades && !hayEnfermedadesEtapas" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay enfermedades registradas
+    </div>
+    <!--hayEnfermedades: {{hayEnfermedades}} - hayEnfermedadesEtapas {{hayEnfermedadesEtapas}}-->
     <form [formGroup]="NombreEnfermedadForm" (ngSubmit)="enviarEnfermedad()">
-
-
-        <div class="row">
-            <div class="col">
-                <h4> Enfermedades </h4>
-            </div>
-            <div class="col">
-                <app-fecha> </app-fecha>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <p>Estas son la enfermedades registradas hasta el momento </p>
-        </div>
-
-        <div *ngIf="bandera" class="alert alert-danger" role="alert">
-            <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
-        </div>
-
         <div class="row" *ngIf="!bandera">
-            <table class="table table-hover">
+            <table *ngIf="hayEnfermedades" class="table table-hover">
                 <thead>
                     <tr class="table-success">
                         <th></th>
-                        <th scope="col">Enfermedad</th>
-                        <th scope="col">Tratamiento</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Procedimiento</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,17 +44,16 @@
                         </td>
                         <td>
                             <label class="form-check-label" for="enfermedad.nombre_enfermedad">
-                        {{ enfermedad.nombre_enfermedad }}   
-                        </label>
+                                {{ enfermedad.nombre_enfermedad | titlecase }}   
+                            </label>
                         </td>
                         <td> {{ enfermedad.procedimiento_tratamiento_enfermedad }} </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <!---->
 
-        <table class="table table-hover">
+        <table *ngIf="hayEnfermedadesEtapas" class="table table-hover">
             <thead>
                 <tr class="table-success row">
                     <th class="col-1"></th>
@@ -56,17 +64,19 @@
             </thead>
             <tbody>
                 <tr *ngFor="let enfermedad of enfermedadesEtapas; let i=index" class="row">
-                    <td class="col-1"> <input type="radio" id={{i}} value=etapa-{{enfermedad.id_enfermedad}} name="nombre_enfermedad" formControlName="nombre_enfermedad"> </td>
+                    <td class="col-1">
+                        <input type="radio" id={{i+enfermedades.length}} value=etapa-{{enfermedad[0].nombre_enfermedad}} name="nombre_enfermedad" formControlName="nombre_enfermedad">
+                    </td>
                     <td class="col-3">
                         <label class="form-check-label" for="enfermedad.nombre_enfermedad">
-                            {{ enfermedad[0].nombre_enfermedad }} 
+                            {{ enfermedad[0].nombre_enfermedad | titlecase }} 
                         </label>
                     </td>
                     <td class="col-8">
                         <table class="container-fluid">
                             <tbody>
                                 <tr class="row" *ngFor="let etapaTratamiento of enfermedad">
-                                    <td class="col-5" style=" border: transparent; padding-top: unset;"> {{ etapaTratamiento.etapa_enfermedad }} </td>
+                                    <td class="col-5" style=" border: transparent; padding-top: unset;"> {{ etapaTratamiento.etapa_enfermedad | titlecase }} </td>
                                     <td class="col-7" style=" border: transparent; padding-top: unset; padding-left: unset;"> {{ etapaTratamiento.tratamiento_etapa_enfermedad }} </td>
                                 </tr>
                             </tbody>
@@ -75,7 +85,7 @@
                 </tr>
             </tbody>
         </table>
-
+        <hr class="row mt-1">
         <div class="row">
             <div class="col">
                 <button type="button" class="btn btn-outline-info btn-block" [routerLink]="['/nueva-enfermedad']">
@@ -90,18 +100,18 @@
             </button>
             </div>-->
         </div>
-        <div class="row mt-2">
-            <i class="fas fa-exclamation-circle"></i> <small> Para eliminar o editar debe seleccionar primero una enfermedad.</small>
+        <div *ngIf="hayEnfermedades || hayEnfermedadesEtapas" class="row m-2">
+            <i class="mr-2 fas fa-exclamation-circle"></i> <small> Para eliminar o editar debe seleccionar primero una enfermedad.</small>
         </div>
-        <div class="row mt-2">
+        <div *ngIf="hayEnfermedades || hayEnfermedadesEtapas" class="row mt-2">
             <div class="col">
-                <button type="button" class="btn btn-outline-danger btn-block"> 
+                <button type="submit" class="btn btn-outline-danger btn-block" (click)="eliminarEnfermedad()" [disabled]="!esValido()"> 
                 <i class="fas fa-trash"></i>
                 Eliminar 
             </button>
             </div>
             <div class="col">
-                <button type="submit" class="btn btn-outline-warning btn-block" (click)="editarEnfermedad()">
+                <button type="submit" class="btn btn-outline-warning btn-block" (click)="editarEnfermedad()" [disabled]="!esValido()">
                 <i class="fas fa-pencil-alt"></i>
                 Editar 
             </button>

@@ -11,8 +11,10 @@ export class LotesComponent implements OnInit {
 
   lotes:any = [];
   bandera_error:boolean = false;
+  cargando:boolean = false;
   mensaje_error:string;
   changeText: boolean;
+  
 
   constructor( private _loteService:LoteService,
     private router:Router ) {
@@ -23,7 +25,7 @@ export class LotesComponent implements OnInit {
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
-        
+        this.cargando = false;
       },
       error => {
         this.bandera_error = true;
@@ -33,8 +35,8 @@ export class LotesComponent implements OnInit {
           this.mensaje_error = "Servicio no disponible"
         }
         console.log(error);
-
       });
+      this.cargando = true;
   }
    
   verLote( nombre:string ){

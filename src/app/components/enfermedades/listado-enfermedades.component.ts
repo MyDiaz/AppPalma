@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { EnfermedadesService } from '../../Servicios/enfermedades.service';
 import { FormGroup, FormControl } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-listado-enfermedades',
@@ -11,81 +12,53 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class ListadoEnfermedadesComponent {
   
   NombreEnfermedadForm:FormGroup;
-  EtapaEnfermedadForm:FormGroup;
 
   enfermedadesEtapas:any = [];
-  unique_enfermedades:any = [];
-  contador_etapas_enfermedad:any = [2,2,1,1];
-  enfermedades:any = [];
+  hayEnfermedadesEtapas:boolean = false;
   
-  NombreEnfermedadEditar:string;
+  enfermedades:any = [];
+  hayEnfermedades:boolean = false;
+
   bandera:boolean = false;
+  cargando:boolean = false;
   mensaje_error:string;
   
-  constructor(private EnfermedadesService:EnfermedadesService, private router:Router,
-    private activatedRoute:ActivatedRoute) {
+  constructor(private EnfermedadesService:EnfermedadesService, private router:Router) {
     
+    //enfermedades con etapas
     this.EnfermedadesService.getEnfermedadesEtapas().subscribe( data => {
       this.enfermedadesEtapas = this.groupBy(data,"nombre_enfermedad");
-      console.log("hola", this.enfermedadesEtapas);
+      console.log("enfermedadesEtapas",this.enfermedadesEtapas);
+      this.cargando = true;
+      if(this.enfermedadesEtapas.length > 0) this.hayEnfermedadesEtapas = true;
     }, err => {
       this.bandera = true;
       this.mensaje_error = err.error.mensaje;
       console.log(err);
       if( err.status == 0 ) this.mensaje_error = "Servicio no disponible"
-    })    
-
+    });    
+    //this.cargando = false;
+    
+    //enfermedades 
     this.EnfermedadesService.getEnfermedades().subscribe( data => {
       this.enfermedades = data;
-
+      console.log("enfermedades", this.enfermedades);
+      this.cargando = true;
+      if(this.enfermedades.length > 0) this.hayEnfermedades = true;
     }, err => {
       this.bandera = true;
       this.mensaje_error = err.error.mensaje;
       console.log(err);
       if( err.status == 0 ) this.mensaje_error = "Servicio no disponible"
-    })
+    });
 
     this.NombreEnfermedadForm = new FormGroup({
       nombre_enfermedad: new FormControl()
-    })
-    
-    this.EtapaEnfermedadForm = new FormGroup({
-      id_enfermedad: new FormControl()
-    })
-    //this.mostrarEnfermedadesEtapas();
+    });
   }
-  
-
-  onlyUnique(value, index, self) {
-    return self.indexOf(value) === index;
-  }
-
-  /*mostrarEnfermedadesEtapas(){
-    console.log("enfermedadesEtapas", this.enfermedadesEtapas);
-    for(let i = 0; i<this.enfermedadesEtapas.length; i++){
-      this.unique_enfermedades.push(this.enfermedadesEtapas[i].nombre_enfermedad);
-    }
-    var unique = this.unique_enfermedades.filter(this.onlyUnique);
-
-    for(let i = 0; i<unique.length; i++){
-    //[pudricion cogollo,pudricion,enfermedades]
-        let contador = 0;
-        for(let j = 0; j<this.unique_enfermedades.length; j++){
-    //[pudricion cogollo,pudricion cogollo,pudricion,pudricion,enfermedades,enfermedades]
-            if( unique[i] === this.unique_enfermedades[j] ){
-                    contador = contador+1;    
-            }
-        }
-        this.contador_etapas_enfermedad.push(contador);
-    }
-    console.log("contador_etapas_enfermedad", this.contador_etapas_enfermedad);
-    //return this.unique_enfermedades, this.contador_etapas_enfermedad; 
-    //[pudricion cogollo,pudricion,enfermedades,beto], [2,2,1,1]
-  }*/
 
   enviarEnfermedad(){
     console.log("this.NombreEnfermedadForm.value", this.NombreEnfermedadForm.value);
-    console.log("EtapaEnfermedadForm", this.EtapaEnfermedadForm.value);
   }
 
   editarEnfermedad(){
@@ -95,6 +68,42 @@ export class ListadoEnfermedadesComponent {
     else{
       this.router.navigate(['editar-etapa-enfermedad',this.NombreEnfermedadForm.value.nombre_enfermedad.replace("etapa-", "")]);
     }
+  }
+
+  eliminarEnfermedad(){
+    if(this.NombreEnfermedadForm.value.nombre_enfermedad.startsWith("enfermedad-")){
+      var enfermedad = this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", "");
+    }
+    else{
+      var enfermedad = this.NombreEnfermedadForm.value.nombre_enfermedad.replace("etapa-", "");
+    }
+    Swal.fire({
+        text: 'Estás seguro de eliminar la enfermedad?',
+        icon: 'question',
+        showCancelButton: true,
+        showConfirmButton: true
+      }).then( () => {
+        this.EnfermedadesService.eliminarEnfermedad(enfermedad).subscribe(
+          resp => {
+            let rta = resp;
+            Swal.fire({
+              title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", ""),
+              //html : rta.message,
+              icon : 'success'
+            });
+            window.location.reload();
+          },(error) => {
+            Swal.fire({
+              //title: nombre_enfermedad,
+              html : error.error.message,
+              icon : 'error'
+            });
+          })
+      })
+  }
+
+  esValido(){
+    return this.NombreEnfermedadForm.value.nombre_enfermedad != null;
   }
 
   private groupBy(collection, property){
@@ -111,5 +120,5 @@ export class ListadoEnfermedadesComponent {
         }
     }
     return result;
-}
+  }
 }

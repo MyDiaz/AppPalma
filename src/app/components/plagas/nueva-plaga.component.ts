@@ -153,7 +153,8 @@ export class NuevaPlagaComponent implements OnInit {
           });
         }
       )}
-    )}
+    )
+  }
   
     //PARA AÑADIR LAS ETAPAS AL ARRAY 
     addEtapa() {

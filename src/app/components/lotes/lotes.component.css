@@ -1,13 +1,26 @@
-.lote {
-    height: 100px;
-    width: 150px;
-    background-color: #45b39d;
-    font-size: medium;
-    border-color: #45b39d;
+.ButtonLote {
+    background-color: #52B788;
+    display: inline-block;
+    cursor: pointer;
     color: #ffffff;
+    font-size: 20px;
+    font-weight: bold;
+    height: 5rem;
+    width: 13rem;
+    border-radius: 0rem;
+}
+
+.ButtonLote:hover {
+    background-color: #40916C;
+}
+
+.ButtonLote:active {
+    position: relative;
+    top: 1px;
 }
 
 .plus {
-    height: 100px;
-    width: 150px;
+    height: 5rem;
+    width: 13rem;
+    border-radius: 0rem;
 }

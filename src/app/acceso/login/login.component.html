@@ -7,13 +7,13 @@
                     Login
                 </span>
 
-                <span *ngIf="ccUsuarioNoValido" class="text-danger animated fadeIn">El correo es obligatorio</span>
+                <small *ngIf="ccUsuarioNoValido" class="text-danger animated fadeIn">Campo obligatorio</small>
                 <div class="wrap-input100 m-b-16">
                     <input class="input100" type="number" formControlName="cc_usuario" [class.is-invalid]="ccUsuarioNoValido" placeholder="Cédula de ciudadania">
                     <span class="focus-input100"></span>
                 </div>
 
-                <span *ngIf="contrasenaUsuarioNoValido" class="text-danger animated fadeIn">La contraseña debe de ser más de 8 letras</span>
+                <small *ngIf="contrasenaUsuarioNoValido" class="text-danger animated fadeIn">Campo obligatorio</small>
                 <div class="wrap-input100 m-b-16">
                     <input class="input100" type="password" formControlName="contrasena_usuario" [class.is-invalid]="contrasenaUsuarioNoValido" placeholder="Contraseña">
                     <span class="focus-input100"></span>

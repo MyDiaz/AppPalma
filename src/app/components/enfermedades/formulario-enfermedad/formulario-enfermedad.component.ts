@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl,FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup,FormBuilder, Validators, FormArray } from '@angular/forms';
 import { EnfermedadesService } from 'src/app/Servicios/enfermedades.service';
 import Swal from 'sweetalert2';
 import { respuesta } from '../../../models/resp.model';
@@ -15,10 +15,9 @@ export class FormularioEnfermedadComponent implements OnInit {
   NuevaEnfermedadEtapasForm: FormGroup;
   NuevaEnfermedadForm: FormGroup;
   bandera:boolean = false;
-  enfermedadEtapas:any;
-  enfermedad:any;
   rta = new respuesta();
   hayEtapas:boolean = false;
+  noEtapas:boolean = false;
 
   constructor(private fb: FormBuilder, private enfermedadService:EnfermedadesService, 
     private router:Router) { 
@@ -54,8 +53,8 @@ export class FormularioEnfermedadComponent implements OnInit {
   crearFormularioEnfermedadEtapas(){
     this.NuevaEnfermedadEtapasForm= this.fb.group({
       nombre_enfermedad          : [, [Validators.required, Validators.minLength(3)]],
-      etapas_enfermedad           : this.fb.array([]),
-      tratamiento_etapa_enfermedad: this.fb.array([])
+      etapas_enfermedad           : this.fb.array(['']),
+      tratamiento_etapa_enfermedad: this.fb.array([''])
     });
   }
 
@@ -75,21 +74,38 @@ export class FormularioEnfermedadComponent implements OnInit {
     this.TratamientoEtapaEnfermedad.push( this.fb.control('') );
   }
 
+  borrarFila(){
+    let i = this.etapasEnfermedad.length - 1;
+    console.log("i" ,i);
+    if( i != 0 ){
+      this.etapasEnfermedad.removeAt(i);
+      this.TratamientoEtapaEnfermedad.removeAt(i);
+    }
+  }
+
   guardarEnfermedadEtapas()
-    {
-      this.enfermedadEtapas = this.NuevaEnfermedadEtapasForm.value;
-      console.log(this.enfermedadEtapas);
+    { 
+      let valores_etapas_enfermedad = {
+        nombre_enfermedad: encodeURIComponent(this.NuevaEnfermedadEtapasForm.value.nombre_enfermedad),
+        etapas_enfermedad: this.NuevaEnfermedadEtapasForm.value.etapas_enfermedad.map( etapas => { 
+          return encodeURIComponent(etapas)
+        }),
+        tratamiento_etapa_enfermedad: this.NuevaEnfermedadEtapasForm.value.tratamiento_etapa_enfermedad.map( tratamieto => { 
+          return encodeURIComponent(tratamieto)
+        })
+      }
+      console.log(valores_etapas_enfermedad);
       Swal.fire({
         text: 'Estás seguro de agregarlo?',
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
       }).then( () => {
-        this.enfermedadService.postEnfermedadEtapas(this.enfermedadEtapas).subscribe(
+        this.enfermedadService.postEnfermedadEtapas(valores_etapas_enfermedad).subscribe(
           resp => {
             this.rta = resp;
             Swal.fire({
-              title: this.enfermedadEtapas.nombre_enfermedad,
+              title: decodeURIComponent(valores_etapas_enfermedad.nombre_enfermedad),
               html: this.rta.message,
               icon: 'success'
             });
@@ -97,7 +113,7 @@ export class FormularioEnfermedadComponent implements OnInit {
             this.router.navigateByUrl('listado-enfermedad');
           },(error) => {
             Swal.fire({
-              title: this.enfermedadEtapas.nombre_enfermedad,
+              title: decodeURIComponent(valores_etapas_enfermedad.nombre_enfermedad),
               html: error.error.message,
               icon: 'error'
             });
@@ -106,19 +122,22 @@ export class FormularioEnfermedadComponent implements OnInit {
     }
 
     guardarEnfermedad(){
-      this.enfermedad = this.NuevaEnfermedadForm.value;
-      console.log(this.enfermedad);
+      let valores_enfermedad = {
+        nombre_enfermedad: encodeURIComponent(this.NuevaEnfermedadForm.value.nombre_enfermedad),
+        procedimiento_tratamiento_enfermedad: encodeURIComponent(this.NuevaEnfermedadForm.value.procedimiento_tratamiento_enfermedad)
+      }
+      console.log(valores_enfermedad);
       Swal.fire({
         text: 'Estás seguro de agregarlo?',
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
       }).then( () => {
-        this.enfermedadService.postEnfermedad(this.enfermedad).subscribe(
+        this.enfermedadService.postEnfermedad(valores_enfermedad).subscribe(
           resp => {
             this.rta = resp;
             Swal.fire({
-              title: this.enfermedad.nombre_enfermedad,
+              title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
               html: this.rta.message,
               icon: 'success'
             });
@@ -126,7 +145,7 @@ export class FormularioEnfermedadComponent implements OnInit {
             this.router.navigateByUrl('listado-enfermedad');
           },(error) => {
             Swal.fire({
-              title: this.enfermedad.nombre_enfermedad,
+              title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
               html: error.error.message,
               icon: 'error'
             });

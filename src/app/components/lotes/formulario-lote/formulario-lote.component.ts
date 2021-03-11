@@ -27,13 +27,13 @@ export class FormularioLoteComponent implements OnInit {
   @Input() id_lote:string;
 
   constructor(private fb: FormBuilder, private LoteService:LoteService, private router:Router) {
-      this.NuevoLoteForm = new FormGroup({
+      /*this.NuevoLoteForm = new FormGroup({
         nombre_lote      : new FormControl(),
         año_siembra      : new FormControl(),
         hectareas        : new FormControl(),
         numero_palmas    : new FormControl(),
         material_siembra : new FormControl(), 
-     });
+     });*/
    }
 
    ngOnInit() {
@@ -90,7 +90,13 @@ export class FormularioLoteComponent implements OnInit {
   
   guardar() {
     console.log("valor", this.NuevoLoteForm.value);
-    this.lote_req = this.NuevoLoteForm.value;
+    this.lote_req = {
+      nombre_lote     : encodeURIComponent(this.NuevoLoteForm.value.nombre_lote),
+      año_siembra     : this.NuevoLoteForm.value.año_siembra,
+      hectareas       : this.NuevoLoteForm.value.hectareas,
+      numero_palmas   : this.NuevoLoteForm.value.numero_palmas,
+      material_siembra: encodeURIComponent(this.NuevoLoteForm.value.material_siembra)
+    };
     //AGREGAR LOTE    
     Swal.fire({
       text: 'Estás seguro de agregarlo?',
@@ -102,14 +108,15 @@ export class FormularioLoteComponent implements OnInit {
           resp => {
             this.rta = resp;
             Swal.fire({
-              title: this.lote_req.nombre_lote,
+              title: decodeURIComponent(this.NuevoLoteForm.value.nombre_lote),
               html: this.rta.message,
               icon: 'success'
             });
             this.NuevoLoteForm.reset({});
+            this.router.navigateByUrl('lotes');
           }, (error) => {
             Swal.fire({
-              title: this.lote_req.nombre_lote,
+              title: decodeURIComponent(this.NuevoLoteForm.value.nombre_lote),
               html: error.error.message,
               icon: 'error'
             });

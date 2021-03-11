@@ -46,8 +46,7 @@ export class LoginComponent implements OnInit {
 
   //login
   login( ){
-    this.usuario = this.LoginUserForm.value;
-    console.log(this.LoginUserForm.value);
+    console.log(this.LoginUserForm.value.cc_usuario, encodeURIComponent(this.LoginUserForm.value.contrasena_usuario));
     if( this.LoginUserForm.invalid ){ return; }
     else{
       Swal.fire({
@@ -56,30 +55,27 @@ export class LoginComponent implements OnInit {
         text: 'Espere por favor...'
       });
       Swal.showLoading();
-      this.auth.login( this.usuario.cc_usuario, this.usuario.contrasena_usuario )
+      this.auth.login( this.LoginUserForm.value.cc_usuario, encodeURIComponent(this.LoginUserForm.value.contrasena_usuario))
         .subscribe( resp => {
           //login valido
           Swal.close();
-          
+          this.router.navigate(['/lotes']);          
+          //
           //recordar contraseña
           /*if(this.recuerdame){
             localStorage.setItem('correo_usuario', this.correo_usuario);
           }*/
-
-          this.router.navigateByUrl('/lotes');
-
+          
         }, (err)=> {
           console.log(err.error.message);
           Swal.fire({
-
             icon: 'error',
             title: 'Error al autenticar',
             text: err.error.message
           });
         });
-     
-     }  
-
+        
+     } 
     }
   }
 

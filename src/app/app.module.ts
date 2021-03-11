@@ -3,7 +3,7 @@ import { NgModule, LOCALE_ID} from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 //graficos
 import { ChartsModule } from 'ng2-charts';
@@ -13,7 +13,7 @@ import { APP_ROUTING } from './app.router';
 
 //servicios
 import { LoteService } from './Servicios/lote.service';
-
+import { AuthInterceptor } from './Servicios/auth.service';
 
 //components
 import { AppComponent } from './app.component';
@@ -43,6 +43,7 @@ import { RendimientoProductivoComponent } from './components/rendimiento-product
 import { FormularioLoteComponent } from './components/lotes/formulario-lote/formulario-lote.component';
 import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
 import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
+import { EditarEtapaEnfermedadComponent } from './components/enfermedades/editar-etapa-enfermedad/editar-etapa-enfermedad.component';
 
 registerLocaleData(localeEs);
 
@@ -72,7 +73,8 @@ registerLocaleData(localeEs);
     RendimientoProductivoComponent,
     FormularioLoteComponent,
     EditarLoteComponent,
-    EditarEnfermedadComponent
+    EditarEnfermedadComponent,
+    EditarEtapaEnfermedadComponent
   ],
   imports: [
     BrowserModule,
@@ -83,6 +85,11 @@ registerLocaleData(localeEs);
     ChartsModule
   ],
   providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
     {
       provide: LOCALE_ID,
       useValue: 'es'

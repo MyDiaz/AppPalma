@@ -1,40 +1,48 @@
-<div class="container">
-    <div class="mt-5">
+<div *ngIf="bandera_error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
+</div>
+
+<div *ngIf="!bandera_error" style="height: 80%">
+
+    <div *ngIf="cargando" class="container mt-5" style="height: 80%">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+            <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!cargando" class="container">
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-md-9">
+                    <h3> Bienvenido </h3>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <app-fecha> </app-fecha>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+        <h2 class="text-center"> Lotes </h2>
+        <hr>
+
         <div class="row">
-            <div class="col-md-9">
-                <h3> Bienvenido </h3>
-            </div>
-            <div class="col-md-3 mt-3">
-                <app-fecha> </app-fecha>
+            <div class="btn-group-lg text-center">
+
+                <button *ngFor="let lote of lotes" (click)="verLote(lote.nombre_lote)" type="button" class="ButtonLote btn mr-2 mb-2"> 
+                                {{ lote.nombre_lote }}
+                            </button>
+                <!--Agregar nuevo lote -->
+                <br>
+                <button data-placement="bottom" *ngIf="!bandera_error" class="plus btn btn-light" [routerLink]="['/nuevo-lote']" (mouseover)="changeText=true" (mouseout)="changeText=false">
+                                <span  style="font-size: 3rem;">
+                                    <i class="fas fa-plus-circle"></i>
+                                </span>
+                            </button>
+                <small *ngIf="changeText"> Da click para agregar lote! </small>
             </div>
         </div>
     </div>
-
-
-    <hr>
-    <h2 class="text-center"> Lotes </h2>
-    <hr>
-
-
-    <div *ngIf="bandera_error" class="alert alert-danger" role="alert">
-        <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
-    </div>
-
-    <div class="row">
-        <div class="btn-group-lg text-center">
-            <button *ngFor="let lote of lotes" (click)="verLote(lote.nombre_lote)" type="button" class="lote btn btn-light mr-2 mb-2"> 
-                <b> {{ lote.nombre_lote }} </b>
-            </button>
-            <!--Agregar nuevo lote -->
-            <button data-placement="bottom" *ngIf="!bandera_error" class="plus btn btn-light" [routerLink]="['/nuevo-lote']" (mouseover)="changeText=true" (mouseout)="changeText=false">
-                <span  style="font-size: 3rem;">
-                    <i class="fas fa-plus-circle"></i>
-                </span>
-            </button>
-            <small *ngIf="changeText"> Da click para agregar lote! </small>
-        </div>
-
-    </div>
-
-
 </div>
