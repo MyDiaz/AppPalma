@@ -33,7 +33,7 @@ export class AuthService {
   login( cc_usuario: string, contrasena_usuario:string ){
     return this.http.post(`${this.url_autenticacion}/login`, {cc_usuario, contrasena_usuario})
     .pipe( map (resp => {
-      this.guardarToken(resp);
+      //this.guardarToken(resp);
       
         
         this.loggedIn.next(true);
@@ -43,7 +43,7 @@ export class AuthService {
     }))
   }
 
-  private guardarToken( authResult ){
+  guardarToken( authResult ){
     localStorage.setItem('token', authResult.token);
     localStorage.setItem('expira', authResult.vence);
     localStorage.setItem('creacion', authResult.creacion);
@@ -80,6 +80,7 @@ export class AuthService {
   }*/
 
   cerrarSesion() {
+    debugger;
     this.loggedIn.next(false);
     localStorage.removeItem('token');
   }

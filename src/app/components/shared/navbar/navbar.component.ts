@@ -25,11 +25,11 @@ export class NavbarComponent implements OnInit {
         this.usuario = data;
       },
       error => {
-          console.log(error);
+          console.log("Error en getUsuario-Navbar", error);
         }  
     )
       this.estaAutenticado$ = this.authService.isLoggedIn;
-    
+    console.log("this.authService.isLoggedIn", this.authService.isLoggedIn);
   }
 
   salir(){

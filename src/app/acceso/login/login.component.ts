@@ -18,6 +18,7 @@ export class LoginComponent implements OnInit {
   
   constructor(private auth: AuthService, private router:Router,
      private fb: FormBuilder) {
+       
       this.LoginUserForm = new FormGroup({
         cc_usuario         : new FormControl(),
         contrasena_usuario : new FormControl() 
@@ -57,6 +58,7 @@ export class LoginComponent implements OnInit {
       Swal.showLoading();
       this.auth.login( this.LoginUserForm.value.cc_usuario, encodeURIComponent(this.LoginUserForm.value.contrasena_usuario))
         .subscribe( resp => {
+          this.auth.guardarToken(resp);
           //login valido
           Swal.close();
           this.router.navigate(['/lotes']);          
@@ -67,7 +69,7 @@ export class LoginComponent implements OnInit {
           }*/
           
         }, (err)=> {
-          console.log(err.error.message);
+          console.log("errorLogin",err.error.message);
           Swal.fire({
             icon: 'error',
             title: 'Error al autenticar',
