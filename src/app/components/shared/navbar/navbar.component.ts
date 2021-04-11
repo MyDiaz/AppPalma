@@ -3,6 +3,7 @@ import { AuthService } from 'src/app/Servicios/auth.service';
 import { UsuarioService } from '../../../acceso/usuario.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router'
+import { UsuarioModel } from 'src/app/models/usuario.models';
 
 @Component({
   selector: 'app-navbar',
@@ -11,8 +12,8 @@ import { Router } from '@angular/router'
 })
 export class NavbarComponent implements OnInit {
   
-  cc_usuario:string;
-  usuario:any;
+  cc_usuario: string;
+  usuario$: Observable<UsuarioModel>;
   estaAutenticado$: Observable<boolean>;
   
   constructor(private authService: AuthService, private router:Router, 
@@ -22,14 +23,15 @@ export class NavbarComponent implements OnInit {
     this.cc_usuario = this.authService.getIdUsuario();
     this.usuarioService.getUsuario(this.cc_usuario).subscribe(
       data => {
-        this.usuario = data;
+        console.log("Usuario:", data[0]);
+        this.usuario$ = data[0];
       },
       error => {
           console.log("Error en getUsuario-Navbar", error);
         }  
     )
-      this.estaAutenticado$ = this.authService.isLoggedIn;
-    console.log("this.authService.isLoggedIn", this.authService.isLoggedIn);
+    this.estaAutenticado$ = this.authService.isLoggedIn;
+    //console.log("this.authService.isLoggedIn", this.authService.isLoggedIn);
   }
 
   salir(){

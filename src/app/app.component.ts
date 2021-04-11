@@ -10,11 +10,12 @@ export class AppComponent{
   title = 'AppPalma';
 
 
-  constructor(){
+  constructor(private authService: AuthService){
   
   }
 
-  
-
+  ngOnInit() {
+    this.authService.estaAutenticado();
+  }
 
 }

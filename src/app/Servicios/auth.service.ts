@@ -33,13 +33,10 @@ export class AuthService {
   login( cc_usuario: string, contrasena_usuario:string ){
     return this.http.post(`${this.url_autenticacion}/login`, {cc_usuario, contrasena_usuario})
     .pipe( map (resp => {
-      //this.guardarToken(resp);
-      
-        
+        this.guardarToken(resp);
         this.loggedIn.next(true);
         console.log("bu");
-      
-      return resp;   
+        return resp;   
     }))
   }
 
@@ -56,7 +53,7 @@ export class AuthService {
 
   
   
-  /*estaAutenticado(){
+  estaAutenticado(){
     let token = localStorage.getItem('token');
     if (token)
     {
@@ -67,9 +64,11 @@ export class AuthService {
       let rol = token_payload.sub["rol"]
 
       if( creacion < ahora && ahora < expira){
-        //esta autenticado  
+        //esta autenticado
+        this.loggedIn.next(true);
         return true;
-      }else{
+      } else {
+        this.loggedIn.next(false);
         return false;
       }
     }
@@ -77,7 +76,7 @@ export class AuthService {
     {
       return false;
     }
-  }*/
+  }
 
   cerrarSesion() {
     debugger;

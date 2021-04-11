@@ -1,5 +1,5 @@
 <!-- *ngIf="estaLogueado" -->
-<nav *ngIf="estaAutenticado$ | async as estaAutenticado" class="navbar navbar-expand-lg navbar-green ">
+<nav *ngIf="estaAutenticado$ | async" class="navbar navbar-expand-lg navbar-green ">
     <a class="navbar-brand" routerLink="/lotes">AppPalma </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -37,21 +37,20 @@
 
         <ul class="navbar-nav">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="user_icon" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-user mr-2"></i> {{ usuario.nombre_usuario | titlecase }}
-                </a>
+              <a class="nav-link dropdown-toggle" id="user_icon" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <!--i class="fas fa-user mr-2"> {{ usuario$.nombre_usuario | titlecase }} </i-->
+                <i class="fas fa-user mr-2"> </i> {{ usuario$.nombre_usuario | async }}
+              </a>
                 <div id="user_menu" class="dropdown-menu" aria-labelledby="user_icon">
-                    <a class="dropdown-item btn-secondary" [routerLink]='["/usuario"]' routerLinkActive="active"> 
-                        Mi perfil 
+                    <a class="dropdown-item btn-secondary" [routerLink]='["/usuario"]' routerLinkActive="active">
+                        Mi perfil
                     </a>
                     <div class="dropdown-divider"></div>
-                    <button class="dropdown-item btn-secondary" (click)="salir()"> 
+                    <button class="dropdown-item btn-secondary" (click)="salir()">
                         Cerrar sesión
                     </button>
                 </div>
-            </li>
+             </li>
         </ul>
-
-
-    </div>
-</nav>
+     </div>
+  </nav>
