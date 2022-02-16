@@ -1,0 +1,82 @@
+<div *ngIf="bandera_error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
+</div>
+
+<div *ngIf="!bandera_error" style="height: 80%">
+
+    <div *ngIf="cargando" class="container mt-5" style="height: 80%">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+            <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!cargando" class="container">
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-md-9">
+                    <h3> Historico de cosechas </h3>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <app-fecha> </app-fecha>
+                </div>
+            </div>
+
+            <div class="row">
+
+                <p>A continuación,seleccione si quiere ver las cosechas ya finalizadas, en proceso o ambas. </p>
+
+                <section class="example-section">
+                    <mat-checkbox class="example-margin" [(ngModel)]="checked">Checked</mat-checkbox>
+                    <mat-checkbox class="example-margin" [(ngModel)]="indeterminate">Indeterminate</mat-checkbox>
+                </section>
+
+                <p> Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quidem, vero praesentium doloremque ipsum laboriosam nesciunt nihil rem cum adipisci eligendi perferendis ea quae tempore, quisquam cupiditate, suscipit obcaecati illum.</p>
+
+                <table mat-table class="mat-elevation-z8" [dataSource]="cosechas">
+
+                    <ng-container matColumnDef="nombre_lote">
+                        <th mat-header-cell *matHeaderCellDef> Lote </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.nombre_lote}} </td>
+                    </ng-container>
+
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="kilos_totales">
+                        <th mat-header-cell *matHeaderCellDef> Kilos totales </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.kilos_totales}} </td>
+                    </ng-container>
+
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="racimos_totales">
+                        <th mat-header-cell *matHeaderCellDef> Racimos totales </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.racimos_totales}} </td>
+                    </ng-container>
+
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="inicio_cosecha">
+                        <th mat-header-cell *matHeaderCellDef> Inicio cosecha </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.inicio_cosecha | date:'fullDate':'es'}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="fin_cosecha">
+                        <th mat-header-cell *matHeaderCellDef> Fin cosecha </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.fin_cosecha | date:'fullDate':'es'}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="estado_cosecha">
+                        <th mat-header-cell *matHeaderCellDef> Estado </th>
+                        <td mat-cell *matCellDef="let cosechas"> {{cosechas.estado_cosecha}} </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- <mat-tab-group animationDuration="0ms" mat-align-tabs="center">
+        <mat-tab label="En proceso...">En proceso...</mat-tab>
+        <mat-tab label="Finalizadas">Finalizadas</mat-tab>
+    </mat-tab-group> -->
