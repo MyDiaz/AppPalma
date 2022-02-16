@@ -58,10 +58,12 @@ export class LoginComponent implements OnInit {
       Swal.showLoading();
       this.auth.login( this.LoginUserForm.value.cc_usuario, encodeURIComponent(this.LoginUserForm.value.contrasena_usuario))
         .subscribe( resp => {
+          //console.log("this.LoginUserForm.get('cc_usuario')",typeof(JSON.stringify(this.LoginUserForm.get('cc_usuario'))))
+          //localStorage.setItem("cc",JSON.stringify(this.LoginUserForm.get('cc_usuario')))
           this.auth.guardarToken(resp);
           //login valido
           Swal.close();
-          this.router.navigate(['/lotes']);          
+          this.router.navigate(['/lotes']);   
           //
           //recordar contraseña
           /*if(this.recuerdame){

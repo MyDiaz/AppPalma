@@ -1,3 +1,7 @@
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.imagenFondo {
+    background-image: url("https://www.google.com/url?sa=i&url=https%3A%2F%2Fweb.fedepalma.org%2Fpalma-de-aceite-captura-co2-un&psig=AOvVaw3OXYr2HeA1krQbVDBKsO9p&ust=1639623653253000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCJDRh6Ho5PQCFQAAAAAdAAAAABBN");
+}

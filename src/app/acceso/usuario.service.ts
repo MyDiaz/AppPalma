@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../Servicios/auth.service';
 import { Observable, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { UsuarioModel } from 'src/app/models/usuario.models'; 
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +16,11 @@ export class UsuarioService {
       
    }
 
-   getUsuario(cc_usuario:string): Observable<any>{
-    return this.http.get<any>(`${this.url}/usuario/${cc_usuario}`)
-    .pipe(map( data => data));
+   getUsuario(cc_usuario:string){
+    return this.http.get<UsuarioModel>(`${this.url}/usuario/${cc_usuario}`)
+    //.pipe(map( data => data))
+    .pipe(map(data => data))
+    //.map(key => data[key])));
   }
 
    

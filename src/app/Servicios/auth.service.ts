@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient,HttpRequest, 
   HttpHandler,
   HttpEvent,
-  HttpInterceptor } from '@angular/common/http';
+  HttpInterceptor, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, BehaviorSubject} from 'rxjs';
 import { respuesta } from '../models/resp.model';
 import jwtDecode, { JwtPayload } from "jwt-decode";
+import { UsuarioModel } from '../models/usuario.models';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +17,10 @@ export class AuthService {
 
   private url_autenticacion:string = 'http://localhost:3000'; 
   private loggedIn = new BehaviorSubject<boolean>(false);
+  public usuario: UsuarioModel;
+  private token: string;
   
-  constructor( private http: HttpClient ) { }
+  constructor( private http: HttpClient, private router:Router ) { }
 
   registrarUsuario ( usuario ): Observable<respuesta> {
     return this.http.post<respuesta>(`${this.url_autenticacion}/registro`, usuario)
@@ -30,6 +34,8 @@ export class AuthService {
     return this.loggedIn.asObservable();
   }
 
+  
+
   login( cc_usuario: string, contrasena_usuario:string ){
     return this.http.post(`${this.url_autenticacion}/login`, {cc_usuario, contrasena_usuario})
     .pipe( map (resp => {
@@ -39,6 +45,43 @@ export class AuthService {
         return resp;   
     }))
   }
+
+  public async verificarToken(): Promise<boolean> {
+
+    await this.cargarToken();
+
+    return new Promise(resolve => {
+      if (!this.token) {
+        this.router.navigate(['/login']);
+        return resolve(false);
+      }
+
+      this.http.get(`${this.url_autenticacion}/token`, {headers: this.getHeaders()}).subscribe((resp: any) => {
+        if (resp.success) {
+          this.usuario = resp.result;
+          resolve(true);
+        } else {
+          this.usuario = null;
+          this.router.navigate(['/login']);
+          resolve(false);
+        }
+      },
+      () => {
+        console.log('Autenticación', 'Error al validar el token', 'error');
+      });
+    });
+  }
+
+  private getHeaders() {
+    return new HttpHeaders({
+      'x-token': this.token
+    });
+  }
+
+  private async cargarToken() {
+    this.token = await localStorage.getItem('token');
+  }
+
 
   guardarToken( authResult ){
     localStorage.setItem('token', authResult.token);
@@ -79,7 +122,6 @@ export class AuthService {
   }
 
   cerrarSesion() {
-    debugger;
     this.loggedIn.next(false);
     localStorage.removeItem('token');
   }

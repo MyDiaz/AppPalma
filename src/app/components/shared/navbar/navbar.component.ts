@@ -13,23 +13,37 @@ import { UsuarioModel } from 'src/app/models/usuario.models';
 export class NavbarComponent implements OnInit {
   
   cc_usuario: string;
-  usuario$: Observable<UsuarioModel>;
+  usuario: UsuarioModel;
   estaAutenticado$: Observable<boolean>;
   
   constructor(private authService: AuthService, private router:Router, 
-    private usuarioService:UsuarioService) { }
+    private usuarioService:UsuarioService) { 
+      this.usuario = {
+        cc_usuario: "",
+        nombre_usuario: "",
+        rol: "",
+        cargo_empresa: "",
+        contrasena_usuario:""
+      } 
+    }
 
   ngOnInit() {
+    console.log("NAVBAR")
     this.cc_usuario = this.authService.getIdUsuario();
-    this.usuarioService.getUsuario(this.cc_usuario).subscribe(
-      data => {
-        console.log("Usuario:", data[0]);
-        this.usuario$ = data[0];
-      },
+    setTimeout(() => {
+      this.usuarioService.getUsuario(this.cc_usuario).subscribe(
+      (data: UsuarioModel) => this.usuario = { ...data},
       error => {
           console.log("Error en getUsuario-Navbar", error);
+        },
+        () => {
+          //this.usuario$ = data;
+          console.log("Usuario:", this.usuario);
+          console.log("object", this.estaAutenticado$);
         }  
     )
+    }, 5000);
+    
     this.estaAutenticado$ = this.authService.isLoggedIn;
     //console.log("this.authService.isLoggedIn", this.authService.isLoggedIn);
   }
