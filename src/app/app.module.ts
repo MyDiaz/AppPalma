@@ -44,6 +44,11 @@ import { FormularioLoteComponent } from './components/lotes/formulario-lote/form
 import { EditarLoteComponent } from './components/lotes/editar-lote/editar-lote.component';
 import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
 import { EditarEtapaEnfermedadComponent } from './components/enfermedades/editar-etapa-enfermedad/editar-etapa-enfermedad.component';
+import { CosechasComponent } from './components/cosechas/cosechas.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTableModule } from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDatepickerModule} from '@angular/material/datepicker';
 
 registerLocaleData(localeEs);
 
@@ -74,7 +79,8 @@ registerLocaleData(localeEs);
     FormularioLoteComponent,
     EditarLoteComponent,
     EditarEnfermedadComponent,
-    EditarEtapaEnfermedadComponent
+    EditarEtapaEnfermedadComponent,
+    CosechasComponent
   ],
   imports: [
     BrowserModule,
@@ -82,7 +88,11 @@ registerLocaleData(localeEs);
     ReactiveFormsModule,
     APP_ROUTING,
     HttpClientModule,
-    ChartsModule
+    ChartsModule,
+    BrowserAnimationsModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatDatepickerModule
   ],
   providers: [
     {

@@ -18,6 +18,7 @@ import { NuevaPlagaComponent } from './components/plagas/nueva-plaga.component';
 import { NuevoAgroquimicosComponent } from './components/aplicaciones/nuevo-agroquimicos.component';
 import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enfermedad/nueva-enfermedad.component';
 import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
+import { CosechasComponent } from './components/cosechas/cosechas.component';
 //rutas para el acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
 import { LoginComponent } from './acceso/login/login.component';
@@ -50,6 +51,7 @@ const APP_ROUTES: Routes = [
     { path: 'editar-etapa-enfermedad/:nombre_enfermedad', component: EditarEtapaEnfermedadComponent, canActivate: [AuthGuard]},    
     { path: 'nueva-enfermedad', component: NuevaEnfermedadComponent, canActivate: [AuthGuard] },
     { path: 'rendimiento-productivo', component: RendimientoProductivoComponent, canActivate: [AuthGuard]},
+    { path: 'cosechas', component: CosechasComponent, canActivate: [AuthGuard]},
     { path: 'usuario', component: UsuariosComponent, canActivate: [AuthGuard]},
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
     
