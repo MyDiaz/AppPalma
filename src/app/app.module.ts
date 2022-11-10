@@ -49,6 +49,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatTableModule } from '@angular/material/table';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatInputModule} from '@angular/material/input';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import { DynamicTableComponent } from './components/utilidades/dynamic-table/dynamic-table.component';
+import { PodasComponent } from './components/podas/podas.component';
+import { PlateosComponent } from './components/plateos/plateos.component';
 
 registerLocaleData(localeEs);
 
@@ -80,7 +87,10 @@ registerLocaleData(localeEs);
     EditarLoteComponent,
     EditarEnfermedadComponent,
     EditarEtapaEnfermedadComponent,
-    CosechasComponent
+    CosechasComponent,
+    DynamicTableComponent,
+    PodasComponent,
+    PlateosComponent
   ],
   imports: [
     BrowserModule,
@@ -92,7 +102,11 @@ registerLocaleData(localeEs);
     BrowserAnimationsModule,
     MatTableModule,
     MatCheckboxModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
+    MatRadioModule,
+    MatPaginatorModule
   ],
   providers: [
     {
