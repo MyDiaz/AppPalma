@@ -18,6 +18,10 @@ export class CosechasService {
   constructor(private http: HttpClient, private handleError:HttpHandler) { }
 
   getCosechas() {
-    return this.http.get(`${environment.url}/cosechas`).pipe(map( data => data));
+    return this.http.get<any>(`${environment.url}/cosechas`).pipe(map( data => data));
 }
+
+  getCosecha( id_cosecha:string ) {
+    return this.http.get<any>(`${environment.url}/cosecha/${id_cosecha}`).pipe(map( data => data));
+  }
 }
