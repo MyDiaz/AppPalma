@@ -16,7 +16,7 @@
         <div class="mt-5">
             <div class="row">
                 <div class="col-md-9">
-                    <h3> Histórico de cosechas </h3>
+                    <h3> Histórico de podas </h3>
                 </div>
                 <div class="col-md-3 mt-3">
                     <app-fecha> </app-fecha>
@@ -24,7 +24,7 @@
             </div>
             <hr>
             <div>
-                <p>A continuación, seleccione si quiere ver las cosechas ya finalizadas, en proceso o ambas. </p>
+                <p>A continuación, seleccione si quiere ver las podas ya finalizadas, en proceso o ambas. </p>
             </div>
 
             <div class="row mt-4">
@@ -32,29 +32,29 @@
                     <mat-form-field appearance="fill">
                         <mat-label>Ingrese un rango de fechas</mat-label>
                         <mat-date-range-input [rangePicker]="picker" [formGroup]="range">
-                            <input formControlName="start" matStartDate placeholder="fecha inicio" (dateChange)="filtroEstadoCosechas()">
-                            <input formControlName="end" matEndDate placeholder="fecha fin" (dateChange)="filtroEstadoCosechas()">
+                            <input formControlName="start" matStartDate placeholder="fecha inicio" (dateChange)="filtroEstadoPodas()">
+                            <input formControlName="end" matEndDate placeholder="fecha fin" (dateChange)="filtroEstadoPodas()">
                         </mat-date-range-input>
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-date-range-picker #picker></mat-date-range-picker>
                     </mat-form-field>
                     <!-- <p>Selected range: {{range.value | json}}</p> -->
                 </div>
-                <form [formGroup]="procesoCosechas" (ngSubmit)="submit()">
+                <form [formGroup]="procesoPodas" (ngSubmit)="submit()">
                     <div class="col-md-8">
-                        <mat-checkbox class="example-margin" formControlName="activas" (change)="filtroEstadoCosechas()"> Activas </mat-checkbox>
-                        <mat-checkbox class="example-margin" formControlName="finalizadas" (change)="filtroEstadoCosechas()"> Finalizadas </mat-checkbox>
+                        <mat-checkbox class="example-margin" formControlName="activas" (change)="filtroEstadoPodas()"> Activas </mat-checkbox>
+                        <mat-checkbox class="example-margin" formControlName="finalizadas" (change)="filtroEstadoPodas()"> Finalizadas </mat-checkbox>
                     </div>
                 </form>
             </div>
             <div class="col-md-12 mt-4" *ngIf="filtradas == 'encontro'">
-                <app-dynamic-table [dataSource]="estadoCosechas" [columns]="columnsCosechas" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
+                <app-dynamic-table [dataSource]="estadoPodas" [columns]="columnsCosechas" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
                 <p>Para consultar el detalle de la cosecha de clic en el registro.</p>
             </div>
 
             <!--El detalle de cada registro de una cosecha-->
             <div class="col-md-12 mt-4" *ngIf="mostrarTablaDetalle && filtradas == 'encontro'">
-                <app-dynamic-table [dataSource]="detalleCosecha" [columns]="columnsCosechasDetalle" [mostrarPaginador]="mostrarPaginadorDetalle"> </app-dynamic-table>
+                <app-dynamic-table [dataSource]="detallePoda" [columns]="columnsCosechasDetalle" [mostrarPaginador]="mostrarPaginadorDetalle"> </app-dynamic-table>
             </div>
 
             <div *ngIf="filtradas == 'noEncontro'" class="col-md-12 mt-4">
@@ -63,8 +63,3 @@
             </div>
         </div>
     </div>
-
-    <!-- <mat-tab-group animationDuration="0ms" mat-align-tabs="center">
-        <mat-tab label="En proceso...">En proceso...</mat-tab>
-        <mat-tab label="Finalizadas">Finalizadas</mat-tab>
-    </mat-tab-group> (action)="onTableAction($event)"-->

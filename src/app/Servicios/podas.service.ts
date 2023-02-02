@@ -13,15 +13,15 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class CosechasService {
+export class PodasService {
 
   constructor(private http: HttpClient, private handleError:HttpHandler) { }
 
-  getCosechas() {
-    return this.http.get<any>(`${environment.url}/cosechas`).pipe(map( data => data));
+  getPodas() {
+    return this.http.get<any>(`${environment.url}/podas`).pipe(map( data => data));
 }
 
-  getCosecha( id_cosecha:string ) {
-    return this.http.get<any>(`${environment.url}/cosecha/${id_cosecha}`).pipe(map( data => data));
+  getPoda( id_poda:string ) {
+    return this.http.get<any>(`${environment.url}/poda/${id_poda}`).pipe(map( data => data));
   }
 }

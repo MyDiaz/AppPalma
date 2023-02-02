@@ -4,24 +4,18 @@ import { Observable, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-const httpOptions = { 
-  headers: new HttpHeaders({
-      'Content-type': 'application/json'
-  })
-}
-
 @Injectable({
   providedIn: 'root'
 })
-export class CosechasService {
+export class PlateosService {
 
   constructor(private http: HttpClient, private handleError:HttpHandler) { }
 
-  getCosechas() {
-    return this.http.get<any>(`${environment.url}/cosechas`).pipe(map( data => data));
+  getPlateos() {
+    return this.http.get<any>(`${environment.url}/plateos`).pipe(map( data => data));
 }
 
-  getCosecha( id_cosecha:string ) {
-    return this.http.get<any>(`${environment.url}/cosecha/${id_cosecha}`).pipe(map( data => data));
+  getPlateo( id_plateos:string ) {
+    return this.http.get<any>(`${environment.url}/plateos/${id_plateos}`).pipe(map( data => data));
   }
 }
