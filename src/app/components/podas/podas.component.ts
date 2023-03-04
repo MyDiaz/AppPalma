@@ -103,7 +103,8 @@ export class PodasComponent implements OnInit {
     console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
     this.estadoPodas.data = this.podas.filter(poda => {
       return (poda.estado_poda === 'FINALIZADA' && this.procesoPodas.value.finalizadas || poda.estado_poda === 'ACTIVA' && this.procesoPodas.value.activas)
-       && (this.range.get('start').value == null || poda.finPodaDate > this.range.get('start').value) && (this.range.get('end').value == null || poda.finPodaDate < this.range.get('end').value)
+       && (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value) &&
+      (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value) || poda.estado_poda === 'ACTIVA')
     });
     if(this.estadoPodas.data.length != 0) {
       this.filtradas = estadosBusqueda.encontro
