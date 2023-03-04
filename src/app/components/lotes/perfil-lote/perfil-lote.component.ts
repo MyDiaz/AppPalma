@@ -40,8 +40,8 @@ export class PerfilLoteComponent implements OnInit{
       
   }
 
-  verRegistro( registro:string ):string{
-    return registro;
+  verCosechas(){
+    this.router.navigate(['/cosechas'], { queryParams: { lote: this.nombre_lote } });
   }
 
   verLoteEditar( nombre:string ){

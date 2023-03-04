@@ -56,6 +56,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import { DynamicTableComponent } from './components/utilidades/dynamic-table/dynamic-table.component';
 import { PodasComponent } from './components/podas/podas.component';
 import { PlateosComponent } from './components/plateos/plateos.component';
+import {MatSelectModule} from '@angular/material/select';
 
 registerLocaleData(localeEs);
 
@@ -106,7 +107,8 @@ registerLocaleData(localeEs);
     MatNativeDateModule,
     MatInputModule,
     MatRadioModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSelectModule
   ],
   providers: [
     {

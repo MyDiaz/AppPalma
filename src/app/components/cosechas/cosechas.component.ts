@@ -3,6 +3,8 @@ import { CosechasService} from '../../Servicios/cosechas.service';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
+import { LoteService } from '../../Servicios/lote.service';
 
 const estadosBusqueda = {
   inicio: "inicio",
@@ -56,10 +58,14 @@ export class CosechasComponent implements OnInit {
   mostrarPaginadorDetalle:boolean = false;
   mostrarTablaDetalle:boolean = false;
 
-  constructor(private cosechaService:CosechasService) {
+  nombreLoteParams:string;
+  lotes:any = [];
+
+  constructor(private cosechaService:CosechasService, private activatedRoute: ActivatedRoute, private _loteService:LoteService) {
     this.procesoCosechas = new FormGroup({
       activas: new FormControl(),
-      finalizadas: new FormControl()
+      finalizadas: new FormControl(),
+      nombreLote: new FormControl()
     });
 
     this.estadoCosechas = new MatTableDataSource<any>([]);
@@ -100,21 +106,54 @@ export class CosechasComponent implements OnInit {
       }
     );
     this.cargando = true;
-    
+
+     this.activatedRoute
+      .queryParamMap
+      .subscribe(params => {
+        this.nombreLoteParams = params.get('lote');
+        console.log("aqui", this.nombreLoteParams)
+      });    
+
+      this._loteService.getLotes().subscribe(
+        data => {
+          this.lotes = data;
+          console.log("lotes desde cosechas", this.lotes)
+          //this.cargando = false;
+        },
+        error => {
+          // this.bandera_error = true;
+          // this.mensaje_error = error.error.message;
+          // console.log("error.status", error.status);
+          // if( error.status == 0 ){
+          //   this.mensaje_error = "Servicio no disponible"
+          // }
+          console.log(error);
+        });
+        if(this.nombreLoteParams != null) {
+          this.procesoCosechas.get('nombreLote').setValue(this.nombreLoteParams);
+          this.procesoCosechas.get('activas').setValue(true);
+          this.procesoCosechas.get('finalizadas').setValue(true);
+          var fechaI = new Date(2024, 11, 15);
+          this.range.get('start').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth(), 1));
+          this.range.get('end').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth() + 1, 0));
+        } 
   }
 
   filtroEstadoCosechas(){
     console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
     this.estadoCosechas.data = this.cosechas.filter(cosecha => {
-      return (cosecha.estado_cosecha === 'FINALIZADA' && this.procesoCosechas.value.finalizadas || cosecha.estado_cosecha === 'ACTIVA' && this.procesoCosechas.value.activas)
-       && (this.range.get('start').value == null || cosecha.finCosechaDate > this.range.get('start').value) && (this.range.get('end').value == null || cosecha.finCosechaDate < this.range.get('end').value)
+      return (cosecha.estado_cosecha === 'FINALIZADA' && 
+      this.procesoCosechas.value.finalizadas || cosecha.estado_cosecha === 'ACTIVA' && this.procesoCosechas.value.activas)
+       && (this.range.get('start').value == null || cosecha.finCosechaDate >= this.range.get('start').value) && 
+       (this.range.get('end').value == null || (cosecha.finCosechaDate <= this.range.get('end').value) || cosecha.estado_cosecha === 'ACTIVA') &&
+       (this.procesoCosechas.value.nombreLote == cosecha.nombre_lote)
     });
     if(this.estadoCosechas.data.length != 0) {
       this.filtradas = estadosBusqueda.encontro
     }else{
       this.filtradas = estadosBusqueda.noEncontro
     }
-    console.log(this.filtradas)
+    //console.log("activado", this.filtradas)
   
     //this.cosechas = this.estadoCosechas
     console.log("this.estadoCosechas :", this.estadoCosechas)

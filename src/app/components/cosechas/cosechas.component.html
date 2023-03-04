@@ -40,12 +40,22 @@
                     </mat-form-field>
                     <!-- <p>Selected range: {{range.value | json}}</p> -->
                 </div>
-                <form [formGroup]="procesoCosechas" (ngSubmit)="submit()">
-                    <div class="col-md-8">
+                <form [formGroup]="procesoCosechas" (ngSubmit)="submit()" class="row">
+                    <div class="col-md-4">
                         <mat-checkbox class="example-margin" formControlName="activas" (change)="filtroEstadoCosechas()"> Activas </mat-checkbox>
                         <mat-checkbox class="example-margin" formControlName="finalizadas" (change)="filtroEstadoCosechas()"> Finalizadas </mat-checkbox>
                     </div>
-                </form>
+                    <div class="col-md-4">
+                        <mat-form-field appearance="fill" >
+                            <mat-label>Select me</mat-label>
+                            <!-- <mat-select > Ningún </mat-select> -->
+                            <mat-select formControlName="nombreLote" >
+                            <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoCosechas()">{{ lote.nombre_lote }}</mat-option>
+                            </mat-select>
+                            <mat-hint align="end">Ve aquí la info del lote seleccionado</mat-hint>
+                        </mat-form-field>
+                    </div>
+                </form>    
             </div>
             <div class="col-md-12 mt-4" *ngIf="filtradas == 'encontro'">
                 <app-dynamic-table [dataSource]="estadoCosechas" [columns]="columnsCosechas" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
