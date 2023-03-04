@@ -103,8 +103,13 @@ export class PlateosComponent implements OnInit {
   filtroEstadoPlateos(){
     console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
     this.estadoPlateos.data = this.plateos.filter(plateo => {
+      // console.log("fecha ", this.range.get('start').value == null, plateo.finPlateoDate > this.range.get('start').value)
+      // console.log("fecha 2 ", this.range.get('end').value == null, plateo.finPlateoDate < this.range.get('end').value)
+      // console.log("valor start", this.range.get('start').value,"fecha BD start", plateo.inicio_plateo)
+      // console.log("valor  end", this.range.get('end').value, "fecha BD end", plateo.fin_plateo)
       return (plateo.estado_plateo === 'FINALIZADA' && this.procesoPlateos.value.finalizadas || plateo.estado_plateo === 'ACTIVA' && this.procesoPlateos.value.activas)
-       && (this.range.get('start').value == null || plateo.finPlateoDate > this.range.get('start').value) && (this.range.get('end').value == null || plateo.finPlateoDate < this.range.get('end').value)
+       && (this.range.get('start').value == null || plateo.finPlateoDate >= this.range.get('start').value) && 
+       (this.range.get('end').value == null || (plateo.finPlateoDate <= this.range.get('end').value || plateo.estado_plateo === 'ACTIVA'))
     });
     if(this.estadoPlateos.data.length != 0) {
       this.filtradas = estadosBusqueda.encontro
@@ -114,7 +119,7 @@ export class PlateosComponent implements OnInit {
     console.log(this.filtradas)
   
     //this.cosechas = this.estadoCosechas
-    console.log("this.estadoPlateos :", this.estadoPlateos)
+    console.log("this.estadoPlateos :", this.estadoPlateos.data)
     //console.log("procesoCosechas", this.procesoCosechas.value)
   }
 
