@@ -111,49 +111,58 @@ export class CosechasComponent implements OnInit {
       .queryParamMap
       .subscribe(params => {
         this.nombreLoteParams = params.get('lote');
-        console.log("aqui", this.nombreLoteParams)
+        console.log("parametro URL: ", this.nombreLoteParams)
       });    
 
       this._loteService.getLotes().subscribe(
         data => {
           this.lotes = data;
+          this.lotes.push({nombre_lote:'TODOS'});
           console.log("lotes desde cosechas", this.lotes)
-          //this.cargando = false;
+          this.cargando = false;
         },
         error => {
-          // this.bandera_error = true;
-          // this.mensaje_error = error.error.message;
-          // console.log("error.status", error.status);
-          // if( error.status == 0 ){
-          //   this.mensaje_error = "Servicio no disponible"
-          // }
+          this.bandera_error = true;
+          this.mensaje_error = error.error.message;
+          console.log("error.status", error.status);
+          if( error.status == 0 ){
+            this.mensaje_error = "Servicio no disponible"
+          }
           console.log(error);
         });
         if(this.nombreLoteParams != null) {
           this.procesoCosechas.get('nombreLote').setValue(this.nombreLoteParams);
           this.procesoCosechas.get('activas').setValue(true);
           this.procesoCosechas.get('finalizadas').setValue(true);
-          var fechaI = new Date(2024, 11, 15);
+          var fechaI = new Date();
           this.range.get('start').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth(), 1));
           this.range.get('end').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth() + 1, 0));
-        } 
+        }else{
+          this.procesoCosechas.get('nombreLote').setValue('TODOS');
+        }
+
   }
 
+  //Filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote.
   filtroEstadoCosechas(){
-    console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
+    //console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
     this.estadoCosechas.data = this.cosechas.filter(cosecha => {
-      return (cosecha.estado_cosecha === 'FINALIZADA' && 
-      this.procesoCosechas.value.finalizadas || cosecha.estado_cosecha === 'ACTIVA' && this.procesoCosechas.value.activas)
-       && (this.range.get('start').value == null || cosecha.finCosechaDate >= this.range.get('start').value) && 
-       (this.range.get('end').value == null || (cosecha.finCosechaDate <= this.range.get('end').value) || cosecha.estado_cosecha === 'ACTIVA') &&
-       (this.procesoCosechas.value.nombreLote == cosecha.nombre_lote)
+      return (
+      (this.procesoCosechas.value.finalizadas == null && this.procesoCosechas.value.activas == null) ||
+      (cosecha.estado_cosecha === 'FINALIZADA' && this.procesoCosechas.value.finalizadas) ||
+      (cosecha.estado_cosecha === 'ACTIVA' && this.procesoCosechas.value.activas)
+      (!this.procesoCosechas.value.activas && !this.procesoCosechas.value.finalizadas))
+      && 
+      (this.range.get('start').value == null || cosecha.finCosechaDate >= this.range.get('start').value) && 
+      (this.range.get('end').value == null || (cosecha.finCosechaDate <= this.range.get('end').value) || cosecha.estado_cosecha === 'ACTIVA') &&
+      (this.procesoCosechas.value.nombreLote == cosecha.nombre_lote || this.procesoCosechas.value.nombreLote == "TODOS")
     });
     if(this.estadoCosechas.data.length != 0) {
       this.filtradas = estadosBusqueda.encontro
     }else{
-      this.filtradas = estadosBusqueda.noEncontro
+      this.filtradas = estadosBusqueda.noEncontro 
     }
-    //console.log("activado", this.filtradas)
+    console.log("filtro", this.filtradas)
   
     //this.cosechas = this.estadoCosechas
     console.log("this.estadoCosechas :", this.estadoCosechas)
@@ -161,7 +170,7 @@ export class CosechasComponent implements OnInit {
   }
 
   submit(){
-    console.log("procesoCosechas", this.procesoCosechas.value)
+    //console.log("procesoCosechas", this.procesoCosechas.value)
   }
 
 }
