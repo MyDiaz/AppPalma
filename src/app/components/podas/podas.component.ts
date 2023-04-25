@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
 import * as moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
-import { PodasService } from '../../Servicios/podas.service'
+import { PodasService } from '../../Servicios/podas.service';
+import { ActivatedRoute } from '@angular/router';
+import { LoteService } from '../../Servicios/lote.service';
+
 const estadosBusqueda = {
   inicio: "inicio",
   encontro: "encontro",
@@ -50,10 +53,15 @@ export class PodasComponent implements OnInit {
     { columnDef: 'fecha_poda_diaria', header: 'Fecha poda'}
   ]
   
-  constructor( public podasService: PodasService) { 
+  nombreLoteParams:string;
+  lotes:any = [];
+
+
+  constructor( public podasService: PodasService, private activatedRoute: ActivatedRoute, private _loteService:LoteService) { 
     this.procesoPodas = new FormGroup({
       activas: new FormControl(),
-      finalizadas: new FormControl()
+      finalizadas: new FormControl(),
+      nombreLote: new FormControl()
     });
 
     this.estadoPodas = new MatTableDataSource<any>([]);
@@ -85,6 +93,40 @@ export class PodasComponent implements OnInit {
       }
     );
     this.cargando = true;
+
+    this.activatedRoute
+    .queryParamMap
+    .subscribe(params => {
+      this.nombreLoteParams = params.get('lote');
+      console.log("Parametro por URL: ", this.nombreLoteParams)
+    });    
+
+    this._loteService.getLotes().subscribe(
+      data => {
+        this.lotes = data;
+        this.lotes.push({nombre_lote:'TODOS'});
+        console.log("lotes desde podas", this.lotes)
+        this.cargando = false;
+      },
+      error => {
+        this.bandera_error = true;
+        this.mensaje_error = error.error.message;
+        console.log("error.status", error.status);
+        if( error.status == 0 ){
+          this.mensaje_error = "Servicio no disponible"
+        }
+        console.log(error);
+      });
+      if(this.nombreLoteParams != null) {
+        this.procesoPodas.get('nombreLote').setValue(this.nombreLoteParams);
+        this.procesoPodas.get('activas').setValue(true);
+        this.procesoPodas.get('finalizadas').setValue(true);
+        var fechaI = new Date();
+        this.range.get('start').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth(), 1));
+        this.range.get('end').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth() + 1, 0));
+      }else{
+        this.procesoPodas.get('nombreLote').setValue('TODOS');
+      } 
   }
 
   idBd(id_poda:string){
@@ -99,19 +141,31 @@ export class PodasComponent implements OnInit {
 
   submit(){}
 
+  //Filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote.
   filtroEstadoPodas(){
-    console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
+    //console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
     this.estadoPodas.data = this.podas.filter(poda => {
-      return (poda.estado_poda === 'FINALIZADA' && this.procesoPodas.value.finalizadas || poda.estado_poda === 'ACTIVA' && this.procesoPodas.value.activas)
-       && (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value) &&
-      (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value) || poda.estado_poda === 'ACTIVA')
+      // console.log('START', (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value))
+      // console.log('END', (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value)))
+      // console.log('finalidas', this.procesoPodas.value.finalizadas)
+      // console.log('activas', this.procesoPodas.value.activas)
+      return (
+      (this.procesoPodas.value.finalizadas == null && this.procesoPodas.value.activas == null) ||
+      (poda.estado_poda === 'FINALIZADA' && (this.procesoPodas.value.finalizadas)) ||
+      (poda.estado_poda === 'ACTIVA' && (this.procesoPodas.value.activas)) ||
+      (!this.procesoPodas.value.activas && !this.procesoPodas.value.finalizadas))
+      && 
+      (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value) &&
+      (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value || poda.estado_poda === 'ACTIVA')) &&
+      (this.procesoPodas.value.nombreLote == poda.nombre_lote || this.procesoPodas.value.nombreLote == "TODOS")
     });
+    
     if(this.estadoPodas.data.length != 0) {
       this.filtradas = estadosBusqueda.encontro
     }else{
       this.filtradas = estadosBusqueda.noEncontro
     }
-    console.log(this.filtradas)
+    console.log('filtro', this.filtradas)
   
     //this.cosechas = this.estadoCosechas
     console.log("this.estadoPodas :", this.estadoPodas)
