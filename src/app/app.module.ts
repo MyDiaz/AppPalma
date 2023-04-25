@@ -57,6 +57,8 @@ import { DynamicTableComponent } from './components/utilidades/dynamic-table/dyn
 import { PodasComponent } from './components/podas/podas.component';
 import { PlateosComponent } from './components/plateos/plateos.component';
 import {MatSelectModule} from '@angular/material/select';
+import { ViajesComponent } from './components/viajes/viajes.component';
+import { CensosComponent } from './components/censos/censos.component';
 
 registerLocaleData(localeEs);
 
@@ -91,7 +93,9 @@ registerLocaleData(localeEs);
     CosechasComponent,
     DynamicTableComponent,
     PodasComponent,
-    PlateosComponent
+    PlateosComponent,
+    ViajesComponent,
+    CensosComponent
   ],
   imports: [
     BrowserModule,

@@ -20,7 +20,9 @@ import { NuevaEnfermedadComponent } from './components/enfermedades/nueva-enferm
 import { EditarEnfermedadComponent } from './components/enfermedades/editar-enfermedad/editar-enfermedad.component';
 import { CosechasComponent } from './components/cosechas/cosechas.component';
 import { PodasComponent } from './components/podas/podas.component';
-import { PlateosComponent } from './components/plateos/plateos.component'
+import { PlateosComponent } from './components/plateos/plateos.component';
+import { ViajesComponent } from './components/viajes/viajes.component';
+import { CensosComponent } from './components/censos/censos.component';
 //rutas para el acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
 import { LoginComponent } from './acceso/login/login.component';
@@ -56,6 +58,8 @@ const APP_ROUTES: Routes = [
     { path: 'cosechas', component: CosechasComponent, canActivate: [AuthGuard]},
     { path: 'podas', component: PodasComponent, canActivate: [AuthGuard]},
     { path: 'plateos', component: PlateosComponent, canActivate: [AuthGuard]},
+    { path: 'viajes', component: ViajesComponent, canActivate: [AuthGuard]},
+    { path: 'censos', component: CensosComponent, canActivate: [AuthGuard]},
     { path: 'usuario', component: UsuariosComponent, canActivate: [AuthGuard]},
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
     

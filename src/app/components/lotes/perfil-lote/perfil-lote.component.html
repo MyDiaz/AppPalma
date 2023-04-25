@@ -64,12 +64,12 @@
     <h4> Gestión fitosanitaria </h4>
     <div class="btn-group" role="group" aria-label="Basic example">
         <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['aplicaciones']"> Aplicaciones </button>
-        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['registros-plagas']"> Plagas </button>
-        <button type="button" class="btn btn-outline-info mr-2"> Enfermedades y hongos </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/censos')"> Plagas </button>
+        <button type="button" class="btn btn-outline-info mr-2"> Enfermedades </button>
         <button type="button" class="btn btn-outline-info mr-2"> Tratamientos </button>
         <button type="button" class="btn btn-outline-info mr-2"> Fertilizaciones </button>
-        <button type="button" class="btn btn-outline-info mr-2"> Podas </button>
-        <button type="button" class="btn btn-outline-info mr-2"> Plateos </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/podas')"> Podas </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/plateos')"> Plateos </button>
     </div>
     <br> <br>
     <!--Renderiza los componentes del "btn-group"-->
@@ -78,8 +78,8 @@
     <br> <br>
     <h4> Gestión productiva </h4>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-outline-info mr-2" (click)="verCosechas()"> Cosecha </button>
-        <button type="button" class="btn btn-outline-info mr-2"> Viajes </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/cosechas')"> Cosecha </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/viajes')"> Viajes </button>
     </div>
     <br> <br>
     <a [routerLink]="['/lotes']" class="btn btn-outline-danger"> Regresar </a>
