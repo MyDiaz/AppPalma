@@ -22,8 +22,8 @@ export class DynamicTableComponent implements OnInit, AfterViewInit  {
     constructor() { }
   
     ngOnInit(): void {
-      console.log("this.dataset", this.dataSource.data)
-      console.log("www", this.columns.map(x => x))
+      console.log("this.dataSource.data", this.dataSource.data)
+      console.log("Columns names/columns db names: ", this.columns.map(x => x))
       this.displayedColumns = this.columns.map(x => x.columnDef);    // pre-fix static
 
     }

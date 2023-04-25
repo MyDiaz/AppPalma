@@ -2,16 +2,16 @@
 
     <!-- table dynamic columns -->
     <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
-        <mat-header-cell *matHeaderCellDef>{{ column.header }}</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef>{{ column.header }}</mat-header-cell> 
         <mat-cell *matCellDef="let row; let i = index">
-            {{ row[column.columnDef] }}
+            {{ row[column.columnDef] }} 
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns" (click)="row['callback']()"></mat-row>
 </mat-table>
 <div *ngIf="mostrarPaginador">
-    <mat-paginator [pageSizeOptions]="[2, 4, 6]" showFirstLastButtons></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 15, 20]" showFirstLastButtons></mat-paginator>
 </div>
 
 <!-- table pagination 
