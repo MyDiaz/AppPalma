@@ -59,6 +59,7 @@ import { PlateosComponent } from './components/plateos/plateos.component';
 import {MatSelectModule} from '@angular/material/select';
 import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
+import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
 
 registerLocaleData(localeEs);
 
@@ -95,7 +96,8 @@ registerLocaleData(localeEs);
     PodasComponent,
     PlateosComponent,
     ViajesComponent,
-    CensosComponent
+    CensosComponent,
+    HistoricoEnfermedadesComponent
   ],
   imports: [
     BrowserModule,

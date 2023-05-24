@@ -20,6 +20,10 @@ export class EnfermedadesService {
     return this.http.get(`${this.url}/enfermedades`);
   }
 
+  getEnfermedadesConcat(){
+    return this.http.get(`${this.url}/enfermedades`);
+  }
+
   getEnfermedad(nombre_enfermedad){
     return this.http.get(`${this.url}/enfermedad/${nombre_enfermedad}`);
   }
@@ -56,6 +60,11 @@ export class EnfermedadesService {
   actualizarEnfermedadConEtapas(nombre_enfermedad,formEnfermedadEtapas):Observable<respuesta>{
     return this.http.post<respuesta>(`${this.url}/enfermedad-etapas/${nombre_enfermedad}`, formEnfermedadEtapas)
     .pipe(map( data => data ));
+  }
+
+  //obtener el registro de las enfermedades en palmas realizadas
+  getEnfermedadesRegistradas(){
+    return this.http.get<any>(`${this.url}/registro-enfermedades`).pipe(map( data => data));
   }
 
 }
