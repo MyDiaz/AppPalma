@@ -21,7 +21,7 @@ export class EnfermedadesService {
   }
 
   getEnfermedadesConcat(){
-    return this.http.get(`${this.url}/enfermedades`);
+    return this.http.get<any>(`${this.url}/enfermedades_etapas_concat`);
   }
 
   getEnfermedad(nombre_enfermedad){

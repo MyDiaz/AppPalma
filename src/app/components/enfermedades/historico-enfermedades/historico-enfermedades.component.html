@@ -41,26 +41,29 @@
                     <!-- <p>Selected range: {{range.value | json}}</p> -->
                 </div>
                 <form [formGroup]="procesoHistoricoEnfermedades" (ngSubmit)="submit()">
-                    <div class="col-md-4">
-                        <mat-form-field appearance="fill" >
-                            <mat-label>Select me</mat-label>
-                            <!-- <mat-select > Ningún </mat-select> -->
-                            <mat-select formControlName="nombreLote" >
-                            <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoHistoricoEnfermedades()">{{ lote.nombre_lote }}</mat-option>
-                            </mat-select>
-                            <mat-hint align="end">Seleccione el LOTE del cual quiere ver registros</mat-hint>
-                        </mat-form-field>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field appearance="fill" >
+                                <mat-label>Select me</mat-label>
+                                <!-- <mat-select > Ningún </mat-select> -->
+                                <mat-select formControlName="nombreLote" >
+                                <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoHistoricoEnfermedades()">{{ lote.nombre_lote }}</mat-option>
+                                </mat-select>
+                                <mat-hint align="end">Seleccione el LOTE del cual quiere ver registros</mat-hint>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field appearance="fill" >
+                                <mat-label>Select me</mat-label>
+                                <!-- <mat-select > Ningún </mat-select>-->
+                                <mat-select formControlName="enfermedadConcat" >
+                                <mat-option [value]="eC.concat" *ngFor="let eC of enfermedadesConcat" (click)="filtroEstadoHistoricoEnfermedades()">{{ eC.concat }}</mat-option>
+                                </mat-select>
+                                <mat-hint align="end">Seleccione la ENFERMEDAD del cual quiere ver registros</mat-hint>
+                            </mat-form-field>
+                        </div>
                     </div>
-                    <div class="col-md-4">
-                        <mat-form-field appearance="fill" >
-                            <mat-label>Select me</mat-label>
-                            <!-- <mat-select > Ningún </mat-select> -->
-                            <mat-select formControlName="nombreLote" >
-                            <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoHistoricoEnfermedades()">{{ lote.nombre_lote }}</mat-option>
-                            </mat-select>
-                            <mat-hint align="end">Seleccione la ENFERMEDAD del cual quiere ver registros</mat-hint>
-                        </mat-form-field>
-                    </div>
+                    
                 </form>
             </div>
             <div class="col-md-12 mt-4" *ngIf="filtradas == 'encontro'">

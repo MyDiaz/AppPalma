@@ -5,6 +5,7 @@ import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@ang
 import * as moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
 import { EnfermedadesService } from '../../../Servicios/enfermedades.service';
+import { element } from 'protractor';
 
 
 const estadosBusqueda = {
@@ -56,15 +57,24 @@ export class HistoricoEnfermedadesComponent implements OnInit {
 
   nombreLoteParams:string;
   lotes:any = [];
+  enfermedadesConcat:any = [];
 
   constructor(public enfermedadesService: EnfermedadesService, private _loteService:LoteService, private activatedRoute: ActivatedRoute) 
-  { }
+  {
+    this.estadoHistoricoEnfermedades = new MatTableDataSource<any>([]);
+    this.procesoHistoricoEnfermedades = new FormGroup({
+      nombreLote: new FormControl(),
+      enfermedadConcat: new FormControl()
+    });
+  }
 
   ngOnInit(): void {
     this.enfermedadesService.getEnfermedadesRegistradas().subscribe( 
       data => {
         this.historicoEnfermedades = data.map( element => {
         element.diaRegistroEnfermedad = new Date (element.fecha_registro_enfermedad);
+        element.fecha_registro_enfermedad = moment(element.diaRegistroEnfermedad).locale('es').format('LL');
+        element.nombre_enfermedad = element.nombre_enfermedad.toLowerCase();
         return element
       });
       this.cargando = false;
@@ -80,16 +90,30 @@ export class HistoricoEnfermedadesComponent implements OnInit {
     })
     this.cargando = true;
 
-    this.enfermedadesService.getEnfermedades().subscribe(
+    this.enfermedadesService.getEnfermedadesConcat().subscribe(
       data => {
-        
+        this.enfermedadesConcat = data.map( element => {
+          element.concat = element.concat.toLowerCase();
+          return element
+        })
+        this.enfermedadesConcat.push({concat:'TODAS'});
+        console.log("this.enfermedadesConcat", this.enfermedadesConcat)
       }
-    ) 
+    )
+    
+    //obtener el  parametro 
+    this.activatedRoute
+    .queryParamMap
+    .subscribe(params => {
+      this.nombreLoteParams = params.get('lote');
+      console.log("parametro por URL ", this.nombreLoteParams)
+    }); 
 
     //llamado para obtener el listado de lotes
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
+        this.lotes.push({nombre_lote:'TODOS'});
         console.log("lotes desde HE", this.lotes)
         this.cargando = false;
       }, 
@@ -102,10 +126,45 @@ export class HistoricoEnfermedadesComponent implements OnInit {
         }
       }
     )
+    if(this.nombreLoteParams != null) {
+      this.procesoHistoricoEnfermedades.get('nombreLote').setValue(this.nombreLoteParams);
+      // this.procesoHistoricoEnfermedades.get('fumigado').setValue(true);
+      // this.procesoHistoricoEnfermedades.get('eliminado').setValue(true);
+      // this.procesoHistoricoEnfermedades.get('pend_fumigar').setValue(true);
+      var fechaI = new Date();
+      this.range.get('start').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth(), 1));
+      this.range.get('end').setValue(new Date(fechaI.getFullYear(), fechaI.getMonth() + 1, 0));
+    }else{
+      this.procesoHistoricoEnfermedades.get('nombreLote').setValue('TODOS');
+    }
+    this.procesoHistoricoEnfermedades.get('enfermedadConcat').setValue('TODAS')
   }
 
   submit(){}
 
-  filtroEstadoHistoricoEnfermedades(){}
+  filtroEstadoHistoricoEnfermedades(){
+    this.estadoHistoricoEnfermedades.data = this.historicoEnfermedades.filter(enfermedad => {
+    // console.log("000000", this.procesoHistoricoEnfermedades.value.enfermedadConcat, enfermedad.nombre_enfermedad + ' ' + (enfermedad.etapa_enfermedad ?? '') )
+    // console.log("CONDICIONAL", this.procesoHistoricoEnfermedades.value.enfermedadConcat == enfermedad.nombre_enfermedad + ' ' + (enfermedad.etapa_enfermedad ?? '') ||
+    // this.procesoHistoricoEnfermedades.value.enfermedadConcat == "TODAS" )
+    // console.log("lllllllllllllll",this.procesoHistoricoEnfermedades.value.enfermedadConcat == "TODAS", this.procesoHistoricoEnfermedades.value.enfermedadConcat )
+      return (this.procesoHistoricoEnfermedades.value.enfermedadConcat == enfermedad.nombre_enfermedad + ' ' + (enfermedad.etapa_enfermedad ?? '') ||
+      this.procesoHistoricoEnfermedades.value.enfermedadConcat == "TODAS") 
+      && 
+      (this.range.get('start').value == null || enfermedad.diaRegistroEnfermedad >= this.range.get('start').value) && 
+      (this.range.get('end').value == null || (enfermedad.diaRegistroEnfermedad <= this.range.get('end').value)) &&
+      (this.procesoHistoricoEnfermedades.value.nombreLote == enfermedad.nombre_lote || this.procesoHistoricoEnfermedades.value.nombreLote == "TODOS") 
+    });
+    if(this.estadoHistoricoEnfermedades.data.length != 0) {
+      this.filtradas = estadosBusqueda.encontro
+    }else{
+      this.filtradas = estadosBusqueda.noEncontro
+    }
+    console.log('filtro', this.filtradas)
+  
+    //this.cosechas = this.estadoCosechas
+    console.log("this.estadoCensos :", this.estadoHistoricoEnfermedades.data)
+    //console.log("procesoCosechas", this.procesoCosechas.value)
+  }
 
 }
