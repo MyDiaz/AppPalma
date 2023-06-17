@@ -10,7 +10,7 @@ import { UsuarioModel } from 'src/app/models/usuario.models';
 })
 export class UsuarioService {
   
-  private url:string = 'http://localhost:3000'; 
+  private url:string = 'http://176.31.22.252:3000'; 
 
   constructor(private http: HttpClient, private authService:AuthService) {
       

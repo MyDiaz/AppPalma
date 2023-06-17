@@ -95,7 +95,8 @@ export class FormularioLoteComponent implements OnInit {
       año_siembra     : this.NuevoLoteForm.value.año_siembra,
       hectareas       : this.NuevoLoteForm.value.hectareas,
       numero_palmas   : this.NuevoLoteForm.value.numero_palmas,
-      material_siembra: encodeURIComponent(this.NuevoLoteForm.value.material_siembra)
+      material_siembra: encodeURIComponent(this.NuevoLoteForm.value.material_siembra),
+      mapa:null
     };
     //AGREGAR LOTE    
     Swal.fire({

@@ -44,7 +44,7 @@ const APP_ROUTES: Routes = [
     { path: 'lote/:id/estado-productivo', component: EstadoProductivoComponent, canActivate: [AuthGuard] },
     { path: 'lote/:id/aplicaciones', component: AplicacionesComponent, canActivate: [AuthGuard] },
     { path: 'lote/:id/registros-plagas', component: RegistroPlagasComponent, canActivate: [AuthGuard] },
-    { path: 'lote/:id/estado-fitosanitario', component: EstadoFitosanitarioComponent, canActivate: [AuthGuard]},
+    { path: 'estado-fitosanitario', component: EstadoFitosanitarioComponent, canActivate: [AuthGuard]},
     { path: 'listado-plagas',component: ListadoPlagasComponent, canActivate: [AuthGuard]},
     { path: 'nueva-plaga', component: NuevaPlagaComponent, canActivate: [AuthGuard]},
     { path: 'nueva-plaga/:nombre_comun_plaga', component: NuevaPlagaComponent, canActivate: [AuthGuard]},

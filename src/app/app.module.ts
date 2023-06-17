@@ -60,6 +60,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
 import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
+import { AgmCoreModule } from '@agm/core';
 
 registerLocaleData(localeEs);
 
@@ -114,7 +115,11 @@ registerLocaleData(localeEs);
     MatInputModule,
     MatRadioModule,
     MatPaginatorModule,
-    MatSelectModule
+    MatSelectModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyAehXyt20Uk96hGhAhut0AteDFyaKG5eVY',
+      libraries: ['places']
+    }),
   ],
   providers: [
     {

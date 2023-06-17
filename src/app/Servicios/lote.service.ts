@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
 import { respuesta } from '../models/resp.model';
 import { map, catchError, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { EnfermedadNombre, EtapaEnfermedad } from '../models/enfermedadModel';
 
 const httpOptions = { 
     headers: new HttpHeaders({
@@ -12,7 +13,10 @@ const httpOptions = {
 @Injectable()
 export class LoteService{
 
-    private url_lote:string = 'http://localhost:3000/lote';
+    private url_lote:string = 'http://176.31.22.252:3000/lote';
+    private url_enfermedades:string = 'http://176.31.22.252:3000/enfermedades';
+    private url_etapas_enfermedades:string = 'http://176.31.22.252:3000/enfermedad-etapas';
+    private url_palmas_movil:string = 'http://176.31.22.252:3000/movil/palmas';
 
     constructor( private http: HttpClient, private handleError:HttpHandler) { }
 
@@ -33,7 +37,9 @@ export class LoteService{
         }
 
 
-
+        getPalmasLote(nombre:string){
+          return this.http.get(`${this.url_palmas_movil}/${nombre}`);
+        }       
 
 
 
@@ -99,5 +105,47 @@ export class LoteService{
             return this.enfermedades;
         }
 
+        getEnfermedadesServer(): Observable<EnfermedadNombre[]> {
+            return new Observable((observer) => {
+              this.http.get(this.url_enfermedades).subscribe(
+                (data: []) => {
+                  let newData: EnfermedadNombre[] = [];
+                  data.forEach((element) => {
+                    newData.push({
+                      nombre: element["nombre_enfermedad"],
+                    });
+                  });
+                  observer.next(newData);
+                  observer.complete();
+                },
+                (error) => {
+                  observer.error(error);
+                }
+              );
+            });
+          }
+
+          getEtapasServer(): Observable<EtapaEnfermedad[]> {
+            return new Observable((observer) => {
+              this.http.get(this.url_etapas_enfermedades).subscribe(
+                (data: []) => {
+                  let newData: EtapaEnfermedad[] = [];
+                  data.forEach((element) => {
+                    newData.push({
+                      nombre_enfermedad: element["nombre_enfermedad"],
+                      nombre_etapa: element["etapa_enfermedad"]
+                    });
+                  });
+                  observer.next(newData);
+                  observer.complete();
+                },
+                (error) => {
+                  observer.error(error);
+                }
+              );
+            });
+          }
+
+          
 
 }
