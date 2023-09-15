@@ -24,7 +24,7 @@
                 <div class="col-md-4">
                     <!-- <img src="assets/img/palma.PNG" alt="localización del lote en la finca"> -->
                     <!-- <kml-map></kml-map> -->
-                    <agm-map  [latitude]="latitute" [longitude]="longitude" [zoom]="zoom" [mapTypeId]="mapTypeId">
+                    <agm-map [latitude]="latitute" [longitude]="longitude" [zoom]="zoom" [mapTypeId]="mapTypeId">
                         <agm-kml-layer [url]="kmlUrl"></agm-kml-layer>
                     </agm-map>
                 </div>
@@ -54,7 +54,8 @@
     <p> Dar click en el botón para ver el: </p>
     <div class="container">
         <div class="row justify-content-center align-items-center btn-group mb-2" role="group">
-            <button (click)="verRegistros('/estado-fitosanitario')" type="button" class="btn btn-success mr-2 text-center">
+            <button (click)="verRegistros('/estado-fitosanitario')" type="button"
+                class="btn btn-success mr-2 text-center">
                 Estado Fitosanitario
             </button>
             <button [routerLink]="['estado-productivo']" type="button" class="btn btn-success mr-2 text-center">
@@ -62,16 +63,21 @@
             </button>
         </div>
     </div>
-
-
+    <!-- <div id='map'></div>
+    <agm-map [latitude]="latitute" [longitude]="longitude" [zoom]="zoom" [mapTypeId]="mapTypeId">
+        <agm-kml-layer [url]="kmlUrl"></agm-kml-layer>
+    </agm-map> -->
+      
     <hr>
     <br> <br>
     <h4> Gestión fitosanitaria </h4>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['aplicaciones']"> Aplicaciones </button>
+        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active"
+            [routerLink]="['aplicaciones']"> Aplicaciones </button>
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/censos')"> Censos </button>
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/')"> Plagas </button>
-        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/registro-enfermedades')"> Enfermedades </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/registro-enfermedades')">
+            Enfermedades </button>
         <button type="button" class="btn btn-outline-info mr-2"> Tratamientos </button>
         <button type="button" class="btn btn-outline-info mr-2"> Fertilizaciones </button>
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/podas')"> Podas </button>
