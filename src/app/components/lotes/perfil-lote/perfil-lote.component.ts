@@ -44,7 +44,7 @@ export class PerfilLoteComponent implements OnInit {
       }
     );
     this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
-    this.initMap();
+    // this.initMap();
   }
 
   initMap() {

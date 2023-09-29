@@ -13,10 +13,10 @@ const httpOptions = {
 @Injectable()
 export class LoteService{
 
-    private url_lote:string = 'http://176.31.22.252:3000/lote';
-    private url_enfermedades:string = 'http://176.31.22.252:3000/enfermedades';
-    private url_etapas_enfermedades:string = 'http://176.31.22.252:3000/enfermedad-etapas';
-    private url_palmas_movil:string = 'http://176.31.22.252:3000/movil/palmas';
+    private url_lote:string = 'http://127.0.0.1:3000/lote';
+    private url_enfermedades:string = 'http://127.0.0.1:3000/enfermedades';
+    private url_etapas_enfermedades:string = 'http://127.0.0.1:3000/enfermedad-etapas';
+    private url_palmas_movil:string = 'http://127.0.0.1:3000/movil/palmas';
 
     constructor( private http: HttpClient, private handleError:HttpHandler) { }
 
@@ -27,6 +27,10 @@ export class LoteService{
         getLote( nombre:string ) {
             return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
         }
+        getLoteMapaUrl( nombre:string ) {
+          return `${this.url_lote}/mapa/${nombre}`;
+          // return this.http.get(`${this.url_lote}/mapa/${nombre}`).pipe(map( data => data[0]));
+         }
 
         postLote(datosLote): Observable<respuesta> {
             return this.http.post<respuesta>(this.url_lote, datosLote).pipe(map( data => data ));

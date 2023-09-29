@@ -15,7 +15,8 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
 
-  private url_autenticacion:string = 'http://176.31.22.252:3000'; 
+  private url_autenticacion:string = 'http://127.0.0.1:3000'; 
+  // private url_autenticacion:string = 'http://127.0.0.1:3000'; 
   private loggedIn = new BehaviorSubject<boolean>(false);
   public usuario: UsuarioModel;
   private token: string;

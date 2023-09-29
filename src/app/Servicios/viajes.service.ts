@@ -17,7 +17,7 @@ const httpOptions = {
 
 export class ViajesService {
 
-  private url_lote:string = 'http://176.31.22.252:3000/viajes';
+  private url_lote:string = 'http://127.0.0.1:3000/viajes';
 
   constructor(private http: HttpClient, private handleError:HttpHandler) { }
 

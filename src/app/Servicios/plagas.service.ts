@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class PlagasService {
 
-  private url:string = 'http://176.31.22.252:3000';
+  private url:string = 'http://127.0.0.1:3000';
 
   constructor(private http: HttpClient) { }
   
