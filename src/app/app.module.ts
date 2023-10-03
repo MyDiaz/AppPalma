@@ -61,6 +61,7 @@ import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
 import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
 import { AgmCoreModule } from '@agm/core';
+import { ModalComponent } from './modal/modal.component';
 
 registerLocaleData(localeEs);
 
@@ -98,7 +99,8 @@ registerLocaleData(localeEs);
     PlateosComponent,
     ViajesComponent,
     CensosComponent,
-    HistoricoEnfermedadesComponent
+    HistoricoEnfermedadesComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,

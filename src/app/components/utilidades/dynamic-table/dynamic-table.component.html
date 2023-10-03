@@ -8,7 +8,9 @@
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns" (click)="row['callback']()"></mat-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"  class="mat-selection-row" [class.mat-selected]="selection.isSelected(row)"
+    (click)="selection.toggle(row); openModal(row)">
+  </mat-row>
 </mat-table>
 <div *ngIf="mostrarPaginador">
     <mat-paginator [pageSizeOptions]="[10, 15, 20]" showFirstLastButtons></mat-paginator>

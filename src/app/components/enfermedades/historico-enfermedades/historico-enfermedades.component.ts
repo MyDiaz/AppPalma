@@ -52,7 +52,6 @@ export class HistoricoEnfermedadesComponent implements OnInit {
     { columnDef: "nombre_lote", header: "Lote" },
     { columnDef: "fecha_registro_enfermedad", header: "Fecha" },
     { columnDef: "observacion_registro_enfermedad", header: "Observación" },
-    { columnDef: "imagenes_registro_enfermedad", header: "Imagenes" },
   ];
 
   // columnsCosechasDetalle = [
