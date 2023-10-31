@@ -1,3 +1,74 @@
-<h5> Registro de <b>aplicaciones</b> del mes en curso: </h5>
+<div *ngIf="bandera_error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
+</div>
 
-<p> Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet incidunt itaque nobis architecto ullam aliquid dolore quod, nam esse! Sit ullam assumenda recusandae velit maxime esse voluptatem? Quas, inventore. Delectus!</p>
+<div *ngIf="!bandera_error" style="height: 80%">
+
+    <div *ngIf="cargando" class="container mt-5" style="height: 80%">
+        <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+            <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="!cargando" class="container">
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-md-9">
+                    <h3> Histórico de aplicaciones </h3>
+                </div>
+                <div class="col-md-3 mt-3">
+                    <app-fecha> </app-fecha>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <p>A continuación, seleccione la fecha para ver registros. </p>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Ingrese un rango de fechas</mat-label>
+                        <mat-date-range-input [rangePicker]="picker" [formGroup]="range">
+                            <input formControlName="start" matStartDate placeholder="fecha inicio" (dateChange)="filtroEstadoHistoricoTratamientos()">
+                            <input formControlName="end" matEndDate placeholder="fecha fin" (dateChange)="filtroEstadoHistoricoTratamientos()">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
+                    <!-- <p>Selected range: {{range.value | json}}</p> -->
+                </div>
+                <form [formGroup]="procesoHistoricoTratamientos" (ngSubmit)="submit()">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field appearance="fill" >
+                                <mat-label>Select me</mat-label>
+                                <!-- <mat-select > Ningún </mat-select> *ngIf="filtradas == 'encontro'"-->
+                                <mat-select formControlName="nombreLote" >
+                                <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoHistoricoTratamientos()">{{ lote.nombre_lote }}</mat-option>
+                                </mat-select>
+                                <mat-hint align="end">Seleccione el LOTE del cual quiere ver registros</mat-hint>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+            <div class="col-md-12 mt-4" >
+                <app-dynamic-table [dataSource]="estadoHistoricoTratamientos" [columns]="columnsHistoricoTratamientos" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
+                <!-- <p>Para consultar el detalle del HE de clic en el registro.</p> -->
+            </div>
+
+            <!--El detalle de cada registro de una cosecha-->
+            <!-- <div class="col-md-12 mt-4" *ngIf="mostrarTablaDetalle && filtradas == 'encontro'">
+                <app-dynamic-table [dataSource]="detallePoda" [columns]="columnsCosechasDetalle" [mostrarPaginador]="mostrarPaginadorDetalle"> </app-dynamic-table>
+            </div> -->
+
+            <div *ngIf="filtradas == 'noEncontro'" class="col-md-12 mt-4">
+                <hr>
+                <h3 align="center"> No hay registros para los valores indicados. </h3>
+            </div>
+        </div>
+    </div>
