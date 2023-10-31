@@ -17,8 +17,6 @@ const httpOptions = {
 
 export class ViajesService {
 
-  private url_lote:string = 'http://localhost:3000/viajes';
-
   constructor(private http: HttpClient, private handleError:HttpHandler) { }
 
   getViajes(){

@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpHandler } from '@angular/common/http';
 import { respuesta } from '../models/resp.model';
 import { map, catchError, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
+import { environment } from '../../environments/environment'; 
+
 
 const httpOptions = { 
     headers: new HttpHeaders({
@@ -12,24 +14,22 @@ const httpOptions = {
 @Injectable()
 export class LoteService{
 
-    private url_lote:string = 'http://localhost:3000/lote';
-
     constructor( private http: HttpClient, private handleError:HttpHandler) { }
 
         getLotes(){
-            return this.http.get(this.url_lote);
+            return this.http.get(`${environment.url}/lote`);
         }
 
         getLote( nombre:string ) {
-            return this.http.get(`${this.url_lote}/${nombre}`).pipe(map( data => data[0]));
+            return this.http.get(`${environment.url}/lote/${nombre}`).pipe(map( data => data[0]));
         }
 
         postLote(datosLote): Observable<respuesta> {
-            return this.http.post<respuesta>(this.url_lote, datosLote).pipe(map( data => data ));
+            return this.http.post<respuesta>(environment.url, datosLote).pipe(map( data => data ));
         }
 
         putLote(datosLote, nombre:string): Observable<respuesta> {
-            return this.http.put<respuesta>(`${this.url_lote}/${nombre}`, datosLote).pipe(map( data => data ));
+            return this.http.put<respuesta>(`${environment.url}/${nombre}`, datosLote).pipe(map( data => data ));
         }
 
 

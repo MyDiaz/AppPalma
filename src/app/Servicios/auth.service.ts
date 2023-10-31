@@ -9,13 +9,13 @@ import { respuesta } from '../models/resp.model';
 import jwtDecode, { JwtPayload } from "jwt-decode";
 import { UsuarioModel } from '../models/usuario.models';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private url_autenticacion:string = 'http://localhost:3000'; 
   private loggedIn = new BehaviorSubject<boolean>(false);
   public usuario: UsuarioModel;
   private token: string;
@@ -23,7 +23,7 @@ export class AuthService {
   constructor( private http: HttpClient, private router:Router ) { }
 
   registrarUsuario ( usuario ): Observable<respuesta> {
-    return this.http.post<respuesta>(`${this.url_autenticacion}/registro`, usuario)
+    return this.http.post<respuesta>(`${environment.url}/registro`, usuario)
     .pipe(map (resp =>{
         return resp;
       })
@@ -37,7 +37,7 @@ export class AuthService {
   
 
   login( cc_usuario: string, contrasena_usuario:string ){
-    return this.http.post(`${this.url_autenticacion}/login`, {cc_usuario, contrasena_usuario})
+    return this.http.post(`${environment.url}/login`, {cc_usuario, contrasena_usuario})
     .pipe( map (resp => {
         this.guardarToken(resp);
         this.loggedIn.next(true);
@@ -56,7 +56,7 @@ export class AuthService {
         return resolve(false);
       }
 
-      this.http.get(`${this.url_autenticacion}/token`, {headers: this.getHeaders()}).subscribe((resp: any) => {
+      this.http.get(`${environment.url}/token`, {headers: this.getHeaders()}).subscribe((resp: any) => {
         if (resp.success) {
           this.usuario = resp.result;
           resolve(true);
