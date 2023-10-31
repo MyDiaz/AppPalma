@@ -63,11 +63,11 @@
     <br> <br>
     <h4> Gestión fitosanitaria </h4>
     <div class="btn-group" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['aplicaciones']"> Aplicaciones </button>
+        <!-- <button type="button" class="btn btn-outline-info mr-2" routerLinkActive="active" [routerLink]="['aplicaciones']"> Aplicaciones </button> -->
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/censos')"> Censos </button>
-        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/')"> Plagas </button>
+        <!-- <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/')"> Plagas </button> -->
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/registro-enfermedades')"> Enfermedades </button>
-        <button type="button" class="btn btn-outline-info mr-2"> Tratamientos </button>
+        <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/registro-tratamientos')"> Tratamientos </button>
         <button type="button" class="btn btn-outline-info mr-2"> Fertilizaciones </button>
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/podas')"> Podas </button>
         <button type="button" class="btn btn-outline-info mr-2" (click)="verRegistros('/plateos')"> Plateos </button>
