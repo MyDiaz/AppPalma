@@ -4,4 +4,5 @@ export class LoteModel{
       hectareas: number; 
       numero_palmas: number;  
       material_siembra: string;
+      mapa: Uint8Array;
 }

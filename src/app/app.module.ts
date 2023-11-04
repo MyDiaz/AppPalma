@@ -61,6 +61,8 @@ import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
 import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
 //import { HistoricoPlagasComponent } from './components/plagas/historico-plagas/historico-plagas.component';
+import { AgmCoreModule } from '@agm/core';
+import { ModalComponent } from './modal/modal.component';
 
 registerLocaleData(localeEs);
 
@@ -98,8 +100,9 @@ registerLocaleData(localeEs);
     PlateosComponent,
     ViajesComponent,
     CensosComponent,
-    HistoricoEnfermedadesComponent
     //,HistoricoPlagasComponent
+    HistoricoEnfermedadesComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,
@@ -116,7 +119,11 @@ registerLocaleData(localeEs);
     MatInputModule,
     MatRadioModule,
     MatPaginatorModule,
-    MatSelectModule
+    MatSelectModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyAehXyt20Uk96hGhAhut0AteDFyaKG5eVY',
+      libraries: ['places']
+    }),
   ],
   providers: [
     {

@@ -1,0 +1,53 @@
+.enf-seleccionada {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.results {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+}
+.row-text {
+  width: 150px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 10px;
+  align-items: center;
+}
+
+.row-text p {
+  color: #fff;
+}
+
+.firstData {
+  display: flex;
+  flex-direction: row;
+}
+
+.card {
+  padding: 15px;
+  width: 180px;
+  display: flex;
+  align-items: center;
+  height: 80px;
+}
+.card-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.card-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.datosgenerales {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}

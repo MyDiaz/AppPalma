@@ -5,6 +5,7 @@ import { map, catchError, retry } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment'; 
 
+import { EnfermedadNombre, EtapaEnfermedad } from '../models/enfermedadModel';
 
 const httpOptions = { 
     headers: new HttpHeaders({
@@ -23,6 +24,10 @@ export class LoteService{
         getLote( nombre:string ) {
             return this.http.get(`${environment.url}/lote/${nombre}`).pipe(map( data => data[0]));
         }
+        getLoteMapaUrl( nombre:string ) {
+          return `${environment.url}/lote/mapa/${nombre}`;
+          // return this.http.get(`${this.url_lote}/mapa/${nombre}`).pipe(map( data => data[0]));
+         }
 
         postLote(datosLote): Observable<respuesta> {
             return this.http.post<respuesta>(environment.url, datosLote).pipe(map( data => data ));
@@ -33,7 +38,9 @@ export class LoteService{
         }
 
 
-
+        getPalmasLote(nombre:string){
+          return this.http.get(`${environment.url}/movil/palmas/${nombre}`);
+        }       
 
 
 
@@ -99,5 +106,47 @@ export class LoteService{
             return this.enfermedades;
         }
 
+        getEnfermedadesServer(): Observable<EnfermedadNombre[]> {
+            return new Observable((observer) => {
+              this.http.get(`${environment.url}/enfermedades`).subscribe(
+                (data: []) => {
+                  let newData: EnfermedadNombre[] = [];
+                  data.forEach((element) => {
+                    newData.push({
+                      nombre: element["nombre_enfermedad"],
+                    });
+                  });
+                  observer.next(newData);
+                  observer.complete();
+                },
+                (error) => {
+                  observer.error(error);
+                }
+              );
+            });
+          }
+
+          getEtapasServer(): Observable<EtapaEnfermedad[]> {
+            return new Observable((observer) => {
+              this.http.get(`${environment.url}/enfermedad-etapas`).subscribe(
+                (data: []) => {
+                  let newData: EtapaEnfermedad[] = [];
+                  data.forEach((element) => {
+                    newData.push({
+                      nombre_enfermedad: element["nombre_enfermedad"],
+                      nombre_etapa: element["etapa_enfermedad"]
+                    });
+                  });
+                  observer.next(newData);
+                  observer.complete();
+                },
+                (error) => {
+                  observer.error(error);
+                }
+              );
+            });
+          }
+
+          
 
 }

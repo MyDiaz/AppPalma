@@ -1,0 +1,21 @@
+<h1>Imagenes del registro</h1>
+<!-- Mostrar el loading si loading es true -->
+<br />
+<div *ngIf="loading"  class="loading-container">
+<br />
+<div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
+</div>
+
+<!-- Mostrar las imágenes si loading es false -->
+<div *ngIf="!loading">
+  <div *ngFor="let imageUrl of imageUrls">
+    <img [src]="imageUrl" alt="Image" height="350" width="250">
+  </div>
+</div>
+<br />
+<p>Observaciones</p>
+<p>{{observaciones !== null ? observaciones : 'No hay observaciones disponibles'}}</p>
+<br />
+<button mat-button (click)="close()">Cerrar</button>

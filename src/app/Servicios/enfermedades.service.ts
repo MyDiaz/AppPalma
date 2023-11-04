@@ -67,4 +67,12 @@ export class EnfermedadesService {
     return this.http.get<any>(`${environment.url}/registro-enfermedades`).pipe(map( data => data));
   }
 
+  filtrarEnfermedades(){
+    
+  }
+
+  getImagenesRegistroEnfermedad(id:string ){
+    return this.http.get<any>(`${this.url}/registro-enfermedades/imagenes/${id}`).pipe(map( data => data));
+  }
+
 }
