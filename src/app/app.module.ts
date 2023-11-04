@@ -60,6 +60,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
 import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
+//import { HistoricoPlagasComponent } from './components/plagas/historico-plagas/historico-plagas.component';
 
 registerLocaleData(localeEs);
 
@@ -98,6 +99,7 @@ registerLocaleData(localeEs);
     ViajesComponent,
     CensosComponent,
     HistoricoEnfermedadesComponent
+    //,HistoricoPlagasComponent
   ],
   imports: [
     BrowserModule,
