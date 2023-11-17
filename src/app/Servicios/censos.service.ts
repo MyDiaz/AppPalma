@@ -12,5 +12,9 @@ export class CensosService {
 
   getCensos() {
     return this.http.get<any>(`${environment.url}/censos`).pipe(map( data => data));
-}
+  }
+
+  getImagenesCenso(id:string ){
+    return this.http.get<any>(`${environment.url}/censos/imagenes/${id}`).pipe(map( data => data));
+  }
 }

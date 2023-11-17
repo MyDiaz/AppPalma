@@ -2,15 +2,17 @@ import { AfterViewInit, Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
 import { LoteService } from "../../../Servicios/lote.service";
+
 @Component({
   selector: "app-lote",
   templateUrl: "./perfil-lote.component.html",
   styleUrls: ["./perfil-lote.component.css"],
 })
 export class PerfilLoteComponent implements OnInit {
+  kmlUrlObject: string;
   kmlUrl: string;
-  latitute = 6.8989732;
-  longitude = -73.62945;
+  latitute = 0;
+  longitude = 0;
   mapTypeId = "satellite";
   lote: any = {};
   nombre_lote: string;
@@ -18,6 +20,7 @@ export class PerfilLoteComponent implements OnInit {
   mensaje_error: string;
   zoom = 16;
   map: google.maps.Map<HTMLElement>;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private _loteService: LoteService,
@@ -32,6 +35,7 @@ export class PerfilLoteComponent implements OnInit {
     this._loteService.getLote(this.nombre_lote).subscribe(
       (data) => {
         this.lote = data;
+        console.log(data);
       },
       (error) => {
         this.bandera_error = true;
@@ -43,7 +47,10 @@ export class PerfilLoteComponent implements OnInit {
         }
       }
     );
+   
     this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
+    const blob = new Blob([this.kmlUrl], { type: 'application/xml' });
+      this.kmlUrlObject = URL.createObjectURL(blob);
     // this.initMap();
   }
 

@@ -73,23 +73,16 @@ export class CensosComponent implements OnInit {
   ngOnInit(): void {
     this._censosService.getCensos().subscribe(
       data => {
+
         this.censos = data.map( element => { 
-          // if( element.presencia_lote ){
-          //   element.presencia_lote = ' X'
-          // }else{
-          //   element.presencia_lote = ''
-          // }
-          // if( element.presencia_sector ){
-          //   element.presencia_sector = ' X'
-          // }else{
-          //   element.presencia_sector = ''
-          // }
           element.fechaCenso = new Date (element.fecha_censo); 
           element.fecha_censo = moment(element.fechaCenso).locale('es').format('LL');
           element.estado_censo = element.estado_censo.toUpperCase();
           element.nombre_comun_plaga = element.nombre_comun_plaga.charAt(0).toUpperCase() + element.nombre_comun_plaga.slice(1);
           element.nombre_etapa_plaga = element.nombre_etapa_plaga.charAt(0).toUpperCase() + element.nombre_etapa_plaga.slice(1);
-          element.observacion_censo = element.observacion_censo.toLowerCase();
+          if (element.observacion_censo !== null) {
+            element.observacion_censo = element.observacion_censo.toLowerCase();
+          }
           return element
         });
         this.cargando = false;

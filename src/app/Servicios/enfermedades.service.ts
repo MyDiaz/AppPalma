@@ -72,7 +72,7 @@ export class EnfermedadesService {
   }
 
   getImagenesRegistroEnfermedad(id:string ){
-    return this.http.get<any>(`${this.url}/registro-enfermedades/imagenes/${id}`).pipe(map( data => data));
+    return this.http.get<any>(`${environment.url}/registro-enfermedades/imagenes/${id}`).pipe(map( data => data));
   }
 
 }

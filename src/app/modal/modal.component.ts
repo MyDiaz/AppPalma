@@ -3,6 +3,7 @@ import { Component, OnInit, Inject } from "@angular/core";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import { EnfermedadesService } from "../Servicios/enfermedades.service";
 import { DomSanitizer,SafeUrl  } from '@angular/platform-browser';
+import { CensosService } from "../Servicios/censos.service";
 @Component({
   selector: "app-modal",
   templateUrl: './modal.component.html',
@@ -19,30 +20,45 @@ export class ModalComponent implements OnInit{
     @Inject(MAT_DIALOG_DATA) public data: any,
     private dialogRef: MatDialogRef<ModalComponent>,
     public enfermedadesService: EnfermedadesService,
+    public censosService: CensosService,
     private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit() {
-    console.log('this.data');
-    console.log(this.data);
-    this.observaciones = this.data.rowData.observacion_registro_enfermedad;
-    console.log('observaciones',this.observaciones);
-    this.enfermedadesService.getImagenesRegistroEnfermedad(this.data.rowData.id_registro_enfermedad).subscribe(
-      (response) => {
-        response.forEach(r => {
-        console.log('r', r);
-        // const imageUrl = this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + r.imagen.data);
-        //   this.imageUrls.push(imageUrl);
-        const blob = new Blob([new Uint8Array(r.imagen.data)], { type: 'image/png' });
-        this.imageUrls.push(this.sanitizeUrl(URL.createObjectURL(blob)));
-        });
-        console.log('urls', this.imageUrls);
-        this.loading = false;
-      },
-      (error) => {
-        this.mensaje_error = error.error.message;
-      }
-    );
+    if(this.data.rowData.id_censo !== null){
+
+      this.observaciones = this.data.rowData.observacion_censo;
+      this.censosService.getImagenesCenso(this.data.rowData.id_censo).subscribe(
+        (response) => {
+          response.forEach(r => {
+          const blob = new Blob([new Uint8Array(r.imagen.data)], { type: 'image/png' });
+          this.imageUrls.push(this.sanitizeUrl(URL.createObjectURL(blob)));
+          });
+          console.log('urls', this.imageUrls);
+          this.loading = false;
+        },
+        (error) => {
+          this.mensaje_error = error.error.message;
+        }
+      );
+    } else if(this.data.rowData.id_registro_enfermedad !== null ){
+
+      this.observaciones = this.data.rowData.observacion_registro_enfermedad;
+      this.enfermedadesService.getImagenesRegistroEnfermedad(this.data.rowData.id_registro_enfermedad).subscribe(
+        (response) => {
+          response.forEach(r => {
+          const blob = new Blob([new Uint8Array(r.imagen.data)], { type: 'image/png' });
+          this.imageUrls.push(this.sanitizeUrl(URL.createObjectURL(blob)));
+          });
+          console.log('urls', this.imageUrls);
+          this.loading = false;
+        },
+        (error) => {
+          this.mensaje_error = error.error.message;
+        }
+      );
+    }
+
   }
 
   sanitizeUrl(url: string) {

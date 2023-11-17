@@ -91,7 +91,6 @@ export class HistoricoEnfermedadesComponent implements OnInit {
         });
         this.cargando = false;
         console.log("H.E. = ", this.historicoEnfermedades);
-        this.filtroEstadoHistoricoEnfermedades();
       },
       (error) => {
         console.log("Error en el consumo de HE", error);
