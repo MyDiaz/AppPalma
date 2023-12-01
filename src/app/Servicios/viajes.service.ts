@@ -22,4 +22,8 @@ export class ViajesService {
   getViajes(){
     return this.http.get<any>(`${environment.url}/viajes`).pipe(map( data => data));
   }
+
+  getCensoProductivo(){
+    return this.http.get<any>(`${environment.url}/censo-productivo`).pipe(map( data => data));
+  }
 }

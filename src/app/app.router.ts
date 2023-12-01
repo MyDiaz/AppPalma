@@ -24,6 +24,7 @@ import { PlateosComponent } from './components/plateos/plateos.component';
 import { ViajesComponent } from './components/viajes/viajes.component';
 import { CensosComponent } from './components/censos/censos.component';
 import { HistoricoEnfermedadesComponent } from './components/enfermedades/historico-enfermedades/historico-enfermedades.component';
+import { CensoProductivoComponent } from './components/censo-productivo/censo-productivo.component';
 //import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.component';
 //rutas para el acceso
 import { RegistroComponent } from './acceso/registro/registro.component';
@@ -64,6 +65,7 @@ const APP_ROUTES: Routes = [
     { path: 'censos', component: CensosComponent, canActivate: [AuthGuard]},
     { path: 'registro-enfermedades', component: HistoricoEnfermedadesComponent, canActivate: [AuthGuard]},
     { path: 'registro-tratamientos', component: AplicacionesComponent, canActivate : [AuthGuard]},
+    { path: 'censo-productivo', component: CensoProductivoComponent, canActivate: [AuthGuard]},
     { path: 'usuario', component: UsuariosComponent, canActivate: [AuthGuard]},
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
     
