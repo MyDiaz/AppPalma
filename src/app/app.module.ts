@@ -64,6 +64,7 @@ import { HistoricoEnfermedadesComponent } from './components/enfermedades/histor
 import { AgmCoreModule } from '@agm/core';
 import { ModalComponent } from './modal/modal.component';
 import { CensoProductivoComponent } from './components/censo-productivo/censo-productivo.component';
+import { environment } from 'src/environments/environment';
 
 registerLocaleData(localeEs);
 
@@ -123,7 +124,7 @@ registerLocaleData(localeEs);
     MatPaginatorModule,
     MatSelectModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyAehXyt20Uk96hGhAhut0AteDFyaKG5eVY',
+      apiKey: environment.agmApiKey,
       libraries: ['places']
     }),
   ],

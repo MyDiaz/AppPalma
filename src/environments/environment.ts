@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   //url : 'http://176.31.22.252:3000'
-  url : 'http://localhost:3000'
+  url : 'http://localhost:3000',
+  agmApiKey: 'AIzaSyAlS_YTxKTDcTX72gBIwgZvAQHD1QOUauw',
 };
 
 /*

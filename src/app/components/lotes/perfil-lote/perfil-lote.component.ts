@@ -11,8 +11,8 @@ import { LoteService } from "../../../Servicios/lote.service";
 export class PerfilLoteComponent implements OnInit {
   kmlUrlObject: string;
   kmlUrl: string;
-  latitute = 0;
-  longitude = 0;
+  latitute = 6.899444;
+  longitude = -73.634722;
   mapTypeId = "satellite";
   lote: any = {};
   nombre_lote: string;
@@ -47,33 +47,33 @@ export class PerfilLoteComponent implements OnInit {
         }
       }
     );
-   
+
     this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
     const blob = new Blob([this.kmlUrl], { type: 'application/xml' });
       this.kmlUrlObject = URL.createObjectURL(blob);
     // this.initMap();
   }
 
-  initMap() {
-    this.map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 10,
-    });
+  // initMap() {
+  //   this.map = new google.maps.Map(document.getElementById("map"), {
+  //     zoom: 10,
+  //   });
 
-    var layer1 = new google.maps.KmlLayer({
-      url: this.kmlUrl,
-      preserveViewport: true,
-      map: this.map,
-    });
-    google.maps.event.addListener(
-      layer1,
-      "defaultviewport_changed",
-      function () {
-        var getCenter = layer1.getDefaultViewport().getCenter();
-        this.map.setCenter(getCenter);
-        console.log(getCenter.toUrlValue(6));
-      }
-    );
-  }
+  //   var layer1 = new google.maps.KmlLayer({
+  //     url: this.kmlUrl,
+  //     preserveViewport: true,
+  //     map: this.map,
+  //   });
+  //   google.maps.event.addListener(
+  //     layer1,
+  //     "defaultviewport_changed",
+  //     function () {
+  //       var getCenter = layer1.getDefaultViewport().getCenter();
+  //       this.map.setCenter(getCenter);
+  //       console.log(getCenter.toUrlValue(6));
+  //     }
+  //   );
+  // }
 
   verRegistros(donde: string) {
     this.router.navigate([donde], { queryParams: { lote: this.nombre_lote } });
@@ -82,5 +82,5 @@ export class PerfilLoteComponent implements OnInit {
   verLoteEditar(nombre: string) {
     this.router.navigate(["/editar-lote", nombre]);
   }
- 
+
 }
