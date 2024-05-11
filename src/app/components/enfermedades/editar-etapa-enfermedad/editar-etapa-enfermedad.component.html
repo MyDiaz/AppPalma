@@ -23,7 +23,7 @@
     <form class="mt-3 row" [formGroup]="editarEnfermedadEtapaForm" (ngSubmit)="actualizarEnfermedad()">
 
         <div class="col-12 form-group">
-            <label> Nombre </label>
+            <label> Nomsbre </label>
             <input type="text" class="form-control" formControlName="nombre_enfermedad">
         </div>
 
@@ -37,13 +37,13 @@
             <tbody>
                 <tr>
                     <td class="form-group" formArrayName="etapas_enfermedad">
-                        <div *ngFor="let control of Etapas.controls; let i = index">
-                            <input class="form-control mt-2" type="textarea" [formGroupName]="i">
+                        <div *ngFor="let control of etapasEnfermedad.controls; let i = index">
+                            <input class="form-control mt-2" type="textarea" [formControlName]="i">
                         </div>
                     </td>
                     <td class="form-group" formArrayName="tratamientos_etapa_enfermedad">
-                        <div *ngFor="let control of Tratamientos.controls; let j = index">
-                            <input class="form-control mt-2" type="text" [formGroupName]="j">
+                        <div *ngFor="let control of tratamientosEtapa.controls; let j = index">
+                            <input class="form-control mt-2" type="text" [formControlName]="j">
                         </div>
                     </td>
                 </tr>
@@ -66,7 +66,7 @@
                     <div *ngFor="let control of Etapas.controls; let i = index">
                         <input class="form-control" type="text" [formGroupName]="i">
                         <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
-                        Ingrese un nombre 
+                        Ingrese un nombre
                     </small>
                     </div>
                 </div>
@@ -74,7 +74,7 @@
                     <div *ngFor="let control of Tratamientos.controls; let j = index">
                         <input class="form-control" type="text" [formGroupName]="j">
                         <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
-                        Ingrese un nombre 
+                        Ingrese un nombre
                     </small>
                     </div>
                 </div>
@@ -83,10 +83,10 @@
 
         <!--[routerLink]="['/listado-enfermedad']" *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
         <button type="submit" class="btn btn-success">
-                <i class="fas fa-save"></i> Guardar 
+                <i class="fas fa-save"></i> Guardar
             </button>
-        <button [routerLink]="['/listado-enfermedad']" class="btn btn-danger ml-2"> 
-                <i class="fas fa-arrow-circle-left"></i> Cancelar 
+        <button [routerLink]="['/listado-enfermedad']" class="btn btn-danger ml-2">
+                <i class="fas fa-arrow-circle-left"></i> Cancelar
             </button>
     </form>
 

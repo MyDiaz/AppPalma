@@ -8,5 +8,7 @@ if (environment.production) {
   enableProdMode();
 }
 
+const apiKey = environment.agmApiKey;
+
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.error(err));

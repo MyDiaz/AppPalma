@@ -15,13 +15,13 @@ export class LoginComponent implements OnInit {
   LoginUserForm: FormGroup;
   usuario: UsuarioModel = new UsuarioModel();
   recuerdame = false;
-  
+
   constructor(private auth: AuthService, private router:Router,
      private fb: FormBuilder) {
-       
+
       this.LoginUserForm = new FormGroup({
         cc_usuario         : new FormControl(),
-        contrasena_usuario : new FormControl() 
+        contrasena_usuario : new FormControl()
      });
       }
 
@@ -63,14 +63,16 @@ export class LoginComponent implements OnInit {
           this.auth.guardarToken(resp);
           //login valido
           Swal.close();
-          this.router.navigate(['/lotes']);   
+          this.router.navigate(['/lotes']);
           //
           //recordar contraseña
           /*if(this.recuerdame){
             localStorage.setItem('correo_usuario', this.correo_usuario);
           }*/
-          
+
         }, (err)=> {
+          console.log("err");
+          console.log(err);
           console.log("errorLogin",err.error.message);
           Swal.fire({
             icon: 'error',
@@ -78,8 +80,8 @@ export class LoginComponent implements OnInit {
             text: err.error.message
           });
         });
-        
-     } 
+
+     }
     }
   }
 
