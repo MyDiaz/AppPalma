@@ -23,7 +23,7 @@ export class AuthService {
   constructor( private http: HttpClient, private router:Router ) { }
 
   registrarUsuario ( usuario ): Observable<respuesta> {
-    return this.http.post<respuesta>(`${environment.url}/registro`, usuario)
+    return this.http.post<respuesta>(`${environment.url}/usuarios`, usuario)
     .pipe(map (resp =>{
         return resp;
       })

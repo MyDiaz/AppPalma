@@ -1,0 +1,94 @@
+<div *ngIf="!cargando" class="container mt-5" style="height: 80%">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+        <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="cargando" class="container mt-5 mb-5">
+    <div class="row">
+        <h4> Usuarios </h4>
+        <div class="col pr-0">
+            <app-fecha> </app-fecha>
+        </div>
+    </div>
+    <hr class="row mt-1">
+    <div *ngIf="hayUsuarios" class="row mb-5">
+        <p>Listado de usuarios activos </p>
+    </div>
+
+    <div *ngIf="bandera" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> {{ mensajeError }}
+    </div>
+
+    <div *ngIf="!hayUsuarios" class="alert alert-danger" role="alert">
+        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay usaarios registrados
+    </div>
+    <table *ngIf="hayUsuarios" class="table table-hover">
+        <thead>
+            <tr class="table-success row">
+                <th class="col-5"> Nombre completo </th>
+                <th class="col-2"> Cedula </th>
+                <th class="col-3"> Cargo </th>
+                <th class="col-1"></th>
+                <th class="col-1"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let usuario of usuarios; let i=index" class="row">
+                <td class="col-5">
+                    <label class="form-check-label">
+                    {{ usuario.nombre_usuario }} 
+                </label>
+                </td>
+                <td class="col-2">
+                    <label class="form-check-label"> 
+                    {{ usuario.cc_usuario }} 
+                    </label>
+                </td>
+                <td class="col-3">
+                    <label class="form-check-label"> 
+                    {{ usuario.cargo_empresa }} 
+                    </label>
+                </td>
+                <td class="col-1">
+                    <button
+                        class="btn btn-outline-info btn-block"
+                        (click)="editarUsuario(usuario.cc_usuario)"
+                        title="Editar usuario"
+                    >
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </td>
+                <td class="col-1">
+                    <button
+                        *ngIf="usuario.validado"
+                        class="btn btn-outline-warning btn-block"
+                        (click)="deshabilitarUsuario(usuario.cc_usuario)"
+                        title="Deshabilitar usuario"
+                    >
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <button
+                        *ngIf="!usuario.validado"
+                        class="btn btn-outline-warning btn-block"
+                        (click)="habilitarUsuario(usuario.cc_usuario)"
+                        title="Habilitar usuario"
+                    >
+                        <i class="fas fa-check"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <hr class="row mt-1">
+    <div class="row">
+        <div class="col">
+            <button type="button" class="btn btn-outline-info btn-block" (click)="nuevoUsuario()">
+        <i class="fas fa-plus-circle"></i>
+            Añadir usuario 
+        </button>
+        </div>
+    </div>
+</div>

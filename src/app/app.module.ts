@@ -64,6 +64,7 @@ import { HistoricoEnfermedadesComponent } from './components/enfermedades/histor
 import { AgmCoreModule } from '@agm/core';
 import { ModalComponent } from './modal/modal.component';
 import { CensoProductivoComponent } from './components/censo-productivo/censo-productivo.component';
+import { ListadoUsuariosComponent } from './components/usuarios/listado-usuarios/listado-usuarios.component';
 
 registerLocaleData(localeEs);
 
@@ -104,7 +105,8 @@ registerLocaleData(localeEs);
     //,HistoricoPlagasComponent
     HistoricoEnfermedadesComponent,
     ModalComponent,
-    CensoProductivoComponent
+    CensoProductivoComponent,
+    ListadoUsuariosComponent
   ],
   imports: [
     BrowserModule,

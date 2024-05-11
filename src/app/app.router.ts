@@ -32,12 +32,14 @@ import { LoginComponent } from './acceso/login/login.component';
 
 //usuarios
 import { UsuariosComponent} from './components/usuarios/usuarios.component';
+import { ListadoUsuariosComponent } from './components/usuarios/listado-usuarios/listado-usuarios.component';
 import { EditarEtapaEnfermedadComponent } from './components/enfermedades/editar-etapa-enfermedad/editar-etapa-enfermedad.component';
 
 //guardias
 import { AuthGuard } from '../app/acceso/guardias/auth.guard'
 const APP_ROUTES: Routes = [
-    { path: 'registro', component: RegistroComponent },
+    { path: 'nuevo-usuario', component: RegistroComponent },
+    { path: 'editar-usuario/:cc_usuario', component: RegistroComponent },
     { path: 'login'   , component: LoginComponent},
     { path: 'lotes', component: LotesComponent, canActivate: [AuthGuard]},
     { path: 'nuevo-lote', component: NuevoLoteComponent, canActivate: [AuthGuard]},
@@ -67,6 +69,7 @@ const APP_ROUTES: Routes = [
     { path: 'registro-tratamientos', component: AplicacionesComponent, canActivate : [AuthGuard]},
     { path: 'censo-productivo', component: CensoProductivoComponent, canActivate: [AuthGuard]},
     { path: 'usuario', component: UsuariosComponent, canActivate: [AuthGuard]},
+    { path: 'listado-usuarios', component: ListadoUsuariosComponent, canActivate: [AuthGuard]},
     { path: '**', pathMatch: 'full', redirectTo: 'login'}
     
 ];

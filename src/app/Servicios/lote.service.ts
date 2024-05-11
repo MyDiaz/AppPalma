@@ -30,7 +30,7 @@ export class LoteService {
   }
 
   postLote(datosLote): Observable<respuesta> {
-    return this.http.post<respuesta>(environment.url, datosLote).pipe(map(data => data));
+    return this.http.post<respuesta>(`${environment.url}/lote`, datosLote).pipe(map(data => data));
   }
 
   putLote(datosLote, nombre: string): Observable<respuesta> {

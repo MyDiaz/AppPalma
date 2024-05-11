@@ -3,8 +3,11 @@
         <div class="wrap-login100 p-t-50 p-b-90">
             <form [formGroup]="NuevoUserForm" (ngSubmit)="guardar()" class="login100-form validate-form flex-sb flex-w">
 
-                <span class="login100-form-title p-b-51">
-                        Crear nueva cuenta
+                <span *ngIf="usuarioNuevo"class="login100-form-title p-b-51">
+                    Agregar Usuario
+                </span>
+                <span *ngIf="!usuarioNuevo"class="login100-form-title p-b-51">
+                    Editar Usuario
                 </span>
 
                 <span *ngIf="ccUsuarioNoValido" class="text-danger animated fadeIn">La cédula es obligatoria y debe estar compuesta por números</span>
@@ -19,12 +22,35 @@
                     <span class="focus-input100"></span>
                 </div>
 
-                <span *ngIf="cargoNoValido" class="text-danger ">Debe ingresar el cargo</span>
+                <span *ngIf="telefonoNoValido" class="text-danger animated fadeIn">El teléfono es obligatorio y debe tener 10 dígitos</span>
+                <div class="wrap-input100 m-b-16">
+                    <input class="input100 form-control" type="text" formControlName="telefono" placeholder="Teléfono">
+                    <span class="focus-input100"></span>
+                </div>
+
+                <span *ngIf="emailNoValido" class="text-danger animated fadeIn">El email ingresado no es válido</span>
+                <div class="wrap-input100 m-b-16">
+                    <input class="input100 form-control" type="text" formControlName="correo" placeholder="Correo electrónico">
+                    <span class="focus-input100"></span>
+                </div>
+
+                <span *ngIf="cargoNoValido" class="text-danger ">Debe ingresar un cargo válido</span>
                 <div class="wrap-input100 m-b-16">
                     <span class="focus-input100"></span>
-                    <select class="form-control input100" formControlName="cargo_empresa" [class.is-invalid]="cargoNoValido" placeholder="Cargo">
+                    <select class="form-control input100" formControlName="cargo_empresa" [class.is-invalid]="cargoNoValido">
+                        <option value="cargo"> [Cargo] </option>
                         <option value="Administrador"> Administrador </option>
                         <option value="Supervisor de campo"> Supervisor de campo </option>
+                    </select>
+                </div>
+
+                <span *ngIf="rolNoValido" class="text-danger ">Debe ingresar el rol indicando los permisos del usuario</span>
+                <div class="wrap-input100 m-b-16">
+                    <span class="focus-input100"></span>
+                    <select class="form-control input100" formControlName="rol" [class.is-invalid]="rolNoValido" placeholder="Permisos">
+                        <option value="rol"> [Permisos] </option>
+                        <option value="admin"> Administrador </option>
+                        <option value="user"> Usuario </option>
                     </select>
                 </div>
 
@@ -36,8 +62,8 @@
 
                 <div class="container-login100-form-btn m-t-17">
                     <button class="login100-form-btn" type="submit">
-                            Crear cuenta
-                        </button>
+                        Guardar
+                    </button>
                 </div>
 
             </form>
