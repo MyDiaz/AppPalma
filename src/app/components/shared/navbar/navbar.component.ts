@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/Servicios/auth.service';
-import { UsuarioService } from '../../../acceso/usuario.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router'
 import { UsuarioModel } from 'src/app/models/usuario.models';
+import { UsuariosService } from 'src/app/Servicios/usuarios.service';
 
 @Component({
   selector: 'app-navbar',
@@ -17,14 +17,8 @@ export class NavbarComponent implements OnInit {
   estaAutenticado$: Observable<boolean>;
   
   constructor(private authService: AuthService, private router:Router, 
-    private usuarioService:UsuarioService) { 
-      this.usuario = {
-        cc_usuario: "",
-        nombre_usuario: "",
-        rol: "",
-        cargo_empresa: "",
-        contrasena_usuario:""
-      } 
+    private usuarioService:UsuariosService) { 
+      this.usuario = new UsuarioModel();
     }
 
   ngOnInit() {

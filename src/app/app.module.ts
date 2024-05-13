@@ -62,12 +62,14 @@ import { CensosComponent } from "./components/censos/censos.component";
 import { HistoricoEnfermedadesComponent } from "./components/enfermedades/historico-enfermedades/historico-enfermedades.component";
 //import { HistoricoPlagasComponent } from './components/plagas/historico-plagas/historico-plagas.component';
 import { AgmCoreModule } from "@agm/core";
-import { ModalComponent } from "./modal/modal.component";
-import { CensoProductivoComponent } from "./components/censo-productivo/censo-productivo.component";
-import { environment } from "src/environments/environment";
 import { MatCardModule } from "@angular/material/card";
 import { DatePipe } from "@angular/common";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { ModalComponent } from "./modal/modal.component";
+import { CensoProductivoComponent } from "./components/censo-productivo/censo-productivo.component";
+import { ListadoUsuariosComponent } from "./components/usuarios/listado-usuarios/listado-usuarios.component";
+import { environment } from "src/environments/environment";
+
 registerLocaleData(localeEs);
 
 @NgModule({
@@ -108,6 +110,7 @@ registerLocaleData(localeEs);
     HistoricoEnfermedadesComponent,
     ModalComponent,
     CensoProductivoComponent,
+    ListadoUsuariosComponent,
   ],
   imports: [
     BrowserModule,
