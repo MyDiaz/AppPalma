@@ -2,13 +2,20 @@ import { Component, OnInit } from "@angular/core";
 import {
   FormBuilder,
   FormGroup,
-  FormControl,
   Validators,
   FormArray,
 } from "@angular/forms";
 import { Router, ActivatedRoute } from "@angular/router";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import Swal from "sweetalert2";
+
+type EtapaEnfermedad = {
+  id_etapa_enfermedad: number,
+  etapa_enfermedad: string,
+  nombre_enfermedad: string,
+  tratamiento_etapa_enfermedad?:string,
+  fue_borrado: boolean
+}
 
 @Component({
   selector: "app-editar-etapa-enfermedad",
@@ -17,7 +24,7 @@ import Swal from "sweetalert2";
 })
 export class EditarEtapaEnfermedadComponent implements OnInit {
   nombre_enfermedad: string;
-  enfermedad_etapas: any;
+  enfermedad_etapas: EtapaEnfermedad[];
   editarEnfermedadEtapaForm: FormGroup;
   cargando: boolean = false;
   error: boolean = false;
@@ -31,25 +38,21 @@ export class EditarEtapaEnfermedadComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe((params) => {
       this.nombre_enfermedad = params.get("nombre_enfermedad");
     });
-
-    this.enfermedadesService
-      .getEnfermedadEtapas(this.nombre_enfermedad)
-      .subscribe((data) => {
-        this.enfermedad_etapas = data;
-        this.cargando = true;
-        console.log("data", data);
-        this.crearEtapasEnfermedadForm();
-        console.log("data", this.editarEnfermedadEtapaForm.controls);
-        //this.patch();
-        //console.log("this.EtapasTratamientos",this.EtapasTratamientos);
-      });
     this.cargando = false;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.enfermedadesService
+      .getEnfermedadEtapas(this.nombre_enfermedad)
+      .subscribe((data: EtapaEnfermedad[]) => {
+        this.enfermedad_etapas = data;
+        this.crearEtapasEnfermedadForm();
+        this.cargando = true;
+      }
+    );
+  }
 
   crearEtapasEnfermedadForm() {
-    //if(this.nombre_enfermedad)
     this.editarEnfermedadEtapaForm = this.fb.group({
       ids_etapas_enfermedad: this.fb.array(
         this.enfermedad_etapas.map((a) => a.id_etapa_enfermedad)
@@ -65,30 +68,7 @@ export class EditarEtapaEnfermedadComponent implements OnInit {
         this.enfermedad_etapas.map((a) => a.tratamiento_etapa_enfermedad)
       ),
     });
-    /*}else{
-      this.editarEnfermedadEtapaForm = this.fb.group({
-        nombre_enfermedad:            this.fb.array(['']),
-        etapas_enfermedad:             this.fb.array(['']),
-        tratamientos_etapa_enfermedad: this.fb.array([''])
-      });
-    }*/
   }
-
-  /*patch() {
-    this.crearEtapasEnfermedadForm();
-    const control = <FormArray>this.editarEnfermedadEtapaForm.get('etapas_tratamientos');
-
-    this.enfermedad_etapas.forEach(x => {
-      control.push(this.patchValues(x.etapa_enfermedad, x.tratamiento_etapa_enfermedad))
-    })
-  }
-
-  patchValues(etapa_enfermedad, tratamiento_etapa_enfermedad) {
-    return this.fb.group({
-      etapa_enfermedad: [etapa_enfermedad],
-      tratamiento_etapa_enfermedad: [tratamiento_etapa_enfermedad]
-    })
-  }*/
 
   get IDsEnfermedad() {
     return this.editarEnfermedadEtapaForm.get(
@@ -108,30 +88,20 @@ export class EditarEtapaEnfermedadComponent implements OnInit {
 
   addEtapa() {
     this.etapasEnfermedad.push(this.fb.control(""));
-    //this.ids_posiciones_puntajes_insertadas.push(-1);
+    this.tratamientosEtapa.push(this.fb.control(""));
+    this.IDsEnfermedad.push(this.fb.control(-1));
   }
 
-  addTratamiento() {
-    this.etapasEnfermedad.push(this.fb.control(""));
-  }
-
-  addID() {
-    if (this.nombre_enfermedad) {
-      this.IDsEnfermedad.push(this.fb.control(-1));
-    }
-  }
-
-  borrarFila() {
-    let i = this.etapasEnfermedad.length - 1;
-    if (i != 0) {
+  borrarFila(i: number) {
+    if (this.enfermedad_etapas.length > 0) {
       this.etapasEnfermedad.removeAt(i);
-      this.etapasEnfermedad.removeAt(i);
+      this.tratamientosEtapa.removeAt(i);
       this.IDsEnfermedad.removeAt(i);
+      this.enfermedad_etapas.splice(i, 1);
     }
   }
 
   actualizarEnfermedad() {
-    console.log(this.editarEnfermedadEtapaForm.value);
     let valores_etapas_enfermedad = {
       ids_etapas_enfermedad:
         this.editarEnfermedadEtapaForm.value.ids_etapas_enfermedad.map(
@@ -173,9 +143,12 @@ export class EditarEtapaEnfermedadComponent implements OnInit {
               ),
               html: rta.message,
               icon: "success",
-            });
-            this.editarEnfermedadEtapaForm.reset({});
-            this.router.navigateByUrl("listado-enfermedad");
+            }).then((value => {
+              if (value.isConfirmed) {
+                this.editarEnfermedadEtapaForm.reset({});
+                this.router.navigateByUrl("listado-enfermedad");
+              }
+            }));
           },
           (error) => {
             Swal.fire({

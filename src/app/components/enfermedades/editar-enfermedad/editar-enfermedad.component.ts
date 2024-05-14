@@ -53,7 +53,7 @@ export class EditarEnfermedadComponent implements OnInit {
       this.enfermedadesService.putEnfermedad(data, encodeURIComponent(this.param_enfermedad)).subscribe(
         resp => {
           Swal.fire({
-            title: encodeURIComponent(this.param_enfermedad),
+            title: this.param_enfermedad,
             html: resp.message,
             icon: 'success'
           });

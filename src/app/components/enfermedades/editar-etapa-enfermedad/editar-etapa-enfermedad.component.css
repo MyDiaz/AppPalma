@@ -1,0 +1,9 @@
+.tratamiento {
+    display: flex;
+}
+
+.borrar-fila {
+    width: auto;
+    height: min-content;
+    margin-left: 5px;
+}

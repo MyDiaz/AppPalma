@@ -42,53 +42,26 @@
                         </div>
                     </td>
                     <td class="form-group" formArrayName="tratamientos_etapa_enfermedad">
-                        <div *ngFor="let control of tratamientosEtapa.controls; let j = index">
+                        <div *ngFor="let control of tratamientosEtapa.controls; let j = index" class="tratamiento">
                             <input class="form-control mt-2" type="text" [formControlName]="j">
+                            <button type="button" class="btn btn-outline-danger btn-block borrar-fila  mt-2" (click)="borrarFila(j)">
+                                <i class="fas fa-minus"></i>
+                            </button>
                         </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="button" class="btn btn-outline-info btn-block" (click)="addID(); addEtapa(); addTratamiento()">
-                            <i class="fas fa-plus-circle"> </i> etapa y tratamiento
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-outline-danger btn-block" (click)="borrarFila()">
-                            <i class="fas fa-minus"></i>  etapa y tratamiento
-                        </button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <!--<div>
-                <div class="form-group col-6" formArrayName="etapas_enfermedad">
-                    <div *ngFor="let control of Etapas.controls; let i = index">
-                        <input class="form-control" type="text" [formGroupName]="i">
-                        <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
-                        Ingrese un nombre
-                    </small>
-                    </div>
-                </div>
-                <div class="col-6 form-group" formArrayName="tratamientos_etapa_enfermedad">
-                    <div *ngFor="let control of Tratamientos.controls; let j = index">
-                        <input class="form-control" type="text" [formGroupName]="j">
-                        <small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
-                        Ingrese un nombre
-                    </small>
-                    </div>
-                </div>
-            </div>-->
-
+        <button type="button" class="btn btn-outline-info btn-block" (click)="addEtapa()">
+            <i class="fas fa-plus-circle"> </i> etapa y tratamiento
+        </button>
 
         <!--[routerLink]="['/listado-enfermedad']" *ngIf="bandera == true" [disabled]="!NuevaEnfermedadForm.valid"-->
         <button type="submit" class="btn btn-success">
-                <i class="fas fa-save"></i> Guardar
-            </button>
+            <i class="fas fa-save"></i> Guardar
+        </button>
         <button [routerLink]="['/listado-enfermedad']" class="btn btn-danger ml-2">
-                <i class="fas fa-arrow-circle-left"></i> Cancelar
-            </button>
+            <i class="fas fa-arrow-circle-left"></i> Cancelar
+        </button>
     </form>
-
-
 </div>
