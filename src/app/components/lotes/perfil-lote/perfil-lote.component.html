@@ -76,7 +76,7 @@
         Estado Fitosanitario
       </button>
       <button
-        routerLink="estado-productivo"
+        (click)="verRegistros('/estado-productivo')"
         type="button"
         class="btn btn-success mr-2 text-center"
       >
@@ -161,7 +161,5 @@
   </div>
   <br />
   <br />
-  <button routerLink="/lotes" class="btn btn-outline-danger">
-    Regresar
-  </button>
+  <button routerLink="/lotes" class="btn btn-outline-danger">Regresar</button>
 </div>

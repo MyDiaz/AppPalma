@@ -9,9 +9,15 @@ import { environment } from "../../environments/environment";
 export class CensosProductivosService {
   constructor(private http: HttpClient) {}
 
-  getCensosProductivo() {
+  getCensosProductivos() {
     return this.http
       .get<any>(`${environment.url}/censo-productivo`)
+      .pipe(map((data) => data));
+  }
+
+  getCensosProductivosLote(lote: string) {
+    return this.http
+      .get<any>(`${environment.url}/censo-productivo/${lote}`)
       .pipe(map((data) => data));
   }
 }

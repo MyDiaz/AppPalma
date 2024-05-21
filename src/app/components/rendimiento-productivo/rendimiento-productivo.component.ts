@@ -35,7 +35,7 @@ export class RendimientoProductivoComponent implements OnInit {
       this.lotes = lotes;
     });
 
-    this._censosProductivosService.getCensosProductivo().subscribe(
+    this._censosProductivosService.getCensosProductivos().subscribe(
       (censosProductivo: CensoProductivoModel[]) => {
         this.censoProductivo = censosProductivo;
         this.createChart();
