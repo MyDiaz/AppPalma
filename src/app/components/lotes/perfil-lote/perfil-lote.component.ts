@@ -49,8 +49,8 @@ export class PerfilLoteComponent implements OnInit {
     );
 
     this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
-    const blob = new Blob([this.kmlUrl], { type: 'application/xml' });
-      this.kmlUrlObject = URL.createObjectURL(blob);
+    const blob = new Blob([this.kmlUrl], { type: "application/xml" });
+    this.kmlUrlObject = URL.createObjectURL(blob);
     // this.initMap();
   }
 
@@ -82,5 +82,4 @@ export class PerfilLoteComponent implements OnInit {
   verLoteEditar(nombre: string) {
     this.router.navigate(["/editar-lote", nombre]);
   }
-
 }

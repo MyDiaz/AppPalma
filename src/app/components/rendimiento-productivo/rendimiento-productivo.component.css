@@ -1,0 +1,5 @@
+.mat-expansion-panel-header-title{
+  display: flex;
+  flex: 3;
+  margin-right: 16px;
+}
