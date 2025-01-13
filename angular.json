@@ -53,7 +53,8 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
-              ]
+              ],
+              "baseHref": "/sigpa/"
             }
           }
         },
@@ -65,6 +66,11 @@
           "configurations": {
             "production": {
               "browserTarget": "AppPalma:build:production"
+            },
+            "development": {
+              "browserTarget": "AppPalma:build",
+              "port": 8080,
+              "proxyConfig": "src/proxy.conf.json"
             }
           }
         },
