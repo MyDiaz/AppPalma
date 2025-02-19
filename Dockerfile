@@ -10,5 +10,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-CMD ["ng", "serve", "--host", "0.0.0.0"]
+# CMD ["ng", "serve", "--prod", "--host", "0.0.0.0", "--publicHost", "joanchilocal.sigpa"]
+CMD ["ng", "serve", "--prod", "--host", "0.0.0.0", "--publicHost", "simon.uis.edu.co"]
 
