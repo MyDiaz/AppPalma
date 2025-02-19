@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  url: "http://localhost:3000/api",
+  url: "http://localhost:3000/sigpa/api",
   agmApiKey: "AIzaSyAlS_YTxKTDcTX72gBIwgZvAQHD1QOUauw",
 };
 
