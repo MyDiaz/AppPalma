@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuariosService  } from '../../../Servicios/usuarios.service';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UsuarioModel } from 'src/app/models/usuario.models';
 
@@ -50,14 +49,14 @@ export class ListadoUsuariosComponent implements OnInit {
   deshabilitarUsuario(cc_usuario) {
     console.log("Deshabilitar Usuario:", cc_usuario);
     this.usuariosService.deshabilitarUsuario(cc_usuario).subscribe(
-      (respuesta) => {
+      () => {
         Swal.fire({
           title: 'Usuario deshabilitado!',
           icon: 'success',
           showConfirmButton: true}).then(() =>
             this.usuarios.find(usuario => usuario.cc_usuario === cc_usuario).validado = false);
-      }
-      ,(err) => {
+      },
+      () => {
         Swal.fire({
           title: 'Error!',
           html: `No fue posible deshabilitar el usuario.`,
@@ -70,14 +69,14 @@ export class ListadoUsuariosComponent implements OnInit {
   habilitarUsuario(cc_usuario) {
     console.log("Habilitar Usuario:", cc_usuario);
     this.usuariosService.habilitarUsuario(cc_usuario).subscribe(
-      (respuesta) => {
+      () => {
         Swal.fire({
           title: 'Usuario habilitado!',
           icon: 'success',
           showConfirmButton: true}).then(() =>
             this.usuarios.find(usuario => usuario.cc_usuario === cc_usuario).validado = true);
-      }
-      ,(err) => {
+      },
+      () => {
         Swal.fire({
           title: 'Error!',
           html: `No fue posible habilitar el usuario.`,

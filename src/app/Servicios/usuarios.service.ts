@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment'; 
-import { UsuarioModel } from '../models/usuario.models';
+import { NewPassword, UsuarioModel, UsuarioProfile } from '../models/usuario.models';
 import { respuesta } from '../models/resp.model';
 import { Observable } from 'rxjs';
 
@@ -22,6 +22,14 @@ export class UsuariosService {
 
   updateUsuario(cc_usuario:string, usuario:UsuarioModel): Observable<respuesta> {
     return this.http.put<respuesta>(`${environment.url}/usuarios/${cc_usuario}`, usuario);
+  }
+
+  updateProfile(profile:UsuarioProfile): Observable<UsuarioModel> {
+    return this.http.put<UsuarioModel>(`${environment.url}/self/profile`, profile);
+  }
+
+  changePassword(nuevaContrasena:NewPassword): Observable<respuesta> {
+    return this.http.put<respuesta>(`${environment.url}/self/password`, nuevaContrasena);
   }
 
   deshabilitarUsuario(cc_usuario:string): Observable<respuesta> {

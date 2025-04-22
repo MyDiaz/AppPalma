@@ -8,3 +8,14 @@ export class UsuarioModel{
     contrasena_usuario?: string;
     validado?: boolean;
 }
+
+export class UsuarioProfile{
+    nombre_usuario: string;
+    telefono: string;
+    correo?: string;
+}
+
+export class NewPassword {
+    contrasena_actual: string;
+    contrasena_nueva: string;
+}
