@@ -6,3 +6,8 @@ img {
 label {
     font-weight: bold;
 }
+
+.btn-orange {
+    background-color: orange;
+    color: white;
+}

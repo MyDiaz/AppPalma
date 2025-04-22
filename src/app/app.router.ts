@@ -27,7 +27,7 @@ import { HistoricoEnfermedadesComponent } from "./components/enfermedades/histor
 import { CensoProductivoComponent } from "./components/censo-productivo/censo-productivo.component";
 //import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.component';
 //rutas para el acceso
-import { RegistroComponent } from "./acceso/registro/registro.component";
+import { RegistroComponent } from "./components/usuarios/registro/registro.component";
 import { LoginComponent } from "./acceso/login/login.component";
 
 //usuarios

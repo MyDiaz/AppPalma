@@ -1,18 +1,13 @@
-FROM node:16.20.0-alpine as base
+# Use Node.js 16.20 as the base image
+FROM node:16.20
 
-# Create app directory
-WORKDIR /usr/src/app
+RUN mkdir /project
+WORKDIR /project
 
-# Install app dependencies
-COPY package*.json ./
-RUN npm install
 RUN npm install -g @angular/cli@10.2.4
-# Copy app source code
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
 COPY . .
-
-EXPOSE 4200
-
-RUN ng build
-# start app
-CMD ng serve --host 0.0.0.0
-
+CMD ["ng", "serve", "--host", "0.0.0.0"]

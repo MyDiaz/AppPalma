@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioModel } from 'src/app/models/usuario.models';
-import { FormGroup, FormControl,FormBuilder, Validators, EmailValidator } from '@angular/forms';
+import { FormGroup,FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/Servicios/auth.service';
 import Swal from 'sweetalert2';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsuariosService } from 'src/app/Servicios/usuarios.service';
-import { error } from 'console';
 
 @Component({
   selector: 'app-registro',
@@ -28,7 +27,7 @@ export class RegistroComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
       this.ccUsuario = params.get('cc_usuario');
-      this.usuarioNuevo = false;
+      this.usuarioNuevo = this.ccUsuario === undefined || this.ccUsuario === null;
       this.usuariosService.getUsuario(this.ccUsuario).subscribe(
         data => {
           this.NuevoUserForm.get('cc_usuario').setValue(data.cc_usuario);
@@ -133,7 +132,7 @@ export class RegistroComponent implements OnInit {
           html: error.error.message,
           icon: 'error'
         });
-      }     
+      }
     )
   }
   
@@ -144,7 +143,7 @@ export class RegistroComponent implements OnInit {
       cargo_empresa     : encodeURIComponent(this.NuevoUserForm.value.cargo_empresa),
       rol               : encodeURIComponent(this.NuevoUserForm.value.rol),
       telefono          : this.NuevoUserForm.value.telefono,
-      correo            : encodeURIComponent(this.NuevoUserForm.value.email)
+      correo            : this.NuevoUserForm.value.correo
     };
     if (this.usuarioNuevo || this.NuevoUserForm.value.contrasena_usuario !== null) {
       usuario = {...usuario, contrasena_usuario: encodeURIComponent(this.NuevoUserForm.value.contrasena_usuario)};

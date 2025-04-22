@@ -36,7 +36,7 @@ import { ListadoEnfermedadesComponent } from "./components/enfermedades/listado-
 import { FormularioEnfermedadComponent } from "./components/enfermedades/formulario-enfermedad/formulario-enfermedad.component";
 
 //acceso
-import { RegistroComponent } from "./acceso/registro/registro.component";
+import { RegistroComponent } from "./components/usuarios/registro/registro.component";
 import { LoginComponent } from "./acceso/login/login.component";
 import { UsuariosComponent } from "./components/usuarios/usuarios.component";
 import { RendimientoProductivoComponent } from "./components/rendimiento-productivo/rendimiento-productivo.component";
