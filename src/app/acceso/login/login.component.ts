@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 export class LoginComponent implements OnInit {
 
   LoginUserForm: FormGroup;
-  usuario: UsuarioModel = new UsuarioModel();
   recuerdame = false;
 
   constructor(private auth: AuthService, private router:Router,
@@ -57,30 +56,20 @@ export class LoginComponent implements OnInit {
       });
       Swal.showLoading();
       this.auth.login( this.LoginUserForm.value.cc_usuario, encodeURIComponent(this.LoginUserForm.value.contrasena_usuario))
-        .subscribe( resp => {
-          //console.log("this.LoginUserForm.get('cc_usuario')",typeof(JSON.stringify(this.LoginUserForm.get('cc_usuario'))))
-          //localStorage.setItem("cc",JSON.stringify(this.LoginUserForm.get('cc_usuario')))
-          this.auth.guardarToken(resp);
-          //login valido
+        .subscribe(() => {
           Swal.close();
           this.router.navigate(['/lotes']);
-          //
-          //recordar contraseña
-          /*if(this.recuerdame){
-            localStorage.setItem('correo_usuario', this.correo_usuario);
-          }*/
-
         }, (err)=> {
           console.log("err");
           console.log(err);
-          console.log("errorLogin",err.error.message);
+          console.log("errorLogin", err.error.message);
           Swal.fire({
             icon: 'error',
             title: 'Error al autenticar',
             text: err.error.message
           });
-        });
-
+        }
+      );
      }
     }
   }

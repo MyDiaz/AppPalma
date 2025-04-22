@@ -8,14 +8,14 @@ import { AuthService } from './Servicios/auth.service';
 })
 export class AppComponent{
   title = 'AppPalma';
+  estaAutenticado: boolean;
 
 
-  constructor(private authService: AuthService){
-  
-  }
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.authService.estaAutenticado();
+    this.authService.isLoggedIn.subscribe(value => {
+      this.estaAutenticado = value;
+    });
   }
-
 }
