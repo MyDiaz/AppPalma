@@ -37,10 +37,11 @@
                 <!--Agregar nuevo lote -->
                 <br>
                 <button data-placement="bottom" *ngIf="!bandera_error" class="plus btn btn-light" [routerLink]="['/nuevo-lote']" (mouseover)="changeText=true" (mouseout)="changeText=false">
-                                <span  style="font-size: 3rem;">
-                                    <i class="fas fa-plus-circle"></i>
-                                </span>
-                            </button>
+                    <span  style="font-size: 3rem;">
+                        <i class="fas fa-plus-circle"></i>
+                    </span>
+                </button>
+                <br>
                 <small *ngIf="changeText"> Da click para agregar lote! </small>
             </div>
         </div>

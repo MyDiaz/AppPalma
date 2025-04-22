@@ -49,25 +49,28 @@ export class ListadoPlagasComponent implements OnInit {
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
-      }).then( () => {
-        this.plagaService.eliminarPlaga(this.NombrePlagaForm.value.nombre_comun_plaga).subscribe(
-          resp => {
-            this.rta = resp;
-            console.log(resp);
-            Swal.fire({
-              title: this.NombrePlagaForm.value.nombre_comun_plaga,
-              html : this.rta.message,
-              icon : 'success'
-            });
-            window.location.reload();
-          },(error) => {
-            Swal.fire({
-              title: this.NombrePlagaForm.value.nombre_comun_plaga,
-              html : error.error.message,
-              icon : 'error'
-            });
-          })
-      })
+      }).then(value => {
+        if (value.isConfirmed) {
+          this.plagaService.eliminarPlaga(this.NombrePlagaForm.value.nombre_comun_plaga).subscribe(
+            resp => {
+              this.rta = resp;
+              console.log(resp);
+              Swal.fire({
+                title: this.NombrePlagaForm.value.nombre_comun_plaga,
+                html : this.rta.message,
+                icon : 'success'
+              });
+              window.location.reload();
+            },
+            error => {
+              Swal.fire({
+                title: this.NombrePlagaForm.value.nombre_comun_plaga,
+                html : error.error.message,
+                icon : 'error'
+              });
+            })
+        }
+      });
   }
 
   editarPlaga(){

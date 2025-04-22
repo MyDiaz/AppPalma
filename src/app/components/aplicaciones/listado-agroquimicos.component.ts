@@ -74,24 +74,26 @@ export class ListadoAgroquimicosComponent implements OnInit {
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
-      }).then( () => {
-        this.agroquimicosService.eliminarAgroquimico(this.NombreAgroquimicoForm.value.id_producto_agroquimico).subscribe(
-          resp => {
-            this.rta = resp;
-            console.log(resp);
-            Swal.fire({
-              title: this.NombreAgroquimicoForm.value.nombre_comun_plaga,
-              html : this.rta.message,
-              icon : 'success'
-            });
-            window.location.reload();
-          },(error) => {
-            Swal.fire({
-              title: this.NombreAgroquimicoForm.value.nombre_comun_plaga,
-              html : error.error.message,
-              icon : 'error'
-            });
-          })
+      }).then(value => {
+        if (value.isConfirmed) {
+          this.agroquimicosService.eliminarAgroquimico(this.NombreAgroquimicoForm.value.id_producto_agroquimico).subscribe(
+            resp => {
+              this.rta = resp;
+              console.log(resp);
+              Swal.fire({
+                title: this.NombreAgroquimicoForm.value.nombre_comun_plaga,
+                html : this.rta.message,
+                icon : 'success'
+              });
+              window.location.reload();
+            },(error) => {
+              Swal.fire({
+                title: this.NombreAgroquimicoForm.value.nombre_comun_plaga,
+                html : error.error.message,
+                icon : 'error'
+              });
+            })
+        }
       })
   }
 
