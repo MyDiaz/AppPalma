@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
 import { LoteService } from "../../../Servicios/lote.service";
@@ -11,14 +11,10 @@ import { LoteService } from "../../../Servicios/lote.service";
 export class PerfilLoteComponent implements OnInit {
   kmlUrlObject: string;
   kmlUrl: string;
-  latitute = 6.899444;
-  longitude = -73.634722;
-  mapTypeId = "satellite";
   lote: any = {};
   nombre_lote: string;
   bandera_error: boolean = false;
   mensaje_error: string;
-  zoom = 16;
   map: google.maps.Map<HTMLElement>;
 
   constructor(
@@ -36,6 +32,8 @@ export class PerfilLoteComponent implements OnInit {
       (data) => {
         this.lote = data;
         console.log(data);
+        this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
+        this.initMap();
       },
       (error) => {
         this.bandera_error = true;
@@ -47,33 +45,31 @@ export class PerfilLoteComponent implements OnInit {
         }
       }
     );
-
-    this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
-    const blob = new Blob([this.kmlUrl], { type: "application/xml" });
-    this.kmlUrlObject = URL.createObjectURL(blob);
-    // this.initMap();
   }
 
-  // initMap() {
-  //   this.map = new google.maps.Map(document.getElementById("map"), {
-  //     zoom: 10,
-  //   });
+  initMap() {
+    if (this.lote["mapa"] == null || this.lote["mapa"] == undefined || this.lote["mapa"] == "") {
+      return;
+    }
+    this.map = new google.maps.Map(document.getElementById("map"), {
+      zoom: 16,
+      mapTypeId: "satellite",
+    });
 
-  //   var layer1 = new google.maps.KmlLayer({
-  //     url: this.kmlUrl,
-  //     preserveViewport: true,
-  //     map: this.map,
-  //   });
-  //   google.maps.event.addListener(
-  //     layer1,
-  //     "defaultviewport_changed",
-  //     function () {
-  //       var getCenter = layer1.getDefaultViewport().getCenter();
-  //       this.map.setCenter(getCenter);
-  //       console.log(getCenter.toUrlValue(6));
-  //     }
-  //   );
-  // }
+    var layer1 = new google.maps.KmlLayer({
+      url: this.kmlUrl,
+      preserveViewport: true,
+      map: this.map,
+    });
+    google.maps.event.addListener(
+      layer1,
+      "defaultviewport_changed",
+      function () {
+        var getCenter = layer1.getDefaultViewport().getCenter();
+        this.map.setCenter(getCenter);
+      }
+    );
+  }
 
   verRegistros(donde: string) {
     this.router.navigate([donde], { queryParams: { lote: this.nombre_lote } });
@@ -81,5 +77,9 @@ export class PerfilLoteComponent implements OnInit {
 
   verLoteEditar(nombre: string) {
     this.router.navigate(["/editar-lote", nombre]);
+  }
+
+  isStringEmpty(str: string | null | undefined): boolean {
+    return !str || str.trim() === '';
   }
 }
