@@ -13,61 +13,66 @@
             <form class="mb-3" autocomplete="off" [formGroup]="NuevoLoteForm" (ngSubmit)="guardar()">
                 <div class="form-group">
                     <label> Nombre lote </label>
-                    <input class="form-control" type="text" formControlName="nombre_lote" [class.is-invalid]="nombreLoteNoValido">
+                    <input class="form-control" type="text" formControlName="nombre_lote"
+                        [class.is-invalid]="nombreLoteNoValido">
 
                     <small *ngIf="nombreLoteNoValido" class="text-danger">
-                            Ingrese 5 letras
-                        </small>
+                        Ingrese 5 letras
+                    </small>
                 </div>
 
                 <div class="form-group">
                     <label> Año de siembra </label>
-                    <input class="form-control" type="date" formControlName="año_siembra" [class.is-invalid]="AnoSiembraNoValido">
+                    <input class="form-control" type="date" formControlName="año_siembra"
+                        [class.is-invalid]="AnoSiembraNoValido">
                     <small *ngIf="AnoSiembraNoValido" class="text-danger">
-                            Ingrese un año válido, debe tener 4 dígitos y ser mayor a cero.
-                        </small>
+                        Ingrese un año válido, debe tener 4 dígitos y ser mayor a cero.
+                    </small>
                 </div>
 
                 <div class="form-group">
                     <label> Hectáreas </label>
-                    <input class="form-control" type="number" formControlName="hectareas" [class.is-invalid]="HectareasNoValido">
+                    <input class="form-control" type="number" formControlName="hectareas"
+                        [class.is-invalid]="HectareasNoValido">
                     <small *ngIf="HectareasNoValido" class="text-danger">
-                            Debe ingresar un número de hectáreas
-                        </small>
+                        Debe ingresar un número de hectáreas
+                    </small>
                 </div>
 
                 <div class="form-group">
                     <label> Número de palmas </label>
-                    <input class="form-control" type="number" formControlName="numero_palmas" [class.is-invalid]="NumeroPalmasNoValido">
+                    <input class="form-control" type="number" formControlName="numero_palmas"
+                        [class.is-invalid]="NumeroPalmasNoValido">
                     <small *ngIf="NumeroPalmasNoValido" class="text-danger">
-                            Debe ingresar el número de palmas
-                        </small>
+                        Debe ingresar el número de palmas
+                    </small>
                 </div>
                 <div class="form-group">
                     <label for="sel1">Material de siembra: </label>
                     <select class="form-control" formControlName="material_siembra">
-                            <option> </option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
+                        <option> </option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
                     <small *ngIf="MaterialSiembraNoValido" class="text-danger">
-                            Debe ingresar el material de siembra 
-                        </small>
+                        Debe ingresar el material de siembra
+                    </small>
                 </div>
                 <div class="form-group">
+                    <label for="sel1">Agregar KML </label>
                     <input type="file" class="file-upload" accept=".kml" (change)="handleFileInput($event)">
                 </div>
-                <button *ngIf="id_lote" type="submit" class="btn btn-success mr-2"> 
+                <button *ngIf="id_lote" type="submit" class="btn btn-success mr-2">
                     <i class="fas fa-pencil-alt"></i> Actualizar
                 </button>
                 <!-- [disabled]="!NuevoLoteForm.valid" -->
-                <button *ngIf="!id_lote" type="submit" class="btn btn-success mr-2" [disabled]="!NuevoLoteForm.valid"> 
-                    <i class="fas fa-save"></i> Guardar 
+                <button *ngIf="!id_lote" type="submit" class="btn btn-success mr-2" [disabled]="!NuevoLoteForm.valid">
+                    <i class="fas fa-save"></i> Guardar
                 </button>
-                <button (click)="regresar()" class="btn btn-danger"> 
-                    <i class="fas fa-arrow-circle-left"></i> Cancelar 
+                <button (click)="regresar()" class="btn btn-danger">
+                    <i class="fas fa-arrow-circle-left"></i> Cancelar
                 </button>
             </form>
         </div>

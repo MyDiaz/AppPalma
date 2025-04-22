@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 import { EnfermedadNombre, EtapaEnfermedad } from '../models/enfermedadModel';
 
 const headers = new HttpHeaders({
- 'Content-Type': 'application/json',
+  'Content-Type': 'application/json',
 });
 
 
@@ -25,8 +25,7 @@ export class LoteService {
     return this.http.get(`${environment.url}/lote/${nombre}`).pipe(map(data => data[0]));
   }
   getLoteMapaUrl(nombre: string) {
-    return `${environment.url}/lote/mapa/${nombre}`;
-    // return this.http.get(`${this.url_lote}/mapa/${nombre}`).pipe(map( data => data[0]));
+    return `${environment.url}/lote/mapa/` + encodeURIComponent(nombre);
   }
 
   postLote(datosLote): Observable<respuesta> {
