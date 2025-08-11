@@ -41,11 +41,11 @@ export class PlateosComponent implements OnInit {
   columnsCosechas = [
     //{ columnDef: 'id_plateos', header: ''},
     { columnDef: 'nombre_lote', header: 'Lote' },
+    { columnDef: 'inicio_plateo', header: 'Fecha de inicio' },
+    { columnDef: 'fin_plateo', header: 'Fecha de finalización' },
+    { columnDef: 'estado_plateo', header: 'Estado del proceso de plateo' },
     { columnDef: 'total_palmas_plateadas', header: 'Total de palmas plateadas' },
-    { columnDef: 'inicio_plateo', header: 'Fecha de inicio plateo' },
-    { columnDef: 'fin_plateo', header: 'Fecha de fin plateo' },
-    { columnDef: 'estado_plateo', header: 'Estado' },
-    { columnDef: 'tipo_plateo', header: 'Tipo de plateo realizado' },
+    { columnDef: 'tipo_plateo', header: 'Tipo de plateo realizado' }
   ]
 
   columnsCosechasDetalle = [
@@ -72,8 +72,8 @@ export class PlateosComponent implements OnInit {
       data => {
         this.plateos = data.map( element => { 
           element.finPlateoDate = new Date (element.fin_plateo); 
-          element.fin_plateo = moment(element.finPlateoDate).format('LL')
-          element.inicio_plateo = moment(element.inicio_plateo).format('LL')
+          element.fin_plateo = moment(element.finPlateoDate).locale("es").format('LL')
+          element.inicio_plateo = moment(element.inicio_plateo).locale("es").format('LL')
           element.callback = () => { this.idBd(element.id_plateos) }
           //finPlateoDate.getDate() + "-" + (element.finPlateoDate.getMonth() + 1) + "-" + element.finPlateoDate.getFullYear()
           return element

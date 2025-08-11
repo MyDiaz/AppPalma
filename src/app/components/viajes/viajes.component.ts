@@ -42,14 +42,14 @@ export class ViajesComponent implements OnInit {
   }); 
 
   columnsViajes = [ //objeto para poder usar la tabla dinamica
-    { columnDef: 'nombres_lotes', header: 'Lotes' },
     { columnDef: 'id_viaje', header: 'VIAJE'},
-    { columnDef: 'hora_cargue', header: 'Hora de cargue' },
-    { columnDef: 'hora_salida', header: 'Hora de salida' },
-    { columnDef: 'fecha_viaje', header: 'Fecha' },
-    { columnDef: 'kilos_total_racimos_extractora', header: 'Total de kilos en la extractora' },
-    { columnDef: 'kilos_total_racimos_finca', header: 'Total de kilos en la finca'},
-    { columnDef: 'kilos_totales_calculados', header: 'Total de kilos calculados'}
+    { columnDef: 'fecha_viaje', header: 'Fecha del viaje' },
+    { columnDef: 'hora_cargue', header: 'Hora de cargue en la empresa' },
+    { columnDef: 'hora_salida', header: 'Hora de salida de la empresa' },
+    { columnDef: 'nombres_lotes', header: 'Lotes' },
+    { columnDef: 'kilos_total_racimos_finca', header: 'Peso total del cargamento en la empresa (kg)'},
+    { columnDef: 'kilos_totales_calculados', header: 'Peso total calculado del cargamento (kg)'},
+    { columnDef: 'kilos_total_racimos_extractora', header: 'Peso total del cargamento en la extractora (kg)' }
   ]
 
   selectedOption:string;
@@ -68,7 +68,8 @@ export class ViajesComponent implements OnInit {
       data => {
         this.viajes = data.map( element => { 
           element.diaViajeDate = new Date (element.fecha_viaje); 
-          element.fecha_viaje = moment(element.diaViajeDate).format('LL')
+          element.fecha_viaje = moment(element.diaViajeDate).locale("es")
+          .format("LL");
           return element
         });
         this.cargando = false;

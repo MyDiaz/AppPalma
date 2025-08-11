@@ -42,16 +42,16 @@ export class AplicacionesComponent implements OnInit {
 
   columnsHistoricoTratamientos = [
     //{ columnDef: 'id_plateos', header: ''},
+    { columnDef: 'nombre_lote', header: 'Lote' },
     { columnDef: 'id_palma', header: 'Palma' },
-    { columnDef: 'fecha_tratamiento', header: 'Fecha' },
+    { columnDef: 'fecha_tratamiento', header: 'Fecha del tratamiento' },
     { columnDef: 'hora_tratamiento', header: 'Hora' },
-    { columnDef: 'nombre_producto_agroquimico', header: 'Producto' },
+    { columnDef: 'nombre_producto_agroquimico', header: 'Producto aplicado' },
     { columnDef: 'dosis', header: 'Dosis' },
     { columnDef: 'unidades', header: 'Unidades' },
-    { columnDef: 'tipo_control', header: 'Tipo de control' },
+    { columnDef: 'tipo_control', header: 'Tipo de control del tratamiento' },
     { columnDef: 'nombre_enfermedad', header: 'Enfermedades' },
     { columnDef: 'etapa_enfermedad', header: 'Etapa' },
-    { columnDef: 'nombre_lote', header: 'Lote' },
     { columnDef: 'descripcion_procedimiento', header: 'Descripción procedimiento' }
   ]
 

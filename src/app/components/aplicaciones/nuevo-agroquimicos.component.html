@@ -1,7 +1,7 @@
 <div class="container mt-5">
     <div class="row">
-        <h4 *ngIf="!hayProducto"> Nuevo producto </h4>
-        <h4 *ngIf="hayProducto"> Editar producto: {{agroquimicoAEditar.nombre_producto_agroquimico}} </h4>
+        <h4 *ngIf="!hayProducto"> Nuevo producto agroquímico</h4>
+        <h4 *ngIf="hayProducto"> Editar producto agroquímico: {{agroquimicoAEditar.nombre_producto_agroquimico}} </h4>
         <div class="col pr-0">
             <app-fecha> </app-fecha>
         </div>
@@ -21,7 +21,7 @@
                 </small>
             </div>
             <div class="form-group">
-                <label> Tipo de producto </label>
+                <label> Tipo de producto agroquímico</label>
                 <select class="form-control" formControlName="tipo_producto_agroquimico" [class.is-invalid]="tipoProductoAgroquimicoNoValido">
                   <option selected>  </option>
                   <option> Funjicida </option>
@@ -30,7 +30,7 @@
                   <option> Bactericida </option>
                 </select>
                 <small *ngIf="tipoProductoAgroquimicoNoValido" class="text-danger">
-                    Seleccione un tipo de producto.
+                    Seleccione un tipo de producto agroquímico.
                 </small>
             </div>
             <div class="form-group">
@@ -45,7 +45,7 @@
                 </small>
             </div>
             <div class="form-group">
-                <label> Presentación producto </label>
+                <label> Presentación producto agroquímico </label>
 
                 <input type="text" class="form-control" formControlName="presentacion_producto_agroquimico" [class.is-invalid]="presentacionProductoAgroquimicoNoValido">
 

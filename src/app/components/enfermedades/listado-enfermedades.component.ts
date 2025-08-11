@@ -97,23 +97,26 @@ export class ListadoEnfermedadesComponent {
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true
-    }).then(() => {
-      this.EnfermedadesService.eliminarEnfermedad(enfermedad).subscribe(
-        resp => {
-          let rta = resp;
-          Swal.fire({
-            title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", ""),
-            //html : rta.message,
-            icon: 'success'
-          });
-          window.location.reload();
-        }, (error) => {
-          Swal.fire({
-            //title: nombre_enfermedad,
-            html: error.error.message,
-            icon: 'error'
-          });
-        })
+    }).then( (value) => {
+      if(value.isConfirmed){
+        this.EnfermedadesService.eliminarEnfermedad(enfermedad).subscribe(
+          resp => {
+            let rta = resp;
+            Swal.fire({
+              title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", ""),
+              html : 'Se eliminó correctamente la enfermedad',
+              icon : 'success'
+            });
+            window.location.reload();
+          },(error) => {
+            Swal.fire({
+              title: this.NombreEnfermedadForm.value.nombre_enfermedad,
+              html : error.error.message,
+              icon : 'error'
+            });
+          }
+        )
+      }
     })
   }
 

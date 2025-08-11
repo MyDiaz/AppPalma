@@ -46,11 +46,11 @@ export class HistoricoEnfermedadesComponent implements OnInit {
 
   columnsHistoricoEnfermedades = [
     //{ columnDef: 'id_plateos', header: ''},
+    { columnDef: "nombre_lote", header: "Lote" },
     { columnDef: "id_palma", header: "Palma" },
+    { columnDef: "fecha_registro_enfermedad", header: "Fecha" },
     { columnDef: "nombre_enfermedad", header: "Enfermedades" },
     { columnDef: "etapa_enfermedad", header: "Etapa" },
-    { columnDef: "nombre_lote", header: "Lote" },
-    { columnDef: "fecha_registro_enfermedad", header: "Fecha" },
     { columnDef: "observacion_registro_enfermedad", header: "Observación" },
   ];
 

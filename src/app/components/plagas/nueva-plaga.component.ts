@@ -118,28 +118,29 @@ export class NuevaPlagaComponent implements OnInit {
       icon: "question",
       showCancelButton: true,
       showConfirmButton: true,
-    }).then(() => {
-      this.plagasService.postPlaga(valores_etapas_plaga).subscribe(
-        (resp) => {
-          let rta = resp;
-          Swal.fire({
-            title: decodeURIComponent(valores_etapas_plaga.nombre_comun_plaga),
-            html: rta.message,
-            icon: "success",
+    }).then((value) => {
+      if(value.isConfirmed){
+        this.plagasService.postPlaga(valores_etapas_plaga).subscribe(
+          (resp) => {
+            let rta = resp;
+            Swal.fire({
+              title: decodeURIComponent(valores_etapas_plaga.nombre_comun_plaga),
+              html: rta.message,
+              icon: "success",
+            });
+            this.NuevaPlagaForm.reset({});
+            this.router.navigateByUrl("listado-plagas");
+          },
+          (error) => {
+            Swal.fire({
+              title: decodeURIComponent(valores_etapas_plaga.nombre_comun_plaga),
+              html: error.error.message,
+              icon: "error",
+            });
           });
-          this.NuevaPlagaForm.reset({});
-          this.router.navigateByUrl("listado-plagas");
-        },
-        (error) => {
-          Swal.fire({
-            title: decodeURIComponent(valores_etapas_plaga.nombre_comun_plaga),
-            html: error.error.message,
-            icon: "error",
-          });
-        }
-      );
+      }
     });
-  }
+  } 
 
   actualizarPlaga() {
     console.log(this.NuevaPlagaForm.value);
@@ -169,33 +170,34 @@ export class NuevaPlagaComponent implements OnInit {
       icon: "question",
       showCancelButton: true,
       showConfirmButton: true,
-    }).then(() => {
-      console.log(valores_etapas_plaga);
-      this.plagasService
-        .putPlaga(valores_etapas_plaga, this.nombrePlaga)
-        .subscribe(
-          (resp) => {
-            let rta = resp;
-            Swal.fire({
-              title: decodeURIComponent(
-                valores_etapas_plaga.nombre_comun_plaga
-              ),
-              html: rta.message,
-              icon: "success",
-            });
-            this.NuevaPlagaForm.reset({});
-            this.router.navigateByUrl("listado-plagas");
-          },
-          (error) => {
-            Swal.fire({
-              title: decodeURIComponent(
-                valores_etapas_plaga.nombre_comun_plaga
-              ),
-              html: error.error.message,
-              icon: "error",
-            });
-          }
-        );
+    }).then((value) => {
+      if(value.isConfirmed){
+        console.log(valores_etapas_plaga);
+        this.plagasService.putPlaga(valores_etapas_plaga, this.nombrePlaga)
+          .subscribe(
+            (resp) => {
+              let rta = resp;
+              Swal.fire({
+                title: decodeURIComponent(
+                  valores_etapas_plaga.nombre_comun_plaga
+                ),
+                html: rta.message,
+                icon: "success",
+              });
+              this.NuevaPlagaForm.reset({});
+              this.router.navigateByUrl("listado-plagas");
+            },
+            (error) => {
+              Swal.fire({
+                title: decodeURIComponent(
+                  valores_etapas_plaga.nombre_comun_plaga
+                ),
+                html: error.error.message,
+                icon: "error",
+              });
+            }
+          );
+      }
     });
   }
 

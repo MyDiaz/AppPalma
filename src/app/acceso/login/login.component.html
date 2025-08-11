@@ -4,10 +4,14 @@
             <form class="login100-form validate-form flex-sb flex-w" [formGroup]="LoginUserForm" (ngSubmit)="login()">
                 <span class="login100-form-title p-b-51">
                     SISTEMA DE INFORMACIÓN PARA LA GESTIÓN DE LA DINÁMICA DE LA PALMA
+                    <div class="icon_sigpa">
+                        <span class="login100-form-title " > SIGPA </span>
+                        <img src="../../../../assets/img/palm-tree.png" alt="palm icon" style="width: 24px; height: 24px;" />
+                    </div>
                 </span>
-                <hr>
+        
                 <span class="login100-form-title p-b-51">
-                    Login
+                    Inicio de sesión
                 </span>
 
                 <small *ngIf="ccUsuarioNoValido" class="text-danger animated fadeIn">Campo obligatorio</small>

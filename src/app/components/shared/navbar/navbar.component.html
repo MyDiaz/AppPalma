@@ -1,9 +1,12 @@
 <!-- *ngIf="estaLogueado" -->
 <nav class="navbar navbar-expand-lg navbar-green ">
-    <a class="navbar-brand" routerLink="/lotes">AppPalma </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="icon_sigpa">
+        <img src="../../../../assets/img/palm-tree.png" alt="palm icon" style="width: 25px; height: 30px;" />
+        <a class="navbar-brand" routerLink="/lotes"> SIGPA </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
@@ -42,7 +45,7 @@
                 </a>
             </li> -->
             <li class="nav-item active">
-                <a class="nav-link" [routerLink]="['/rendimiento-productivo']" style="color: white;"> Rendimiento productivo </a>
+                <a class="nav-link" [routerLink]="['/rendimiento-productivo']" style="color: white;"> Informe productivo </a>
             </li>
             <li class="nav-item dropdown active">
                 <a class="nav-link" [routerLink]="['/listado-usuarios']" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;"> Usuarios </a>
@@ -56,7 +59,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="user_icon" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <!--i class="fas fa-user mr-2"> {{ usuario$.nombre_usuario | async }} </i-->
-                    <i class="fas fa-user mr-2"> </i> {{ usuario.nombre_usuario }}
+                    <i class="fas fa-user mr-2"> </i> {{usuario.cargo_empresa}} | {{ usuario.nombre_usuario }}
                 </a>
                 <div id="user_menu" class="dropdown-menu" aria-labelledby="user_icon">
                     <a class="dropdown-item btn-secondary" [routerLink]='["/usuario"]' routerLinkActive="active">

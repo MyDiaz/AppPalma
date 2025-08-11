@@ -23,17 +23,17 @@ export class CosechasComponent implements OnInit {
   columnsCosechas = [
     //{ columnDef: 'id_cosecha', header: ''},
     { columnDef: 'nombre_lote', header: 'Lote' },
-    { columnDef: 'kilos_totales', header: 'Kilos totales' },
-    { columnDef: 'racimos_totales', header: 'Racimos totales' },
-    { columnDef: 'inicio_cosecha', header: 'Inicio cosecha' },
-    { columnDef: 'fin_cosecha', header: 'Fin cosecha' },
-    { columnDef: 'estado_cosecha', header: 'Estado' }
+    { columnDef: 'inicio_cosecha', header: 'Fecha de inicio' },
+    { columnDef: 'fin_cosecha', header: 'Fecha de finalización' },
+    { columnDef: 'estado_cosecha', header: 'Estado del proceso de cosecha' },
+    { columnDef: 'kilos_totales', header: 'Kilos totales cosechados' },
+    { columnDef: 'racimos_totales', header: 'Racimos totales cosechados' }
   ]
 
   columnsCosechasDetalle = [
-    { columnDef: 'kilos_racimos_dia', header: 'Cantidad kilos dia'},
-    { columnDef: 'cantidad_racimos_dia', header: 'Cantidad racimos dia'},
-    { columnDef: 'fecha_cosecha', header: 'Fecha cosecha'}
+    { columnDef: 'kilos_racimos_dia', header: 'Cantidad kilos cosechados en el día'},
+    { columnDef: 'cantidad_racimos_dia', header: 'Cantidad racimos cosechados en el día'},
+    { columnDef: 'fecha_cosecha', header: 'Fecha de la cosecha'}
   ]
   // displayedColumns: string[] = ['nombre_lote', 'kilos_totales', 'racimos_totales', 'inicio_cosecha', 'fin_cosecha', 'estado_cosecha'];
   // namedColumns: string[] = ['Lote', 'Kilos totales', 'Racimos totales', 'Inicio cosecha', 'Fin cosecha', 'Estado'];
@@ -86,8 +86,8 @@ export class CosechasComponent implements OnInit {
       data => {
         this.cosechas = data.map( element => { 
           element.finCosechaDate = new Date (element.fin_cosecha); 
-          element.fin_cosecha = moment(element.finCosechaDate).format('LL')
-          element.inicio_cosecha = moment(element.inicio_cosecha).format('LL')
+          element.fin_cosecha = moment(element.finCosechaDate).locale("es").format('LL')
+          element.inicio_cosecha = moment(element.inicio_cosecha).locale("es").format('LL')
           element.callback = () => { this.idBd(element.id_cosecha) }
           //finCosechaDate.getDate() + "-" + (element.finCosechaDate.getMonth() + 1) + "-" + element.finCosechaDate.getFullYear()
           return element
