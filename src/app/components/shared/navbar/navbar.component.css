@@ -7,8 +7,13 @@
 }
 
 .navbar-brand {
-    /*color: #FDE0D9;*/
-    color: #F9A18B;
+    font-family: Ubuntu-Bold;
+    color: #ff5d35;
+    padding-left: 5px;
+    padding-right: 10px;
+    padding-bottom: 0%;
+    border-top: 5px;
+    margin: 0%;
 }
 
 .dropdown:hover>.dropdown-menu {
@@ -23,4 +28,13 @@
     #user_menu {
         margin-left: -2.5em;
     }
+}
+
+.icon_sigpa{
+    margin-right: 20px;
+    border-radius: 5px;
+    align-items: center;
+    background-color: #e6fff3;
+    padding-left: 5px;
+    /*background-color: #005D31;  */
 }

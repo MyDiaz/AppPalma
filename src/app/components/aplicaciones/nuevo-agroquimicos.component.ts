@@ -102,29 +102,32 @@ export class NuevoAgroquimicosComponent implements OnInit {
     }
     console.log(valoresAgroquimico);
     Swal.fire({
-      text: 'Estás seguro de agregarlo?',
+      text: 'Estás seguro de agregar el producto agroquímico?',
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true
-    }).then( () => {
-      this.agroquimicosService.postAgroquimico(valoresAgroquimico).subscribe(
-        resp => {
-          this.rta = resp;
-          Swal.fire({
-            title: this.agroquimicoForm.value.nombre_producto_agroquimico,
-            html: this.rta.message,
-            icon: 'success'
-          });
-          this.agroquimicoForm.reset({});
-          this.router.navigateByUrl('listado-agroquimicos');
-        },(error) => {
-          Swal.fire({
-            title: this.agroquimicoForm.value.nombre_producto_agroquimico,
-            html: error.error.message,
-            icon: 'error'
-          });
-        })
-    })  
+    }).then( (value) => {
+      if(value.isConfirmed){
+        this.agroquimicosService.postAgroquimico(valoresAgroquimico).subscribe(
+          resp => {
+            this.rta = resp;
+            Swal.fire({
+              title: this.agroquimicoForm.value.nombre_producto_agroquimico,
+              html: this.rta.message,
+              icon: 'success'
+            });
+            this.agroquimicoForm.reset({});
+            this.router.navigateByUrl('listado-agroquimicos');
+          },(error) => {
+            Swal.fire({
+              title: this.agroquimicoForm.value.nombre_producto_agroquimico,
+              html: error.error.message,
+              icon: 'error'
+            });
+          }
+        )
+      }
+    })
   }
 
   actualizarProducto() {
@@ -142,25 +145,27 @@ export class NuevoAgroquimicosComponent implements OnInit {
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true
-    }).then( () => {
-      this.agroquimicosService.actualizarAgroquimico(this.IDAgroquimico, valoresNuevosAgroquimico).subscribe(
-        resp => {
-          let rta = resp;
-          Swal.fire({
-            title: decodeURIComponent(valoresNuevosAgroquimico.nombre_producto_agroquimico),
-            html: rta.message,
-            icon: 'success'
-          });
-          this.router.navigateByUrl('listado-agroquimicos');
-        },(error) => {
-          Swal.fire({
-            title: decodeURIComponent(valoresNuevosAgroquimico.nombre_producto_agroquimico),
-            html: error.error.message,
-            icon: 'error'
-          });
-        }
-      )}
-    )
+    }).then( (value) => {
+      if(value.isConfirmed){
+        this.agroquimicosService.actualizarAgroquimico(this.IDAgroquimico, valoresNuevosAgroquimico).subscribe(
+          resp => {
+            let rta = resp;
+            Swal.fire({
+              title: decodeURIComponent(valoresNuevosAgroquimico.nombre_producto_agroquimico),
+              html: rta.message,
+              icon: 'success'
+            });
+            this.router.navigateByUrl('listado-agroquimicos');
+          },(error) => {
+            Swal.fire({
+              title: decodeURIComponent(valoresNuevosAgroquimico.nombre_producto_agroquimico),
+              html: error.error.message,
+              icon: 'error'
+            });
+          }
+        )
+      }
+    })
   }
 
 

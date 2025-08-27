@@ -56,7 +56,7 @@
                     
                 </form>
             </div>
-            <div class="col-md-12 mt-4" >
+            <div class="col-md-12 mt-4" *ngIf="filtradas == 'encontro'">
                 <app-dynamic-table [dataSource]="estadoHistoricoTratamientos" [columns]="columnsHistoricoTratamientos" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
                 <!-- <p>Para consultar el detalle del HE de clic en el registro.</p> -->
             </div>

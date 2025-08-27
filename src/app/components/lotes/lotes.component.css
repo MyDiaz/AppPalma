@@ -24,3 +24,38 @@
     width: 13rem;
     border-radius: 0rem;
 }
+
+.row-text {
+    margin: auto;
+    width: 200px;
+    height: 100px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 10px;
+    align-items: center;
+  }
+
+  .card {
+    padding: 15px;
+    width: 180px;
+    display: flex;
+    align-items: center;
+    height: 80px;
+  }
+  .card-row {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .card-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row-text p {
+    color: #fff;
+  }
+
+  

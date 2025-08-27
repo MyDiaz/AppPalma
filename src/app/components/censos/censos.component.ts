@@ -54,12 +54,12 @@ export class CensosComponent implements OnInit {
 
   columnsCensos = [
     //{ columnDef: 'id_Censos', header: ''},
+    { columnDef: "nombre_lote", header: "Lote" },
+    { columnDef: "fecha_censo", header: "Fecha del censo" },
     { columnDef: "nombre_comun_plaga", header: "Plaga" },
     { columnDef: "nombre_etapa_plaga", header: "Etapa" },
     { columnDef: "numero_individuos", header: "Numero individuos" },
-    { columnDef: "fecha_censo", header: "Fecha" },
-    { columnDef: "nombre_lote", header: "Lote" },
-    { columnDef: "estado_censo", header: "Estado" },
+    { columnDef: "estado_censo", header: "Estado del censo" },
     // { columnDef: 'presencia_lote', header: 'Presencia Lote' },
     // { columnDef: 'presencia_sector', header: 'Presencia sector' },
     { columnDef: "observacion_censo", header: "Observación" },

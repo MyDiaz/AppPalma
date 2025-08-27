@@ -44,8 +44,8 @@ export class PodasComponent implements OnInit {
     { columnDef: 'nombre_lote', header: 'Lote' },
     { columnDef: 'total_palmas_podadas', header: 'Total de palmas podadas' },
     { columnDef: 'inicio_poda', header: 'Fecha de inicio' },
-    { columnDef: 'fin_poda', header: 'Fecha de fin poda' },
-    { columnDef: 'estado_poda', header: 'Estado' }
+    { columnDef: 'fin_poda', header: 'Fecha de finalización'},
+    { columnDef: 'estado_poda', header: 'Estado del proceso de la poda' }
   ]
 
   columnsCosechasDetalle = [
@@ -73,8 +73,8 @@ export class PodasComponent implements OnInit {
       data => {
         this.podas = data.map( element => { 
           element.finPodaDate = new Date (element.fin_poda); 
-          element.fin_poda = moment(element.finPodaDate).format('LL')
-          element.inicio_poda = moment(element.inicio_poda).format('LL')
+          element.fin_poda = moment(element.finPodaDate).locale("es").format('LL');
+          element.inicio_poda = moment(element.inicio_poda).locale("es").format('LL');
           element.callback = () => { this.idBd(element.id_poda) }
           //finPodaDate.getDate() + "-" + (element.finPodaDate.getMonth() + 1) + "-" + element.finPodaDate.getFullYear()
           return element

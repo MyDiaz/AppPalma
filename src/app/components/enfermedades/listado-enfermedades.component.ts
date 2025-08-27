@@ -53,7 +53,7 @@ export class ListadoEnfermedadesComponent {
     //enfermedades 
     this.EnfermedadesService.getEnfermedades().subscribe(data => {
       const enfermedadesConEtapas = new Set(
-        this.enfermedadesEtapas[0].map(item => item.nombre_enfermedad)
+        this.enfermedadesEtapas.map(item => item[0].nombre_enfermedad)
       );
 
       // Filter the second array to keep only diseases not present in first array
@@ -97,23 +97,26 @@ export class ListadoEnfermedadesComponent {
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true
-    }).then(() => {
-      this.EnfermedadesService.eliminarEnfermedad(enfermedad).subscribe(
-        resp => {
-          let rta = resp;
-          Swal.fire({
-            title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", ""),
-            //html : rta.message,
-            icon: 'success'
-          });
-          window.location.reload();
-        }, (error) => {
-          Swal.fire({
-            //title: nombre_enfermedad,
-            html: error.error.message,
-            icon: 'error'
-          });
-        })
+    }).then( (value) => {
+      if(value.isConfirmed){
+        this.EnfermedadesService.eliminarEnfermedad(enfermedad).subscribe(
+          resp => {
+            let rta = resp;
+            Swal.fire({
+              title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace("enfermedad-", ""),
+              html : 'Se eliminó correctamente la enfermedad',
+              icon : 'success'
+            });
+            window.location.reload();
+          },(error) => {
+            Swal.fire({
+              title: this.NombreEnfermedadForm.value.nombre_enfermedad,
+              html : error.error.message,
+              icon : 'error'
+            });
+          }
+        )
+      }
     })
   }
 
@@ -122,8 +125,7 @@ export class ListadoEnfermedadesComponent {
   }
 
   private groupBy(collection, property) {
-    var i = 0, val, index,
-      values = [], result = [];
+    var i = 0, val, index, values = [], result = [];
     for (; i < collection.length; i++) {
       val = collection[i][property];
       index = values.indexOf(val);

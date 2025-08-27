@@ -49,24 +49,27 @@ export class EditarEnfermedadComponent implements OnInit {
       text: 'Estás seguro de agregarlo?',
       icon: 'question',
       showCancelButton: true,
-      showConfirmButton: true}).then( () => {
-      this.enfermedadesService.putEnfermedad(data, encodeURIComponent(this.param_enfermedad)).subscribe(
-        resp => {
-          Swal.fire({
-            title: this.param_enfermedad,
-            html: resp.message,
-            icon: 'success'
-          });
-          //this.editaEnfermedadForm.reset({});
-          this.router.navigateByUrl('listado-enfermedad');
-        }, (error) => {
-          Swal.fire({
-            title: this.editaEnfermedadForm.value.nombre_lote,
-            html: error.message,
-            icon: 'error'
-          });
-        });
-      })
-    }
-
+      showConfirmButton: true}).then( (value) => {
+        if(value.isConfirmed){
+          this.enfermedadesService.putEnfermedad(data, encodeURIComponent(this.param_enfermedad)).subscribe(
+            resp => {
+              Swal.fire({
+                title: this.param_enfermedad,
+                html: resp.message,
+                icon: 'success'
+              });
+              //this.editaEnfermedadForm.reset({});
+              this.router.navigateByUrl('listado-enfermedad');
+            }, (error) => {
+              Swal.fire({
+                title: this.editaEnfermedadForm.value.nombre_lote,
+                html: error.message,
+                icon: 'error'
+              });
+            }
+          );
+        }
+      }
+    )
+  }
 }

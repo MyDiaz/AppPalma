@@ -93,7 +93,7 @@ export class EditarEtapaEnfermedadComponent implements OnInit {
   }
 
   borrarFila(i: number) {
-    if (this.enfermedad_etapas.length > 0) {
+    if (this.etapasEnfermedad.controls.length > 1) {
       this.etapasEnfermedad.removeAt(i);
       this.tratamientosEtapa.removeAt(i);
       this.IDsEnfermedad.removeAt(i);

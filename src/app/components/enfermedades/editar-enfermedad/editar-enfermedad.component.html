@@ -15,7 +15,7 @@
         <div class="col-12">
             <form [formGroup]="editaEnfermedadForm" (ngSubmit)="guardar()">
                 <div class="form-group">
-                    <label> Nombre </label>
+                    <label> Enfermedad </label>
                     <input class="form-control" type="text" formControlName="nombre_enfermedad">
                     <!--<small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
                                 Ingrese un nombre 
@@ -23,8 +23,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label> Procedimiento a realizar </label>
-                    <input class="form-control" type="text" formControlName="procedimiento_tratamiento_enfermedad">
+                    <label> Estrategias de manejo </label>
+                    <textarea class="form-control" formControlName="procedimiento_tratamiento_enfermedad">
+                    </textarea> 
                     <!--<small *ngIf="nombreEnfermedadEtapasNoValido" class="text-danger" [class.is-invalid]="nombreEnfermedadEtapasNoValido">
                                 Ingrese un nombre 
                             </small>-->

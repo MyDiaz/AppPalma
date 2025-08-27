@@ -100,8 +100,9 @@ export class FormularioEnfermedadComponent implements OnInit {
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
-      }).then( () => {
-        this.enfermedadService.postEnfermedadEtapas(valores_etapas_enfermedad).subscribe(
+      }).then( (value) => {
+        if(value.isConfirmed){
+          this.enfermedadService.postEnfermedadEtapas(valores_etapas_enfermedad).subscribe(
           resp => {
             this.rta = resp;
             Swal.fire({
@@ -118,6 +119,7 @@ export class FormularioEnfermedadComponent implements OnInit {
               icon: 'error'
             });
           })
+        }
       })  
     }
 
@@ -132,24 +134,27 @@ export class FormularioEnfermedadComponent implements OnInit {
         icon: 'question',
         showCancelButton: true,
         showConfirmButton: true
-      }).then( () => {
-        this.enfermedadService.postEnfermedad(valores_enfermedad).subscribe(
-          resp => {
-            this.rta = resp;
-            Swal.fire({
-              title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
-              html: this.rta.message,
-              icon: 'success'
-            });
-            this.NuevaEnfermedadForm.reset({});
-            this.router.navigateByUrl('listado-enfermedad');
-          },(error) => {
-            Swal.fire({
-              title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
-              html: error.error.message,
-              icon: 'error'
-            });
-          })
+      }).then( (value) => {
+          if(value.isConfirmed){
+            this.enfermedadService.postEnfermedad(valores_enfermedad).subscribe(
+              resp => {
+                this.rta = resp;
+                Swal.fire({
+                  title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
+                  html: this.rta.message,
+                  icon: 'success'
+                });
+                this.NuevaEnfermedadForm.reset({});
+                this.router.navigateByUrl('listado-enfermedad');
+              },(error) => {
+                Swal.fire({
+                  title: this.NuevaEnfermedadForm.value.nombre_enfermedad,
+                  html: error.error.message,
+                  icon: 'error'
+                });
+              }
+            )  
+          }
       })  
     }
 
