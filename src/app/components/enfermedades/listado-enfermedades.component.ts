@@ -53,7 +53,7 @@ export class ListadoEnfermedadesComponent {
     //enfermedades 
     this.EnfermedadesService.getEnfermedades().subscribe(data => {
       const enfermedadesConEtapas = new Set(
-        this.enfermedadesEtapas[0].map(item => item.nombre_enfermedad)
+        this.enfermedadesEtapas.map(item => item[0].nombre_enfermedad)
       );
 
       // Filter the second array to keep only diseases not present in first array
@@ -125,8 +125,7 @@ export class ListadoEnfermedadesComponent {
   }
 
   private groupBy(collection, property) {
-    var i = 0, val, index,
-      values = [], result = [];
+    var i = 0, val, index, values = [], result = [];
     for (; i < collection.length; i++) {
       val = collection[i][property];
       index = values.indexOf(val);
