@@ -64,31 +64,82 @@ export class PodasComponent implements OnInit {
       nombreLote: new FormControl()
     });
 
-    this.estadoPodas = new MatTableDataSource<any>([]);
+    this.estadoPodas = new MatTableDataSource<any>();
     this.detallePoda = new MatTableDataSource<any>([]);
   }
 
   ngOnInit(): void {
+
+    // Esto NO filtra nada todavía, solo define la regla que filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote. Decide si UNA FILA entra o no.
+      this.estadoPodas.filterPredicate = (poda, filter: string) => {
+
+        const filtros = JSON.parse(filter);
+         console.log('Filtro aplicado:', filtros, 'Fila:', poda.id_poda);
+        // ===== FECHA =====
+        const fecha = poda.finPodaDate;
+        let cumpleFecha = true;
+
+        if (filtros.start) {
+          const start = new Date(filtros.start);
+          start.setHours(0, 0, 0, 0);
+          cumpleFecha = fecha >= start;
+        }
+
+        if (cumpleFecha && filtros.end) {
+          const end = new Date(filtros.end);
+          end.setHours(23, 59, 59, 999);
+          cumpleFecha = fecha <= end;
+        }
+
+        // ===== ESTADO =====
+        let cumpleEstado = true;
+
+        if (filtros.activas || filtros.finalizadas) {
+          cumpleEstado =
+            (poda.estado_poda === 'ACTIVA' && filtros.activas) ||
+            (poda.estado_poda === 'FINALIZADA' && filtros.finalizadas);
+        }
+
+        // ===== LOTE =====
+        const cumpleLote =
+          filtros.nombreLote === 'TODOS' ||
+          filtros.nombreLote === poda.nombre_lote;
+
+        return cumpleFecha && cumpleEstado && cumpleLote;
+      };
+    
     this.podasService.getPodas().subscribe(
       data => {
         this.podas = data.map( element => { 
-          element.finPodaDate = new Date (element.fin_poda); 
-          element.fin_poda = moment(element.finPodaDate).locale("es").format('LL');
-          element.inicio_poda = moment(element.inicio_poda).locale("es").format('LL');
-          element.callback = () => { this.idBd(element.id_poda) }
-          //finPodaDate.getDate() + "-" + (element.finPodaDate.getMonth() + 1) + "-" + element.finPodaDate.getFullYear()
-          return element
+
+          const inicioDate = new Date(element.inicio_poda) ? new Date(element.inicio_poda) : null;;
+          const finDate = new Date(element.fin_poda) ? new Date(element.fin_poda) : null;
+
+          return {
+            ...element,
+            inicioPodaDate: inicioDate,
+            finPodaDate: finDate,
+
+            inicio_poda: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
+            fin_poda: finDate ? moment(finDate).locale("es").format('LL'): '',
+            
+            callback: () => { this.idBd(element.id_poda) }
+            //finPodaDate.getDate() + "-" + (element.finPodaDate.getMonth() + 1) + "-" + element.finPodaDate.getFullYear()
+          }
         });
+        // Acá se asigna al elemento MatTableDataSource
+        this.estadoPodas.data = this.podas;
+
         this.cargando = false;
-        console.log("PODAS: ", this.podas)
+        console.log("PODAS cargadas en datasource :", this.estadoPodas.data);
       }, 
       error => {
-        console.log("Error en el consumo de podas", error);
+        console.log("Error en el consumo de podas: ", error);
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
         console.log("error.status", error.status);
         if( error.status == 0 ){
-          this.mensaje_error = "Servicio no disponible"
+          this.mensaje_error = "Servicio no disponible."
         }
       }
     );
@@ -141,35 +192,24 @@ export class PodasComponent implements OnInit {
 
   submit(){}
 
-  //Filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote.
+  // decide CUÁNDO y CON QUÉ filtros se recalcula la tabla.
   filtroEstadoPodas(){
-    //console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
-    this.estadoPodas.data = this.podas.filter(poda => {
-      // console.log('START', (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value))
-      // console.log('END', (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value)))
-      // console.log('finalidas', this.procesoPodas.value.finalizadas)
-      // console.log('activas', this.procesoPodas.value.activas)
-      return (
-      (this.procesoPodas.value.finalizadas == null && this.procesoPodas.value.activas == null) ||
-      (poda.estado_poda === 'FINALIZADA' && (this.procesoPodas.value.finalizadas)) ||
-      (poda.estado_poda === 'ACTIVA' && (this.procesoPodas.value.activas)) ||
-      (!this.procesoPodas.value.activas && !this.procesoPodas.value.finalizadas))
-      && 
-      (this.range.get('start').value == null || poda.finPodaDate >= this.range.get('start').value) &&
-      (this.range.get('end').value == null || (poda.finPodaDate <= this.range.get('end').value || poda.estado_poda === 'ACTIVA')) &&
-      (this.procesoPodas.value.nombreLote == poda.nombre_lote || this.procesoPodas.value.nombreLote == "TODOS")
-    });
-    
-    if(this.estadoPodas.data.length != 0) {
-      this.filtradas = estadosBusqueda.encontro
-    }else{
-      this.filtradas = estadosBusqueda.noEncontro
-    }
-    console.log('filtro', this.filtradas)
-  
-    //this.cosechas = this.estadoCosechas
-    console.log("this.estadoPodas :", this.estadoPodas)
-    //console.log("procesoCosechas", this.procesoCosechas.value)
+    const filtros = {
+    start: this.range.get('start')?.value,
+    end: this.range.get('end')?.value,
+    activas: this.procesoPodas.value.activas,
+    finalizadas: this.procesoPodas.value.finalizadas,
+    nombreLote: this.procesoPodas.value.nombreLote
+  };
+
+  this.estadoPodas.filter = JSON.stringify(filtros);
+
+  this.filtradas =
+    this.estadoPodas.filteredData.length > 0
+      ? estadosBusqueda.encontro
+      : estadosBusqueda.noEncontro;
+
+      console.log('Filtros enviados:', filtros);
   }
 
 }

@@ -11,8 +11,7 @@ export class CensosProductivosService {
 
   getCensosProductivos() {
     return this.http
-      .get<any>(`${environment.url}/censo-productivo`)
-      .pipe(map((data) => data));
+      .get<any>(`${environment.url}/censo-productivo`);
   }
 
   getCensosProductivosLote(lote: string) {

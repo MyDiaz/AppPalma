@@ -59,7 +59,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="user_icon" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <!--i class="fas fa-user mr-2"> {{ usuario$.nombre_usuario | async }} </i-->
-                    <i class="fas fa-user mr-2"> </i> {{usuario.cargo_empresa}} | {{ usuario.nombre_usuario }}
+                    <em class="fas fa-user mr-2"> {{usuario.rol}}  </em> | {{ usuario.nombre_usuario }}
                 </a>
                 <div id="user_menu" class="dropdown-menu" aria-labelledby="user_icon">
                     <a class="dropdown-item btn-secondary" [routerLink]='["/usuario"]' routerLinkActive="active">
