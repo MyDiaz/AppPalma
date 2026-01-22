@@ -24,6 +24,7 @@ export class RendimientoProductivoComponent implements OnInit {
   yearSeleccionado: string = "Todos";
   mesSeleccionado: string = "Todos";
   loteSeleccionado: string = "Todos";
+  years: number[] = [];
   constructor(
     private _censosProductivosService: CensosProductivosService,
     private loteService: LoteService,
@@ -34,6 +35,20 @@ export class RendimientoProductivoComponent implements OnInit {
     this.loteService.getLotes().subscribe((lotes: LoteModel[]) => {
       this.lotes = lotes;
     });
+
+    const currentYear = new Date().getFullYear();
+    this._censosProductivosService.getCensosProductivosMinYear().subscribe(
+      res => {
+        for (var i = res.min_year; i <= currentYear; i++) {
+          this.years.push(i);
+        }
+      },
+      (error: any) => {
+        console.error(error);
+        for (var i = 2000; i <= currentYear; i++) {
+          this.years.push(i);
+        }
+      });
 
     this._censosProductivosService.getCensosProductivos().subscribe(
       (censosProductivo: CensoProductivoModel[]) => {
