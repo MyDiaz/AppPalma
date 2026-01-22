@@ -23,21 +23,22 @@
     </div>
 
     <div *ngIf="!hayUsuarios" class="alert alert-danger" role="alert">
-        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay usaarios registrados
+        <i class="fas fa-exclamation-triangle mr-2"></i> Aún no hay usuarios registrados.
     </div>
     <table *ngIf="hayUsuarios" class="table table-hover">
         <thead>
             <tr class="table-success row">
-                <th class="col-5"> Nombre completo </th>
-                <th class="col-2"> Cedula </th>
-                <th class="col-3"> Cargo </th>
+                <th class="col-4"> Nombre completo </th>
+                <th class="col-2"> Cédula </th>
+                <th class="col-2"> Cargo en la empresa </th>
+                <th class="col-2"> Rol en SIGPA</th>
                 <th class="col-1"></th>
                 <th class="col-1"></th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let usuario of usuarios; let i=index" class="row">
-                <td class="col-5">
+                <td class="col-4">
                     <label class="form-check-label">
                     {{ usuario.nombre_usuario }} 
                 </label>
@@ -47,9 +48,14 @@
                     {{ usuario.cc_usuario }} 
                     </label>
                 </td>
-                <td class="col-3">
+                <td class="col-2">
                     <label class="form-check-label"> 
                     {{ usuario.cargo_empresa }} 
+                    </label>
+                </td>
+                <td class="col-2">
+                    <label class="form-check-label"> 
+                    {{ usuario.rol }} 
                     </label>
                 </td>
                 <td class="col-1">

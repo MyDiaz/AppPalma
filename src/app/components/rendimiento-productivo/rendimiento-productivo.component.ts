@@ -1,8 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { CensosProductivosService } from "../../Servicios/censos-productivos.service";
-import { ActivatedRoute } from "@angular/router";
 import { CensoProductivoModel } from "src/app/models/censoProductivo";
-import * as Chart from "chart.js";
+import { Chart } from 'chart.js';
 import { LoteService } from "src/app/Servicios/lote.service";
 import { LoteModel } from "src/app/models/lote.models";
 import { DatePipe } from "@angular/common";
@@ -14,11 +13,12 @@ import { jsPDF } from "jspdf";
   styleUrls: ["./rendimiento-productivo.component.css"],
 })
 export class RendimientoProductivoComponent implements OnInit {
-  censoProductivo: CensoProductivoModel[];
-  censosFiltered: CensoProductivoModel[];
-  lotes: LoteModel[];
+  censoProductivo: CensoProductivoModel[] = [];
+  censosFiltered: CensoProductivoModel[] = [];
+  lotes: LoteModel[] = [];
   chart: Chart;
   chartMap: Map<string, number>;
+  chartMapKeys: string[];
   panelOpenState = false;
 
   yearSeleccionado: string = "Todos";
@@ -26,13 +26,12 @@ export class RendimientoProductivoComponent implements OnInit {
   loteSeleccionado: string = "Todos";
   constructor(
     private _censosProductivosService: CensosProductivosService,
-    private _loteService: LoteService,
-    private activatedRoute: ActivatedRoute,
+    private loteService: LoteService,
     public datepipe: DatePipe
   ) {}
 
   ngOnInit() {
-    this._loteService.getLotes().subscribe((lotes: LoteModel[]) => {
+    this.loteService.getLotes().subscribe((lotes: LoteModel[]) => {
       this.lotes = lotes;
     });
 
@@ -105,13 +104,13 @@ export class RendimientoProductivoComponent implements OnInit {
     chartDataMap.set("Racimos Sobremaduros", racimosSobreMaduros);
     chartDataMap.set("Racimos Maduros", racimosMaduros);
     this.chartMap = chartDataMap;
-    let chartLabels = Array.from(chartDataMap.keys());
+    this.chartMapKeys = Array.from(chartDataMap.keys());
     let chartValues = Array.from(chartDataMap.values());
 
     this.chart = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: chartLabels,
+        labels: this.chartMapKeys,
         datasets: [
           {
             label: "Censo productivo",
@@ -161,7 +160,6 @@ export class RendimientoProductivoComponent implements OnInit {
 
     // return `${year}-${month}-${day}`;
     // const formattedDate = dateTime.getHours().toString();
-    console.log(dateTime);
     let latest_date = this.datepipe.transform(dateTime, "yyyy-MM-dd");
     return latest_date;
   }

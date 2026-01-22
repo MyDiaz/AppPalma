@@ -33,7 +33,6 @@ export class PerfilLoteComponent implements OnInit {
         this.lote = data;
         console.log(data);
         this.kmlUrl = this._loteService.getLoteMapaUrl(this.nombre_lote);
-        this.initMap();
       },
       (error) => {
         this.bandera_error = true;

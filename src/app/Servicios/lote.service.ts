@@ -6,6 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 import { EnfermedadNombre, EtapaEnfermedad } from '../models/enfermedadModel';
+import { LoteModel } from '../models/lote.models';
 
 const headers = new HttpHeaders({
   'Content-Type': 'application/json',
@@ -17,8 +18,8 @@ export class LoteService {
 
   constructor(private http: HttpClient, private handleError: HttpHandler) { }
 
-  getLotes() {
-    return this.http.get(`${environment.url}/lote`);
+  getLotes() : Observable<LoteModel[]> {
+    return this.http.get(`${environment.url}/lote`) as Observable<LoteModel[]>;
   }
 
   getLote(nombre: string) {
