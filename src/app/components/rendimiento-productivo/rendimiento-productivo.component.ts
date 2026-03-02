@@ -17,8 +17,10 @@ export class RendimientoProductivoComponent implements OnInit {
   censosFiltered: CensoProductivoModel[] = [];
   lotes: LoteModel[] = [];
   chart: Chart;
-  chartMap: Map<string, number>;
-  chartMapKeys: string[];
+  chartMap: Map<string, number> = new Map();
+  chartMapKeys: string[] = [];
+  dateFilteredChartMap: Map<string, number> = new Map();
+  dateFilteredChartKeys: string[] = [];
   panelOpenState = false;
 
   yearSeleccionado: string = "Todos";
@@ -61,66 +63,43 @@ export class RendimientoProductivoComponent implements OnInit {
     );
   }
 
-  createChart() {
-    let data = this.censoProductivo;
+  private matchesYearMonth(item: CensoProductivoModel): boolean {
+    const itemDate = new Date(item.fecha_registro_censo_productivo);
+    const matchesYear =
+      this.yearSeleccionado === "Todos" ||
+      parseInt(this.yearSeleccionado) === itemDate.getFullYear();
+    const matchesMonth =
+      this.mesSeleccionado === "Todos" ||
+      parseInt(this.mesSeleccionado) === itemDate.getMonth();
+    return matchesYear && matchesMonth;
+  }
 
-    if (this.loteSeleccionado != "Todos") {
-      data = data.filter((e) => e.nombre_lote == this.loteSeleccionado);
-    }
-    // data = data.filter( (e) => e.nombre_lote == this.loteSeleccionado);
-    //Aqui filtra por año o por mes si se ha seleccionado
-    if (this.yearSeleccionado != "Todos" || this.mesSeleccionado != "Todos") {
-      const filteredData = data.filter((obj) => {
-        const date = new Date(obj.fecha_registro_censo_productivo);
-        const objectYear = date.getFullYear();
-        const objectMonth = date.getMonth();
-        return (
-          (this.yearSeleccionado === "Todos" ||
-            objectYear === parseInt(this.yearSeleccionado)) &&
-          (this.mesSeleccionado === "Todos" ||
-            objectMonth === parseInt(this.mesSeleccionado))
-        );
-      });
-      data = [...filteredData];
-    }
-    this.censosFiltered = data;
-    let floresFemeninas = data.reduce(
-      (sum, current) => sum + current.cantidad_flores_femeninas,
-      0
+  chartFilter = (item: CensoProductivoModel) => {
+    const matchesLote =
+      this.loteSeleccionado === "Todos" ||
+      this.loteSeleccionado === item.nombre_lote;
+    return matchesLote && this.matchesYearMonth(item);
+  };
+
+  createChart() {
+    this.censosFiltered = this.censoProductivo.filter(this.chartFilter);
+
+    const filteredTotals = this.aggregateChartData(this.censosFiltered);
+    this.chartMap = filteredTotals;
+    this.chartMapKeys = Array.from(filteredTotals.keys());
+
+    const dateFilteredTotals = this.aggregateChartData(
+      this.censoProductivo.filter((item) => this.matchesYearMonth(item))
     );
-    let floresMasculinas = data.reduce(
-      (sum, current) => sum + current.cantidad_flores_masculinas,
-      0
-    );
-    let racimosVerdes = data.reduce(
-      (sum, current) => sum + current.cantidad_racimos_verdes,
-      0
-    );
-    let racimosPintones = data.reduce(
-      (sum, current) => sum + current.cantidad_racimos_pintones,
-      0
-    );
-    let racimosSobreMaduros = data.reduce(
-      (sum, current) => sum + current.cantidad_racimos_sobremaduros,
-      0
-    );
-    let racimosMaduros = data.reduce(
-      (sum, current) => sum + current.cantidad_racimos_maduros,
-      0
-    );
+    this.dateFilteredChartMap = dateFilteredTotals;
+    this.dateFilteredChartKeys = Array.from(dateFilteredTotals.keys());
 
     const canvas = document.getElementById("myChart") as HTMLCanvasElement;
     const ctx = canvas.getContext("2d");
-    let chartDataMap = new Map<string, number>();
-    chartDataMap.set("Flores Femeninas", floresFemeninas);
-    chartDataMap.set("Flores Masculinas", floresMasculinas);
-    chartDataMap.set("Racimos Verdes", racimosVerdes);
-    chartDataMap.set("Racimos Pintones", racimosPintones);
-    chartDataMap.set("Racimos Sobremaduros", racimosSobreMaduros);
-    chartDataMap.set("Racimos Maduros", racimosMaduros);
-    this.chartMap = chartDataMap;
-    this.chartMapKeys = Array.from(chartDataMap.keys());
-    let chartValues = Array.from(chartDataMap.values());
+    if (this.chart) {
+      this.chart.destroy();
+    }
+    const chartValues = Array.from(filteredTotals.values());
 
     this.chart = new Chart(ctx, {
       type: "bar",
@@ -128,7 +107,6 @@ export class RendimientoProductivoComponent implements OnInit {
         labels: this.chartMapKeys,
         datasets: [
           {
-            label: "Censo productivo",
             data: chartValues,
             backgroundColor: [
               "rgba(255, 99, 132, 0.2)",
@@ -152,9 +130,14 @@ export class RendimientoProductivoComponent implements OnInit {
           },
         ],
       },
-
       options: {
-        events: [],
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          enabled: true,
+          mode: "nearest",
+        },
         scales: {
           yAxes: [
             {
@@ -166,6 +149,20 @@ export class RendimientoProductivoComponent implements OnInit {
         },
       },
     });
+  }
+
+  private aggregateChartData(data: CensoProductivoModel[]): Map<string, number> {
+    const sum = (selector: (item: CensoProductivoModel) => number | undefined) =>
+      data.reduce((total, current) => total + (selector(current) ?? 0), 0);
+
+    const totals = new Map<string, number>();
+    totals.set("Flores Femeninas", sum(item => item.cantidad_flores_femeninas));
+    totals.set("Flores Masculinas", sum(item => item.cantidad_flores_masculinas));
+    totals.set("Racimos Verdes", sum(item => item.cantidad_racimos_verdes));
+    totals.set("Racimos Pintones", sum(item => item.cantidad_racimos_pintones));
+    totals.set("Racimos Sobremaduros", sum(item => item.cantidad_racimos_sobremaduros));
+    totals.set("Racimos Maduros", sum(item => item.cantidad_racimos_maduros));
+    return totals;
   }
 
   formatDateTime(dateTime: Date): string {
@@ -184,8 +181,21 @@ export class RendimientoProductivoComponent implements OnInit {
 
     // Titulo
     doc.setFontSize(36);
-    doc.text("Rendimiento productivo", 42, 35);
-    doc.text("de todos los lotes", 52, 49);
+    doc.text("Rendimiento productivo", 15, 35);
+      doc.setFontSize(24);
+    if (this.loteSeleccionado === "Todos") {
+      doc.text("Lote: Todos", 15, 52);
+    } else {
+      doc.text(`Lote: ${this.loteSeleccionado}`, 15, 52);
+    }
+    const monthLabel =
+      this.mesSeleccionado === "Todos"
+        ? "Todos"
+        : this.getMonthName(parseInt(this.mesSeleccionado));
+    const yearLabel =
+      this.yearSeleccionado === "Todos" ? "Todos" : this.yearSeleccionado;
+    doc.setFontSize(18);
+    doc.text(`Mes: ${monthLabel} | Año: ${yearLabel}`, 15, 70);
 
     // Grafica
     const canvas = document.getElementById("myChart") as HTMLCanvasElement;
@@ -265,5 +275,23 @@ export class RendimientoProductivoComponent implements OnInit {
     })
     
     doc.save(`Rendimiento_Productivo.pdf`);
+  }
+
+  private getMonthName(monthIndex: number): string {
+    const months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+    return months[monthIndex] ?? "Mes desconocido";
   }
 }
