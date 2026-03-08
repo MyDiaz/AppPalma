@@ -70,7 +70,10 @@
     </div>
     <div class="col-4">
       <div *ngFor="let key of dateFilteredChartKeys">
-        <div class="card rounded shadow-sm mt-1">
+        <div
+          class="card rounded shadow-sm mt-1"
+          [attr.title]="'Muestra el total de ' + key.toLowerCase() + ' en toda la plantacion.'"
+        >
           <div class="card-body">
             <div class="value-container">Total {{ key }}</div>
             <div class="value-container">{{ dateFilteredChartMap.get(key) }}</div>
