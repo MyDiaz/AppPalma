@@ -1,5 +1,37 @@
-.mat-expansion-panel-header-title{
-  display: flex;
-  flex: 3;
-  margin-right: 16px;
+.historial-table {
+  width: 100%;
+  table-layout: auto;
+}
+
+.historial-table td,
+.historial-table th {
+  vertical-align: middle;
+}
+
+.historial-table tbody td {
+  white-space: nowrap;
+}
+
+.historial-header-text {
+  display: block;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+.historial-table th,
+.historial-table td {
+  font-size: 0.85rem;
+}
+
+.historial-table thead th.column-contrast {
+  background-color: #000;
+  color: #fff;
+}
+
+.historial-table thead th.column-fecha {
+  min-width: 110px;
+}
+
+.historial-table tbody td:first-child {
+  min-width: 110px;
 }
