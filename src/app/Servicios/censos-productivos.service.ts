@@ -14,6 +14,11 @@ export class CensosProductivosService {
       .get<any>(`${environment.url}/censo-productivo`);
   }
 
+  getCensosProductivosMinYear() {
+    return this.http
+      .get<any>(`${environment.url}/censo-productivo/min_year`);
+  }
+
   getCensosProductivosLote(lote: string) {
     return this.http
       .get<any>(`${environment.url}/censo-productivo/${lote}`)
