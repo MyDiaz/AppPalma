@@ -81,19 +81,75 @@ export class CosechasComponent implements OnInit {
     })
     this.mostrarTablaDetalle = true;
   }
+
   ngOnInit() {
+
+    this.estadoCosechas.filterPredicate = (cosecha, filter: string) => {
+
+      const filtros = JSON.parse(filter);
+      const fecha = cosecha.finCosechaDate || cosecha.inicioCosechaDate;
+      let cumpleFecha = true;
+
+      if (filtros.start && fecha) {
+        const start = new Date(filtros.start);
+        start.setHours(0,0,0,0);
+        cumpleFecha = fecha >= start;
+      }
+
+      if (cumpleFecha && filtros.end && fecha) {
+        const end = new Date(filtros.end);
+        end.setHours(23,59,59,999);
+        cumpleFecha = fecha <= end;
+      }
+
+      let cumpleEstado = true;
+
+      if (filtros.activas || filtros.finalizadas) {
+        cumpleEstado =
+          (cosecha.estado_cosecha === 'ACTIVA' && filtros.activas) ||
+          (cosecha.estado_cosecha === 'FINALIZADA' && filtros.finalizadas);
+      }
+
+      const cumpleLote =
+        filtros.nombreLote === 'TODOS' ||
+        filtros.nombreLote === cosecha.nombre_lote;
+
+        console.log(
+        cosecha.nombre_lote,
+        "fecha:", fecha,
+        "cumpleFecha:", cumpleFecha
+      );
+
+      console.log("Filtrando:", cosecha.nombre_lote);
+
+      return cumpleFecha && cumpleEstado && cumpleLote;
+  };
+
+
     this.cosechaService.getCosechas().subscribe(
       data => {
-        this.cosechas = data.map( element => { 
-          element.finCosechaDate = new Date (element.fin_cosecha); 
-          element.fin_cosecha = moment(element.finCosechaDate).locale("es").format('LL')
-          element.inicio_cosecha = moment(element.inicio_cosecha).locale("es").format('LL')
-          element.callback = () => { this.idBd(element.id_cosecha) }
-          //finCosechaDate.getDate() + "-" + (element.finCosechaDate.getMonth() + 1) + "-" + element.finCosechaDate.getFullYear()
-          return element
+        this.cosechas = data.map( element => {  
+          
+          const inicioDate = element.inicio_cosecha ? new Date(element.inicio_cosecha): null;
+          const finDate = element.fin_cosecha ? new Date(element.fin_cosecha) : null;
+
+          return {
+            ...element,
+
+          inicioCosechaDate: inicioDate,
+          finCosechaDate: finDate,
+
+          inicio_cosecha: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
+          fin_cosecha: finDate ? moment(finDate).locale("es").format('LL') : '',
+
+          callback: () => { this.idBd(element.id_cosecha) } 
+
+          }
         });
+
+        this.estadoCosechas.data = this.cosechas;
+        console.log("COSECHAS cargadas en el datasource:", this.estadoCosechas.data);
         this.cargando = false;
-        console.log("COSECHAS: ", this.cosechas)
       }, 
       error => {
         console.log("Error en el consumo de cosechas", error);
@@ -145,28 +201,25 @@ export class CosechasComponent implements OnInit {
 
   //Filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote.
   filtroEstadoCosechas(){
-    //console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
-    this.estadoCosechas.data = this.cosechas.filter(cosecha => {
-      return (
-      (this.procesoCosechas.value.finalizadas == null && this.procesoCosechas.value.activas == null) ||
-      (cosecha.estado_cosecha === 'FINALIZADA' && this.procesoCosechas.value.finalizadas) ||
-      (cosecha.estado_cosecha === 'ACTIVA' && this.procesoCosechas.value.activas)
-      (!this.procesoCosechas.value.activas && !this.procesoCosechas.value.finalizadas))
-      && 
-      (this.range.get('start').value == null || cosecha.finCosechaDate >= this.range.get('start').value) && 
-      (this.range.get('end').value == null || (cosecha.finCosechaDate <= this.range.get('end').value) || cosecha.estado_cosecha === 'ACTIVA') &&
-      (this.procesoCosechas.value.nombreLote == cosecha.nombre_lote || this.procesoCosechas.value.nombreLote == "TODOS")
-    });
-    if(this.estadoCosechas.data.length != 0) {
-      this.filtradas = estadosBusqueda.encontro
-    }else{
-      this.filtradas = estadosBusqueda.noEncontro 
+    const filtros = {
+      start: this.range.get('start')?.value,
+      end: this.range.get('end')?.value,
+      activas: this.procesoCosechas.value.activas,
+      finalizadas: this.procesoCosechas.value.finalizadas,
+      nombreLote: this.procesoCosechas.value.nombreLote
+    };
+
+    this.estadoCosechas.filter = JSON.stringify(filtros);
+    const rows = this.estadoCosechas.filteredData.length;
+
+      if(rows > 0){
+      this.filtradas = estadosBusqueda.encontro;
+    } else {
+      this.filtradas = estadosBusqueda.noEncontro;
     }
-    console.log("filtro", this.filtradas)
-  
-    //this.cosechas = this.estadoCosechas
-    console.log("this.estadoCosechas :", this.estadoCosechas)
-    //console.log("procesoCosechas", this.procesoCosechas.value)
+
+    console.log("Rows en datasource:", this.estadoCosechas.filteredData.length);
+    console.log("Filtros enviados:", filtros);
   }
 
   submit(){

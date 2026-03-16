@@ -10,7 +10,7 @@
 
     <div class="row mt-3">
         <div class="col-12">
-            <form class="mb-3" autocomplete="off" [formGroup]="NuevoLoteForm" (ngSubmit)="guardar()">
+            <form class="mb-3" autocomplete="off" [formGroup]="NuevoLoteForm" (ngSubmit)="onSubmit()">
                 <div class="form-group">
                     <label> Nombre lote </label>
                     <input class="form-control" type="text" formControlName="nombre_lote"
@@ -22,11 +22,11 @@
                 </div>
 
                 <div class="form-group">
-                    <label> Año de siembra </label>
-                    <input class="form-control" type="date" formControlName="año_siembra"
+                    <label> Fecha de siembra </label>
+                    <input class="form-control" type="number" min="1900" max="2100" step="1" formControlName="año_siembra"
                         [class.is-invalid]="AnoSiembraNoValido">
                     <small *ngIf="AnoSiembraNoValido" class="text-danger">
-                        Ingrese un año válido, debe tener 4 dígitos y ser mayor a cero.
+                        Ingrese una fecha válida.
                     </small>
                 </div>
 

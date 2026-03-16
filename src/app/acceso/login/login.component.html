@@ -1,15 +1,15 @@
 <div class="imagenFondo limiter animated fadeInRight ">
     <div class="container-login100">
         <div class="wrap-login100 p-t-50 p-b-90">
-            <form class="login100-form validate-form flex-sb flex-w" [formGroup]="LoginUserForm" (ngSubmit)="login()">
-                <span class="login100-form-title p-b-51">
+            <span class="login100-form-title">
                     SISTEMA DE INFORMACIÓN PARA LA GESTIÓN DE LA DINÁMICA DE LA PALMA
-                    <div class="icon_sigpa">
-                        <span class="login100-form-title " > SIGPA </span>
-                        <img src="../../../../assets/img/palm-tree.png" alt="palm icon" style="width: 24px; height: 24px;" />
-                    </div>
-                </span>
-        
+            </span>
+            <div class="icon_sigpa">
+                <img src="../../../../assets/img/palm-tree.png" alt="palm icon" style="width: 25px; height: 30px;" />
+                <a class="navbar-brand" routerLink="/lotes"> SIGPA </a>
+            </div>
+
+            <form class="login100-form validate-form flex-sb flex-w" [formGroup]="LoginUserForm" (ngSubmit)="login()">
                 <span class="login100-form-title p-b-51">
                     Inicio de sesión
                 </span>
