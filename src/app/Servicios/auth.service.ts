@@ -43,9 +43,20 @@ export class AuthService {
     localStorage.setItem('creacion', authResult.creacion);
   }
 
-  getIdUsuario(){
-    let token = localStorage.getItem('token');
-    return jwtDecode<JwtPayload>(token).sub["cc_usuario"];
+  getIdUsuario(): string | null {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return null;
+    }
+    const decoded: any = jwtDecode(token);
+    const subject = decoded?.sub;
+    if (!subject) {
+      return null;
+    }
+    if (typeof subject === 'string') {
+      return subject;
+    }
+    return subject.cc_usuario ?? subject.id ?? null;
   }
 
   estaAutenticado(){

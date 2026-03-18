@@ -11,7 +11,7 @@ import { UsuariosService } from 'src/app/Servicios/usuarios.service';
 })
 export class NavbarComponent implements OnInit {
   
-  cc_usuario: string;
+  cc_usuario: string | null = null;
   usuario: UsuarioModel;
   
   constructor(private authService: AuthService, private router:Router, 
@@ -22,6 +22,10 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     console.log("NAVBAR")
     this.cc_usuario = this.authService.getIdUsuario();
+    if (!this.cc_usuario) {
+      console.warn('Navbar: no se pudo obtener el id del usuario desde el token');
+      return;
+    }
     this.usuarioService.getUsuario(this.cc_usuario).subscribe(
       (usuario: UsuarioModel) => this.usuario = { ...usuario},
       error => {

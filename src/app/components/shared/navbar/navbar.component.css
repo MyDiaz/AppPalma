@@ -2,6 +2,19 @@
     background-color: #1a936f;
 }
 
+.navbar-brand-row {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+#navbarSupportedContent {
+    flex: 1 1 auto;
+}
+
+#user_section {
+    margin-left: auto;
+}
+
 .nav-item{
     color: white;
 }
@@ -26,7 +39,9 @@
 
 @media (min-width: 992px) {
     #user_menu {
-        margin-left: -2.5em;
+        margin-left: 0;
+        right: 0;
+        left: auto;
     }
 }
 
@@ -37,6 +52,7 @@
     align-items: center;
     background-color: #e6fff3;
     padding-left: 5px;
+    align-items: flex-end;
     /*background-color: #005D31;  */
 }
 
@@ -67,5 +83,13 @@
 
     .navbar-toggler-menu-icon {
         display: inline-block;
+    }
+
+    .navbar-brand-row {
+        width: 100%;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
     }
 }
