@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { Chart } from 'chart.js';
 import { PrecipitacionesService } from '../../Servicios/precipitaciones.service';
 
 interface PrecipitacionTile {
@@ -29,6 +30,11 @@ export class PrecipitacionComponent implements OnInit, OnDestroy {
     start: new FormControl(),
     end: new FormControl(),
   });
+
+  encontro = false;
+  rangoSeleccionado = false;
+
+  private lluviaChart: Chart | null = null;
 
   resumenTiles: PrecipitacionTile[] = this.obtenerTilesPorDefecto();
 
@@ -79,17 +85,28 @@ export class PrecipitacionComponent implements OnInit, OnDestroy {
     const rango = this.obtenerRangoActual();
     if (!rango) {
       this.resumenTiles = this.obtenerTilesPorDefecto();
+      this.encontro = false;
+      this.rangoSeleccionado = false;
+      this.actualizarGraficoPrecipitacion([]);
       return;
     }
 
     const { inicio, fin } = rango;
+    this.rangoSeleccionado = true;
     const registrosEnRango = this.filtrarRegistrosPorRango(this.registrosActuales, inicio, fin);
     const diasTotales = this.calcularDiasInclusivos(inicio, fin);
     const acumulado = registrosEnRango.reduce((sum, registro) => sum + registro.milimetros, 0);
     const diasConLluvia = registrosEnRango.filter((registro) => registro.milimetros > 0).length;
     const promedioDiario = diasTotales ? acumulado / diasTotales : 0;
 
-    this.resumenTiles = this.construirResumenTiles(acumulado, diasConLluvia, promedioDiario, inicio, fin, diasTotales);
+    this.encontro = registrosEnRango.length > 0;
+    if (this.encontro) {
+      this.resumenTiles = this.construirResumenTiles(acumulado, diasConLluvia, promedioDiario, inicio, fin, diasTotales);
+      setTimeout(() => this.actualizarGraficoPrecipitacion(registrosEnRango));
+    } else {
+      this.resumenTiles = this.obtenerTilesPorDefecto();
+      this.actualizarGraficoPrecipitacion([]);
+    }
   }
 
   private normalizarPrecipitaciones(datos: any): PrecipitacionRegistro[] {
@@ -200,14 +217,117 @@ export class PrecipitacionComponent implements OnInit, OnDestroy {
     return date.toLocaleDateString('es-UY', opciones);
   }
 
+  private formatearFechaConAnio(date: Date): string {
+    const opciones: Intl.DateTimeFormatOptions = {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    };
+    return date.toLocaleDateString('es-UY', opciones);
+  }
+
   get rangoMostrar(): string {
     const rango = this.obtenerRangoActual();
     if (!rango) {
       const inicio = this.rangeForm.get('start')?.value;
       const fin = this.rangeForm.get('end')?.value;
-      return inicio || fin ? 'Completa ambos campos del rango.' : 'Selecciona un rango para ver los indicadores de precipitación.';
+      return inicio || fin ? 'Completa ambos campos del rango.' : 'Selecciona un rango para ver los indicadores de precipitacin.';
     }
 
-    return `${this.formatearFecha(rango.inicio)} — ${this.formatearFecha(rango.fin)}`;
+    return `${this.formatearFechaConAnio(rango.inicio)} - ${this.formatearFechaConAnio(rango.fin)}`;
   }
+
+  private actualizarGraficoPrecipitacion(registros: PrecipitacionRegistro[]): void {
+    const canvas = document.getElementById('chartPrecipitaciones') as HTMLCanvasElement;
+    if (!canvas) {
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+
+    if (registros.length === 0) {
+      if (this.lluviaChart) {
+        this.lluviaChart.destroy();
+        this.lluviaChart = null;
+      }
+      return;
+    }
+
+    if (this.lluviaChart) {
+      this.lluviaChart.destroy();
+    }
+
+    const datosOrdenados = [...registros].sort(
+      (a, b) => a.fecha.getTime() - b.fecha.getTime()
+    );
+
+    const puntos = datosOrdenados.map((registro) => ({
+      x: registro.fecha,
+      y: registro.milimetros,
+    }));
+
+    this.lluviaChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [
+          {
+            label: 'Precipitación (mm)',
+            data: puntos,
+            backgroundColor: 'rgba(65, 105, 225, 0.5)',
+            borderColor: 'rgb(65, 105, 225)',
+            borderWidth: 1,
+            barPercentage: 0.8,
+            categoryPercentage: 0.8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        legend: {
+          display: false,
+        },
+        tooltips: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              type: 'time',
+              distribution: 'series',
+              time: {
+                tooltipFormat: 'll',
+                unit: 'day',
+                displayFormats: {
+                  day: 'DD MMM',
+                },
+              },
+              ticks: {
+                autoSkip: true,
+                maxRotation: 0,
+              },
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+              },
+              gridLines: {
+                display: true,
+              },
+            },
+          ],
+        },
+      },
+    });
+  }
+
 }

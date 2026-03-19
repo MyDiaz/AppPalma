@@ -12,18 +12,18 @@
   </div>
 
   <div *ngIf="!cargando" class="content-wrapper">
-    <div class="row align-items-center">
-      <div class="col-md-8">
-        <h3> Histórico de precipitaciones </h3>
-      </div>
-      <div class="col-md-4 text-end">
-        <app-fecha></app-fecha>
+    <div class="titulo">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h3 class="my-3"> Histórico de precipitaciones </h3>
+        </div>
+        <div class="col-md-3 mt-3 text-end">
+          <app-fecha></app-fecha>
+        </div>
       </div>
     </div>
-
     <hr class="my-3">
-
-    <div>
+    <div class="texto">
       <div>
         <p class="mb-0 text-muted">{{ descripcion }}</p>
       </div>
@@ -46,17 +46,37 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-md-4 mb-3" *ngFor="let tile of resumenTiles">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body">
-            <p class="text-uppercase small mb-1 text-muted">{{ tile.title }}</p>
-            <h4 class="mb-2 fw-semibold">{{ tile.value }}</h4>
-            <p class="mb-0 text-muted">{{ tile.detail }}</p>
+    <div class="registros" *ngIf="rangoSeleccionado && !encontro">
+      <hr class="my-3">
+      <div class="text-center mt-4">
+        <h3 class="my-3">No hay registros para los valores indicados.</h3>
+      </div>
+    </div>
+    
+
+    <ng-container *ngIf="encontro">
+      <div class="row justify-content-center mt-4 mb-4">
+        <div class="col-12 col-lg-10">
+          <div class="chart-wrapper card border-0 shadow-sm">
+            <div class="card-body chart-card-body p-3">
+              <canvas id="chartPrecipitaciones"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3" *ngFor="let tile of resumenTiles">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+              <p class="text-uppercase small mb-1 text-muted">{{ tile.title }}</p>
+              <h4 class="mb-2 fw-semibold">{{ tile.value }}</h4>
+              <p class="mb-0 text-muted">{{ tile.detail }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
 
     <!--
     <div class="card mt-5 border-0 shadow-sm">
