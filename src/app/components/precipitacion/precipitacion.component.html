@@ -1,0 +1,80 @@
+<div class="precipitacion-component container mt-4">
+  <div *ngIf="bandera_error" class="alert alert-danger" role="alert">
+    <i class="fas fa-exclamation-triangle"></i> {{ mensaje_error }}
+  </div>
+
+  <div *ngIf="cargando" class="container mt-5" style="height: 80%">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100%">
+      <div class="spinner-grow text-success" role="status" style="width: 3rem; height: 3rem;">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!cargando" class="content-wrapper">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <h3> Histórico de precipitaciones </h3>
+      </div>
+      <div class="col-md-4 text-end">
+        <app-fecha></app-fecha>
+      </div>
+    </div>
+
+    <hr class="my-3">
+
+    <div>
+      <div>
+        <p class="mb-0 text-muted">{{ descripcion }}</p>
+      </div>
+      <p class="small text-secondary mb-0">{{ rangoMostrar }}</p>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <form [formGroup]="rangeForm" class="w-100">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Seleccione un rango de fechas</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="Inicio">
+              <input matEndDate formControlName="end" placeholder="Fin">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3" *ngFor="let tile of resumenTiles">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <p class="text-uppercase small mb-1 text-muted">{{ tile.title }}</p>
+            <h4 class="mb-2 fw-semibold">{{ tile.value }}</h4>
+            <p class="mb-0 text-muted">{{ tile.detail }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--
+    <div class="card mt-5 border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Distribución semanal</h5>
+          <small class="text-muted">Valores de referencia</small>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item px-0" *ngFor="let punto of seriesSemanal">
+            <div class="d-flex justify-content-between">
+              <span>{{ punto.label }}</span>
+              <strong>{{ punto.value }}</strong>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    -->
+  </div>
+</div>

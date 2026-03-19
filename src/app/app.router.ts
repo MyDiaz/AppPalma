@@ -26,6 +26,7 @@ import { CensosComponent } from "./components/censos/censos.component";
 import { HistoricoEnfermedadesComponent } from "./components/enfermedades/historico-enfermedades/historico-enfermedades.component";
 import { CensoProductivoComponent } from "./components/censo-productivo/censo-productivo.component";
 //import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.component';
+import { PrecipitacionComponent } from "./components/precipitacion/precipitacion.component";
 //rutas para el acceso
 import { RegistroComponent } from "./components/usuarios/registro/registro.component";
 import { LoginComponent } from "./acceso/login/login.component";
@@ -161,6 +162,11 @@ const APP_ROUTES: Routes = [
   {
     path: "listado-usuarios",
     component: ListadoUsuariosComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: "precipitacion",
+    component: PrecipitacionComponent,
     canActivate: [AuthGuard],
   },
   { path: "**", pathMatch: "full", redirectTo: "login" },
