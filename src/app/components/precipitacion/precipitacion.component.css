@@ -13,3 +13,13 @@
   width: 100% !important;
   height: 100% !important;
 }
+
+.control-row .mat-form-field {
+  min-height: 56px;
+}
+
+.control-row .mat-form-field .mat-form-field-wrapper,
+.control-row .mat-form-field .mat-form-field-flex {
+  min-height: 56px;
+  align-items: center;
+}

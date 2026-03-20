@@ -15,7 +15,7 @@
     <div class="titulo">
       <div class="row align-items-center">
         <div class="col-md-8">
-          <h3 class="my-3"> Histórico de precipitaciones </h3>
+          <h3 class="my-3"> Hist&oacute;rico de precipitaciones </h3>
         </div>
         <div class="col-md-3 mt-3 text-end">
           <app-fecha></app-fecha>
@@ -30,9 +30,9 @@
       <p class="small text-secondary mb-0">{{ rangoMostrar }}</p>
     </div>
 
-    <div class="row mt-4">
-      <div class="col-md-4">
-        <form [formGroup]="rangeForm" class="w-100">
+    <form [formGroup]="rangeForm" class="w-100">
+      <div class="row mt-4 g-3 control-row align-items-end">
+        <div class="col-md-6">
           <mat-form-field appearance="fill" class="w-100">
             <mat-label>Seleccione un rango de fechas</mat-label>
             <mat-date-range-input [rangePicker]="picker">
@@ -42,9 +42,20 @@
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-date-range-picker #picker></mat-date-range-picker>
           </mat-form-field>
-        </form>
+        </div>
+        <div class="col-md-3">
+          <mat-form-field appearance="fill" class="w-100 control-height-field">
+            <mat-label>Agrupar por</mat-label>
+            <mat-select formControlName="granularity">
+              <mat-option value="dia">D&iacute;a</mat-option>
+              <mat-option value="semana">Semana</mat-option>
+              <mat-option value="mes">Mes</mat-option>
+              <mat-option value="anio">A&ntilde;o</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
+    </form>
 
     <div class="registros" *ngIf="rangoSeleccionado && !encontro">
       <hr class="my-3">
