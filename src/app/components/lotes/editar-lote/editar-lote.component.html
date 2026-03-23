@@ -4,6 +4,6 @@
 
     <p> Ingresa los datos necesarios:</p>
 
-    <app-formulario-lote [id_lote]="nombre_lote" > </app-formulario-lote>
+    <app-formulario-lote *ngIf="nombre_lote" [id_lote]="nombre_lote" > </app-formulario-lote>
 
 </div>

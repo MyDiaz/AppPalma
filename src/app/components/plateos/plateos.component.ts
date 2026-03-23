@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { PlateosService } from '../../Servicios/plateos.service';
 import { LoteService } from '../../Servicios/lote.service';
 import { ActivatedRoute } from '@angular/router';
+import { element } from 'protractor';
 
 const estadosBusqueda = {
   inicio: "inicio",
@@ -63,31 +64,82 @@ export class PlateosComponent implements OnInit {
       nombreLote: new FormControl()
     });
 
-    this.estadoPlateos = new MatTableDataSource<any>([]);
+    this.estadoPlateos = new MatTableDataSource<any>();
     this.detallePlateos = new MatTableDataSource<any>([]);
   }
 
   ngOnInit(): void {
+
+    // Esto NO filtra nada todavía, solo define la regla que filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote. Decide si UNA FILA entra o no.
+      this.estadoPlateos.filterPredicate = (plateos, filter: string) => {
+
+        const filtros = JSON.parse(filter);
+        console.log('Filtro aplicado:', filtros, 'Fila:', plateos.id_plateos);
+        // ===== FECHA =====
+        const fecha = plateos.finPlateoDate;
+        let cumpleFecha = true;
+
+        if (filtros.start) {
+          const start = new Date(filtros.start);
+          start.setHours(0, 0, 0, 0);
+          cumpleFecha = fecha >= start;
+        }
+
+        if (cumpleFecha && filtros.end) {
+          const end = new Date(filtros.end);
+          end.setHours(23, 59, 59, 999);
+          cumpleFecha = fecha <= end;
+        }
+
+        // ===== ESTADO =====
+        let cumpleEstado = true;
+
+        if (filtros.activas || filtros.finalizadas) {
+          cumpleEstado =
+            (plateos.estado_plateo === 'ACTIVA' && filtros.activas) ||
+            (plateos.estado_plateo === 'FINALIZADA' && filtros.finalizadas);
+        }
+
+        // ===== LOTE =====
+        const cumpleLote =
+          filtros.nombreLote === 'TODOS' ||
+          filtros.nombreLote === plateos.nombre_lote;
+
+        return cumpleFecha && cumpleEstado && cumpleLote;
+      };
+
     this.plateosService.getPlateos().subscribe(
       data => {
-        this.plateos = data.map( element => { 
-          element.finPlateoDate = new Date (element.fin_plateo); 
-          element.fin_plateo = moment(element.finPlateoDate).locale("es").format('LL')
-          element.inicio_plateo = moment(element.inicio_plateo).locale("es").format('LL')
-          element.callback = () => { this.idBd(element.id_plateos) }
-          //finPlateoDate.getDate() + "-" + (element.finPlateoDate.getMonth() + 1) + "-" + element.finPlateoDate.getFullYear()
-          return element
+        this.plateos = data.map( element => {
+          const inicioDate = new Date(element.inicio_plateo) ? new Date(element.inicio_plateo) : null;
+          const finDate = new Date(element.fin_plateo) ? new Date(element.fin_plateo) : null;
+
+          return {
+            ...element,
+            inicioPlateoDate: inicioDate,
+            finPlateoDate: finDate,
+
+            inicio_plateo: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
+            fin_plateo: finDate ? moment(finDate).locale("es").format('LL'): '',
+            
+            callback: () => { this.idBd(element.id_plateos) }
+            //finPodaDate.getDate() + "-" + (element.finPodaDate.getMonth() + 1) + "-" + element.finPodaDate.getFullYear()
+          }
         });
+
+        // Acá se asigna al elemento MatTableDataSource
+        this.estadoPlateos.data = this.plateos;
+
         this.cargando = false;
-        console.log("PLATEOS: ", this.plateos)
+        console.log("PLATEOS cargadas en datasource :", this.estadoPlateos.data);
       }, 
       error => {
-        console.log("Error en el consumo de plateos", error);
+        console.log("Error en el consumo de plateos.", error);
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
+        console.log("error.status: ", error.status);
         if( error.status == 0 ){
-          this.mensaje_error = "Servicio no disponible"
+          this.mensaje_error = "Servicio no disponible."
         }
       }
     );
@@ -142,33 +194,22 @@ export class PlateosComponent implements OnInit {
 
   //Filtra por estado: activa o finalizada, por rango de fecha y por nombre de lote.
   filtroEstadoPlateos(){
-    //console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
-    this.estadoPlateos.data = this.plateos.filter(plateo => {
-      // console.log("fecha ", this.range.get('start').value == null, plateo.finPlateoDate > this.range.get('start').value)
-      // console.log("fecha 2 ", this.range.get('end').value == null, plateo.finPlateoDate < this.range.get('end').value)
-      // console.log("valor start", this.range.get('start').value,"fecha BD start", plateo.inicio_plateo)
-      // console.log("valor  end", this.range.get('end').value, "fecha BD end", plateo.fin_plateo)
-      return (
-        (this.procesoPlateos.value.finalizadas == null && this.procesoPlateos.value.activas == null) ||
-        (plateo.estado_plateo === 'FINALIZADA' &&  (this.procesoPlateos.value.finalizadas)) || 
-        (plateo.estado_plateo === 'ACTIVA' && (this.procesoPlateos.value.activas)) ||
-        (!this.procesoPlateos.value.activas && !this.procesoPlateos.value.finalizadas)
-        )
-        && 
-        (this.range.get('start').value == null || plateo.finPlateoDate >= this.range.get('start').value) && 
-        (this.range.get('end').value == null || (plateo.finPlateoDate <= this.range.get('end').value || plateo.estado_plateo === 'ACTIVA')) &&
-        (this.procesoPlateos.value.nombreLote == plateo.nombre_lote || this.procesoPlateos.value.nombreLote == "TODOS")
-    });
-    if(this.estadoPlateos.data.length != 0) {
-      this.filtradas = estadosBusqueda.encontro
-    }else{
-      this.filtradas = estadosBusqueda.noEncontro
-    }
-    console.log('filtro', this.filtradas)
-  
-    //this.cosechas = this.estadoCosechas
-    console.log("this.estadoPlateos :", this.estadoPlateos.data)
-    //console.log("procesoCosechas", this.procesoCosechas.value)
+    const filtros = {
+    start: this.range.get('start')?.value,
+    end: this.range.get('end')?.value,
+    activas: this.procesoPlateos.value.activas,
+    finalizadas: this.procesoPlateos.value.finalizadas,
+    nombreLote: this.procesoPlateos.value.nombreLote
+  };
+
+  this.estadoPlateos.filter = JSON.stringify(filtros);
+
+  this.filtradas =
+    this.estadoPlateos.filteredData.length > 0
+      ? estadosBusqueda.encontro
+      : estadosBusqueda.noEncontro;
+
+      console.log('Filtros enviados:', filtros);
   }
 
 

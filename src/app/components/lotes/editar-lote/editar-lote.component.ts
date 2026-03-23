@@ -11,11 +11,10 @@ export class EditarLoteComponent implements OnInit {
   nombre_lote: string;
 
   constructor( private activatedRoute:ActivatedRoute ) {
-    this.activatedRoute.paramMap.subscribe(params => {
-      this.nombre_lote = params.get('id');
-    });
    }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.nombre_lote = this.activatedRoute.snapshot.paramMap.get('id');
+  }
 
 }

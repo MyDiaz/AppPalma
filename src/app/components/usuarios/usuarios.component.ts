@@ -14,7 +14,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 export class UsuariosComponent implements OnInit {
   actualizarUsuarioForm:FormGroup;
   cambiarContrasenaForm:FormGroup;
-  cc_usuario:string;
+  cc_usuario:string | null = null;
   usuario:any;
   cargando:boolean = false;
 
@@ -23,6 +23,10 @@ export class UsuariosComponent implements OnInit {
 
   ngOnInit() {
     this.cc_usuario = this.authService.getIdUsuario();
+    if (!this.cc_usuario) {
+      console.warn('UsuariosComponent: no se pudo extraer el id del token');
+      return;
+    }
     this.cargando = true;
     this.usuariosService.getUsuario(this.cc_usuario).subscribe(
       data => {

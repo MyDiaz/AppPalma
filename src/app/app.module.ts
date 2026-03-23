@@ -70,6 +70,7 @@ import { CensoProductivoComponent } from "./components/censo-productivo/censo-pr
 import { ListadoUsuariosComponent } from "./components/usuarios/listado-usuarios/listado-usuarios.component";
 import { environment } from "src/environments/environment";
 import { PrecipitacionComponent } from './components/precipitacion/precipitacion.component';
+import { FooterComponent } from './components/shared/footer/footer.component';
 
 registerLocaleData(localeEs);
 
@@ -113,6 +114,7 @@ registerLocaleData(localeEs);
     CensoProductivoComponent,
     ListadoUsuariosComponent,
     PrecipitacionComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
