@@ -21,6 +21,7 @@ export class FormularioLoteComponent implements OnInit {
   lote_res = new LoteModel();
   lote_req = new LoteModel();
   rta = new respuesta();
+  archivoMapa: File | null = null;
 
 
   //comunicacion con el componente padre
@@ -45,6 +46,8 @@ export class FormularioLoteComponent implements OnInit {
       error => {
         console.log("error en lote", error);
       });
+
+      console.log("ID EN INIT", this.id_lote);
   }
 
   get nombreLoteNoValido() {
@@ -93,32 +96,39 @@ export class FormularioLoteComponent implements OnInit {
   handleFileInput(event: any): void {
     const archivo = event.target.files[0];
 
+    if (archivo) {
+    this.archivoMapa = archivo;
+  }
     // Actualiza el valor del control del archivo en tu formulario
     this.NuevoLoteForm.get('mapa').setValue(archivo);
   }
 
-  guardar() {
-    console.log("valor", this.NuevoLoteForm.value);
-    let request = {
+  construirRequest(){
+    return {
       nombre_lote: encodeURIComponent(this.NuevoLoteForm.value.nombre_lote),
       año_siembra: this.NuevoLoteForm.value.año_siembra,
       hectareas: this.NuevoLoteForm.value.hectareas,
       numero_palmas: this.NuevoLoteForm.value.numero_palmas,
       material_siembra: encodeURIComponent(this.NuevoLoteForm.value.material_siembra),
       mapa: null
-    };
-    let formData: FormData = new FormData();
+    }
+  }
 
-    if (this.NuevoLoteForm.value.mapa) {
-
-      // Usa FileReader para leer el contenido del archivo como texto
+  leerArchivoMapa(archivo, request) {
+    // Usa FileReader para leer el contenido del archivo como texto
       const reader = new FileReader();
+      
       reader.onload = (e: any) => {
         const contenido = e.target.result;
         request.mapa = encodeURIComponent(contenido);
+
+        this.confirmarYGuardarLote(request);
       };
       reader.readAsText(this.NuevoLoteForm.value.mapa);
     }
+  
+
+  confirmarYGuardarLote(request) {
     //AGREGAR LOTE    
     Swal.fire({
       text: 'Estás seguro de agregarlo?',
@@ -128,6 +138,7 @@ export class FormularioLoteComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         if (!this.id_lote) {
+          console.log("Entro al POST", this.id_lote);
           this.LoteService.postLote(request).subscribe(
             resp => {
               this.rta = resp;
@@ -146,6 +157,7 @@ export class FormularioLoteComponent implements OnInit {
               });
             });
         } else {
+          console.log("Entro al PUT", this.id_lote);
           //ACTUALIZAR LOTE  
           this.LoteService.putLote(request, this.id_lote,).subscribe(
             resp => {
@@ -156,6 +168,7 @@ export class FormularioLoteComponent implements OnInit {
                 icon: 'success'
               }).then(() => {
                 this.router.navigateByUrl(`lote/${request.nombre_lote}`)
+                console.log("NAVIGATE BY URL", `lote/${request.nombre_lote}`);
               })
             }, error => {
               console.log('error put', error);
@@ -173,6 +186,18 @@ export class FormularioLoteComponent implements OnInit {
 
   }
 
+    onSubmit() {
+      const request = this.construirRequest();
+
+      const archivoMapa = this.archivoMapa;
+
+      if (archivoMapa) {
+        this.leerArchivoMapa(archivoMapa, request);
+      } else {
+        this.confirmarYGuardarLote(request);(request);
+      }
+  }
+
   regresar() {
     if (this.id_lote) {
       this.router.navigateByUrl(`lote/${this.id_lote}`)
@@ -180,5 +205,4 @@ export class FormularioLoteComponent implements OnInit {
       this.router.navigateByUrl('lotes')
     }
   }
-
 }

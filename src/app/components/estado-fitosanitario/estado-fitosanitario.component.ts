@@ -12,6 +12,7 @@ import { LoteModel } from "src/app/models/lote.models";
 import { PalmaModel } from "src/app/models/palma.model";
 //import { Router } from '@angular/router';
 import { jsPDF } from "jspdf";
+import { forkJoin } from "rxjs";
 
 interface GraficoArrayMap {
   [key: string]: any[]; // Index signature with string keys and array values
@@ -32,6 +33,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   chart: Chart;
   mesSeleccionado: string = "Todos";
   yearSeleccionado: string = "Todos";
+  availableYears: string[] = [];
   enfermedadSeleccionada: string = "Todas";
 
   totalpalmas: number;
@@ -45,6 +47,16 @@ export class EstadoFitosanitarioComponent implements OnInit {
   casosacumulados: number;
   incidenciareal: number;
   incidenciaacumulada: number;
+  estadoCargaMensaje: string = "";
+
+  private normalizeLoteName(value: string): string {
+    const safe = (value || "").trim().toLowerCase();
+    try {
+      return decodeURIComponent(safe);
+    } catch {
+      return safe;
+    }
+  }
   
   constructor(
     private _loteService: LoteService,
@@ -55,6 +67,12 @@ export class EstadoFitosanitarioComponent implements OnInit {
   ngOnInit() {
     this.activatedRoute.queryParamMap.subscribe((params) => {
       this.nombreLoteParams = params.get("lote");
+      if (!this.nombreLoteParams) {
+        this.estadoCargaMensaje = "No se recibió el parámetro de lote en la URL.";
+        return;
+      }
+      this.estadoCargaMensaje = "";
+
       this._loteService.getLote(this.nombreLoteParams).subscribe(
         (lote: LoteModel) => {
           this.lote = lote;
@@ -88,36 +106,58 @@ export class EstadoFitosanitarioComponent implements OnInit {
           console.error(error);
         }
       );
+
+      forkJoin({
+        enfermedades: this._loteService.getEnfermedadesServer(),
+        registros: this._enfermedadesService.getEnfermedadesRegistradas(),
+      }).subscribe(
+        ({ enfermedades, registros }) => {
+          const fromCatalog = enfermedades.map((e) => e.nombre);
+          const fromRegistros = registros
+            .map((r) => r.nombre_enfermedad)
+            .filter((n) => !!n);
+          const uniqueNames = Array.from(new Set([...fromCatalog, ...fromRegistros]));
+          this.enfermedades = uniqueNames.map((nombre) => ({ nombre }));
+
+          const loteParam = this.normalizeLoteName(this.nombreLoteParams);
+          this.registroEnfermedadesLote = registros.filter(
+            (d) => this.normalizeLoteName(d.nombre_lote) === loteParam
+          );
+          this.availableYears = Array.from(
+            new Set(
+              this.registroEnfermedadesLote
+                .map((r) => new Date(r.fecha_registro_enfermedad).getFullYear())
+                .filter((y) => !Number.isNaN(y))
+                .map((y) => String(y))
+            )
+          ).sort((a, b) => Number(b) - Number(a));
+
+          if (
+            this.yearSeleccionado !== "Todos" &&
+            !this.availableYears.includes(this.yearSeleccionado)
+          ) {
+            this.yearSeleccionado = "Todos";
+          }
+
+          if (this.registroEnfermedadesLote.length === 0) {
+            this.estadoCargaMensaje =
+              "No hay registros de enfermedades para este lote.";
+          }
+          this.createChart(this.registroEnfermedadesLote);
+        },
+        (error) => {
+          console.error(error);
+          this.estadoCargaMensaje =
+            "No fue posible cargar enfermedades registradas.";
+        }
+      );
     });
-    
-    this._loteService.getEnfermedadesServer().subscribe(
-      (aux: EnfermedadNombre[]) => {
-        this.enfermedades = aux;
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
 
     this._loteService.getEtapasServer().subscribe(
       (aux: EtapaEnfermedad[]) => {
         this.etapasEnfermedades = aux;
       },
       (error) => {
-        console.error(error);
-      }
-    );
-
-    this._enfermedadesService.getEnfermedadesRegistradas().subscribe(
-      (data) => {
-        // Process the array of data here
-        this.registroEnfermedadesLote = data.filter(
-          (d) => d.nombre_lote === this.nombreLoteParams
-        );
-        this.createChart(this.registroEnfermedadesLote);
-      },
-      (error) => {
-        // Handle any errors that occur during the HTTP request
         console.error(error);
       }
     );
@@ -136,23 +176,28 @@ export class EstadoFitosanitarioComponent implements OnInit {
     }
     this.graficosData = res;
 
-    const values: any[] = this.enfermedades.reduce(
-      (acc: any[], map: { [key: string]: any }) => {
-        return acc.concat(Object.values(map));
-      },
-      []
+    const values: string[] = Array.from(
+      new Set(data.map((d) => d.nombre_enfermedad).filter((n) => !!n))
     );
+    const labels = values.length > 0 ? values : ["Sin datos"];
     const lengths: number[] = [];
-    for (const key in this.graficosData) {
-      if (this.graficosData.hasOwnProperty(key)) {
-        const values: any[] = this.graficosData[key];
-        lengths.push(values.length);
+    for (let i = 0; i < labels.length; i++) {
+      const diseaseName = labels[i];
+      if (diseaseName === "Sin datos") {
+        lengths.push(0);
+        continue;
       }
+      lengths.push(data.filter((d) => d.nombre_enfermedad === diseaseName).length);
     }
+
+    if (this.chart) {
+      this.chart.destroy();
+    }
+
     this.chart = new Chart(ctx, {
       type: "bar",
       data: {
-        labels: values,
+        labels,
         datasets: [
           {
             label: "# de casos",
@@ -190,6 +235,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
         );
         lengths.push(filtrados.length);
       }
+    }
+
+    if (this.chart) {
+      this.chart.destroy();
     }
 
     this.chart = new Chart(ctx, {

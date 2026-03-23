@@ -15,14 +15,28 @@ input[type=number] {
     background-color: #ffffff80;
     padding-left: 20px;
     padding-right: 20px;
+    text-align: center;   /* necesario para centrar inline-flex */
 }
 
 .login100-form-title {
     color: #832e19;
 }
 
-.sigpa_icon {
-    display: flex;
-    align-items: center; /* Alinea verticalmente los elementos */
-    gap: 8px; /* Espacio entre el texto y el icono (opcional) */
+.icon_sigpa{
+    border-radius: 5px;
+    display: inline-flex;
+    background-color: #e6fff3;
+    padding-left: 5px;
+    align-items: flex-end;
+    margin: 30px auto;
+}
+
+.navbar-brand {
+    font-family: Ubuntu-Bold;
+    color: #ff5d35;
+    padding-left: 5px;
+    padding-right: 10px;
+    padding-bottom: 0%;
+    border-top: 5px;
+    margin: 0%;
 }

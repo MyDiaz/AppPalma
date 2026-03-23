@@ -2,6 +2,19 @@
     background-color: #1a936f;
 }
 
+.navbar-brand-row {
+    flex: 0 0 auto;
+    width: auto;
+}
+
+#navbarSupportedContent {
+    flex: 1 1 auto;
+}
+
+#user_section {
+    margin-left: auto;
+}
+
 .nav-item{
     color: white;
 }
@@ -26,15 +39,57 @@
 
 @media (min-width: 992px) {
     #user_menu {
-        margin-left: -2.5em;
+        margin-left: 0;
+        right: 0;
+        left: auto;
     }
 }
 
 .icon_sigpa{
+    display: flex;
     margin-right: 20px;
     border-radius: 5px;
     align-items: center;
     background-color: #e6fff3;
     padding-left: 5px;
+    align-items: flex-end;
     /*background-color: #005D31;  */
+}
+
+.navbar-toggler-menu-icon {
+    display: none;
+    width: 28px;
+    height: auto;
+}
+
+@media (max-width: 991.98px) {
+    .icon_sigpa {
+        margin-right: 0;
+        padding-right: 5px;
+    }
+
+    .icon_sigpa .navbar-brand {
+        margin-right: auto;
+    }
+
+    .navbar-toggler {
+        border: none;
+        background: transparent;
+    }
+
+    .navbar-toggler-icon {
+        display: none;
+    }
+
+    .navbar-toggler-menu-icon {
+        display: inline-block;
+    }
+
+    .navbar-brand-row {
+        width: 100%;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
+    }
 }
