@@ -24,6 +24,7 @@ import { PlateosComponent } from "./components/plateos/plateos.component";
 import { ViajesComponent } from "./components/viajes/viajes.component";
 import { CensosComponent } from "./components/censos/censos.component";
 import { HistoricoEnfermedadesComponent } from "./components/enfermedades/historico-enfermedades/historico-enfermedades.component";
+import { ErradicacionesComponent } from "./components/erradicaciones/erradicaciones.component";
 import { CensoProductivoComponent } from "./components/censo-productivo/censo-productivo.component";
 //import { AplicacionesComponent } from './components/aplicaciones/aplicaciones.component';
 import { PrecipitacionComponent } from "./components/precipitacion/precipitacion.component";
@@ -143,6 +144,11 @@ const APP_ROUTES: Routes = [
   { path: "plateos", component: PlateosComponent, canActivate: [AuthGuard] },
   { path: "viajes", component: ViajesComponent, canActivate: [AuthGuard] },
   { path: "censos", component: CensosComponent, canActivate: [AuthGuard] },
+  {
+    path: "erradicaciones",
+    component: ErradicacionesComponent,
+    canActivate: [AuthGuard],
+  },
   {
     path: "registro-enfermedades",
     component: HistoricoEnfermedadesComponent,

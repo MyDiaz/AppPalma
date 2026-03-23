@@ -60,6 +60,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { ViajesComponent } from "./components/viajes/viajes.component";
 import { CensosComponent } from "./components/censos/censos.component";
 import { HistoricoEnfermedadesComponent } from "./components/enfermedades/historico-enfermedades/historico-enfermedades.component";
+import { ErradicacionesComponent } from "./components/erradicaciones/erradicaciones.component";
 //import { HistoricoPlagasComponent } from './components/plagas/historico-plagas/historico-plagas.component';
 import { AgmCoreModule } from "@agm/core";
 import { MatCardModule } from "@angular/material/card";
@@ -110,6 +111,7 @@ registerLocaleData(localeEs);
     CensosComponent,
     //,HistoricoPlagasComponent
     HistoricoEnfermedadesComponent,
+    ErradicacionesComponent,
     ModalComponent,
     CensoProductivoComponent,
     ListadoUsuariosComponent,
