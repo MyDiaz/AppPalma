@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
 import { LoteService } from "../../../Servicios/lote.service";
+import Swal from "sweetalert2";
 
 @Component({
   selector: "app-lote",
@@ -76,6 +77,43 @@ export class PerfilLoteComponent implements OnInit {
 
   verLoteEditar(nombre: string) {
     this.router.navigate(["/editar-lote", nombre]);
+  }
+
+  eliminarLote() {
+    Swal.fire({
+      title: "Eliminar lote",
+      text: "¿Estás seguro de que quieres eliminar este lote?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.bandera_error = false;
+        this._loteService.deleteLote(this.nombre_lote).subscribe(
+          () => {
+            Swal.fire({
+              title: "Lote eliminado",
+              text: "El lote se eliminó correctamente.",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            this.router.navigate(["/lotes"]);
+          },
+          (error) => {
+            this.bandera_error = true;
+            if (error.status == 0) {
+              this.mensaje_error = "Servicio no disponible";
+            } else {
+              this.mensaje_error = error.error?.message || "No se pudo eliminar el lote";
+            }
+            console.error("error eliminar lote", error);
+          }
+        );
+      }
+    });
   }
 
   isStringEmpty(str: string | null | undefined): boolean {
