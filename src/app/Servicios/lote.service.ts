@@ -37,6 +37,10 @@ export class LoteService {
     return this.http.put<respuesta>(`${environment.url}/lote/${nombre}`, datosLote, { headers }).pipe(map(data => data));
   }
 
+  deleteLote(nombre: string) {
+    return this.http.delete(`${environment.url}/lote/${nombre}`);
+  }
+
 
   getPalmasLote(nombre: string) {
     return this.http.get(`${environment.url}/movil/palmas/${nombre}`);
