@@ -14,7 +14,7 @@
 
     <div *ngIf="!cargando" class="container">
         <div class="mt-5">
-                <h3 class="text-center" style="color:#ff5d35;"> SISTEMA DE INFORMACIÓN PARA LA GESTIÓN DE LA DINÁMICA DE LA PALMA </h3>
+                <h3 class="text-center" style="color:#ff5d35;"> SISTEMA DE INFORMACIÓN PARA LA GESTIÓN DE LA DINÁMICA DE LA PALMA AFRICANA </h3>
         </div>
         <div class="mt-5">
             <div class="row">
@@ -50,12 +50,12 @@
         </div>
         <div class="card-row mt-5">
             <div class="row-text" style="background-color: #619885;">
-                <p > Total palmas </p>
-                <p style="font-size: 20px;"> 15000 </p> 
+                <p> Total palmas </p>
+                <p style="font-size: 20px;"> {{ totalPalmas | number:'1.0-0' }} </p> 
             </div>
             <div class="row-text" style="background-color: #674746;">
                 <p> Total lotes </p>
-                <p style="font-size: 20px;"> 14 </p>
+                <p style="font-size: 20px;"> {{ totalLotes }} </p>
             </div>
         </div>
     </div>

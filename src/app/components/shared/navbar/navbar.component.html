@@ -40,17 +40,16 @@
                     <a class="dropdown-item" [routerLink]="['/listado-plagas']"> Plagas </a>
                     <a class="dropdown-item" [routerLink]="['/listado-agroquimicos']"> Productos </a>
                     <a class="dropdown-item" [routerLink]="['/listado-enfermedad']"> Enfermedades </a>
-                    <!--<div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">Something else here</a>-->
                 </div>
             </li>
-            <!-- <li class="nav-item dropdown active">
+            <li class="nav-item dropdown active">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Gestión productiva
+                    Informes 
                 </a>
-            </li> -->
-            <li class="nav-item active">
-                <a class="nav-link" [routerLink]="['/rendimiento-productivo']" style="color: white;"> Informe productivo </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" [routerLink]="['/rendimiento-productivo']"> Productivo </a>
+                    <a class="dropdown-item" [routerLink]="['/estado-fitosanitario']"> Fitosanitario </a>
+                </div>
             </li>
             <li class="nav-item dropdown active">
                 <a class="nav-link" [routerLink]="['/listado-usuarios']" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;"> Usuarios </a>

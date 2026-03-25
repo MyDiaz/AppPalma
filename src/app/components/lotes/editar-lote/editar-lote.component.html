@@ -1,9 +1,15 @@
 <div class="container mt-4">
-
-    <h4 class="text-info mb-2"> Editar lote </h4>
-
-    <p> Ingresa los datos necesarios:</p>
-
-    <app-formulario-lote *ngIf="nombre_lote" [id_lote]="nombre_lote" > </app-formulario-lote>
-
+  <div class="row">
+    <div class="col">
+      <h3 class="mb-2">Editar lote</h3>
+    </div>
+    <div class="col-auto pr-0">
+      <app-fecha></app-fecha>
+    </div>
+  </div>
+  <hr class="row mt-1" />
+  <div class="row mb-5">
+    <p>Ingresa los datos necesarios:</p>
+  </div>
+  <app-formulario-lote *ngIf="nombre_lote" [id_lote]="nombre_lote"></app-formulario-lote>
 </div>
