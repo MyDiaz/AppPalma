@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoteService } from '../../Servicios/lote.service'; 
 import { Router } from '@angular/router';
+import { LoteModel } from '../../models/lote.models';
 
 @Component({
   selector: 'app-lotes',
@@ -9,11 +10,13 @@ import { Router } from '@angular/router';
 })
 export class LotesComponent implements OnInit {
 
-  lotes:any = [];
+  lotes:LoteModel[] = [];
   bandera_error:boolean = false;
   cargando:boolean = false;
   mensaje_error:string;
   changeText: boolean;
+  totalPalmas:number = 0;
+  totalLotes:number = 0;
   
 
   constructor( private _loteService:LoteService,
@@ -25,6 +28,7 @@ export class LotesComponent implements OnInit {
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
+        this.calcularTotales();
         this.cargando = false;
       },
       error => {
@@ -45,6 +49,14 @@ export class LotesComponent implements OnInit {
 
   agregarNuevoLote(){
     this.router.navigate(['/nuevo-lote']);
+  }
+
+  private calcularTotales(){
+    this.totalLotes = Array.isArray(this.lotes) ? this.lotes.length : 0;
+    this.totalPalmas = this.lotes.reduce((total, lote) => {
+      const palmas = Number(lote.numero_palmas || 0);
+      return total + (isNaN(palmas) ? 0 : palmas);
+    }, 0);
   }
 
 }
