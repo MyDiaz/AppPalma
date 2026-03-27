@@ -59,20 +59,15 @@
         </form>
       </div>
 
-      <div class="col-md-12 mt-4" *ngIf="filterApplied && filtradas == 'encontro'">
-        <app-dynamic-table [dataSource]="estadoErradicaciones" [columns]="columnsErradicaciones" [mostrarPaginador]="mostrarPaginador">
-        </app-dynamic-table>
-        <p>Para consultar el detalle de la erradicación de clic en el registro.</p>
-      </div>
-
-      <div class="col-md-12 mt-4" *ngIf="mostrarTablaDetalle && filtradas == 'encontro'">
-        <app-dynamic-table
-          [dataSource]="detalleErradicaciones"
-          [columns]="columnsErradicacionesDetalle"
-          [mostrarPaginador]="mostrarPaginadorDetalle"
-        >
-        </app-dynamic-table>
-      </div>
+        <div class="col-md-12 mt-4" *ngIf="filterApplied && filtradas == 'encontro'">
+          <app-dynamic-table
+            [dataSource]="estadoErradicaciones"
+            [columns]="columnsErradicaciones"
+            [mostrarPaginador]="mostrarPaginador"
+            [habilitarDetalle]="false"
+          >
+          </app-dynamic-table>
+        </div>
 
       <div *ngIf="filterApplied && filtradas == 'noEncontro'" class="col-md-12 mt-4">
         <hr />

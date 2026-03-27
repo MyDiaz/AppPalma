@@ -19,7 +19,6 @@ const estadosBusqueda = {
 export class ErradicacionesComponent implements OnInit {
   erradicaciones: any[] = [];
   estadoErradicaciones: MatTableDataSource<any>;
-  detalleErradicaciones: MatTableDataSource<any>;
   procesoErradicaciones: FormGroup;
 
   cargando = false;
@@ -27,8 +26,6 @@ export class ErradicacionesComponent implements OnInit {
   mensaje_error = "";
   filtradas = estadosBusqueda.inicio;
   mostrarPaginador = true;
-  mostrarPaginadorDetalle = false;
-  mostrarTablaDetalle = false;
   filterApplied = false;
   private pendingRequests = 0;
 
@@ -62,7 +59,6 @@ export class ErradicacionesComponent implements OnInit {
     });
 
     this.estadoErradicaciones = new MatTableDataSource<any>([]);
-    this.detalleErradicaciones = new MatTableDataSource<any>([]);
   }
 
   ngOnInit(): void {

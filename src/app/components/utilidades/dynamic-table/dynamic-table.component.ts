@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild, AfterViewInit  } from '@angular/core';
+import { Component, Input, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { TableColumn } from '../../../models/columnsDynamicTable';
@@ -16,7 +16,7 @@ export class DynamicTableComponent implements OnInit, AfterViewInit  {
     @Input() dataSource: MatTableDataSource<any>; //listado de lo que sea (cosechas, viajes...) filtrado 
     displayedColumns: string[] = []; //nombre de las columnas obtenido a partir de columns
     @Input() mostrarPaginador:boolean;
-    ////@Input() mostrarTablaDetalle:boolean;
+    @Input() habilitarDetalle = true;
 
   
     constructor(private modalService: ModalService) { }
@@ -36,7 +36,12 @@ export class DynamicTableComponent implements OnInit, AfterViewInit  {
       this.dataSource.paginator = this.paginator;
     }
     
-    openModal(rowData: any) {
+    onRowClick(rowData: any) {
+      if (!this.habilitarDetalle) {
+        return;
+      }
+
+      this.selection.toggle(rowData);
       this.modalService.openModal(rowData);
     }
   
