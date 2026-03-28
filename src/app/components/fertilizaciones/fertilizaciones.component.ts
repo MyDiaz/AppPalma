@@ -41,8 +41,6 @@ export class FertilizacionesComponent implements OnInit {
     { columnDef: 'linea_fin', header: 'Línea fin' },
     { columnDef: 'numero_fin', header: 'Número fin' }
   ]
-  // displayedColumns: string[] = ['nombre_lote', 'kilos_totales', 'racimos_totales', 'inicio_cosecha', 'fin_cosecha', 'estado_cosecha'];
-  // namedColumns: string[] = ['Lote', 'Kilos totales', 'Racimos totales', 'Inicio cosecha', 'Fin cosecha', 'Estado'];
 
   fertilizaciones:any = [];
   cargando:boolean = false;
@@ -111,8 +109,10 @@ export class FertilizacionesComponent implements OnInit {
   }
 
   onFertilizacionRowClick(row: any) {
-    const id = row.id_fertilizacion || row.id_cosecha;
-    this.cargarDetalleFertilizacion(id);
+    if (!row.id_fertilizacion) {
+      return;
+    }
+    this.cargarDetalleFertilizacion(row.id_fertilizacion);
   }
 
   ngOnInit() {
@@ -120,7 +120,7 @@ export class FertilizacionesComponent implements OnInit {
     this.estadoFertilizaciones.filterPredicate = (fertilizacion, filter: string) => {
 
       const filtros = JSON.parse(filter);
-      const fecha = fertilizacion.finCosechaDate || fertilizacion.inicioCosechaDate;
+      const fecha = fertilizacion.finFertilizacionDate || fertilizacion.inicioFertilizacionDate;
       let cumpleFecha = true;
 
       if (filtros.start && fecha) {
@@ -169,8 +169,8 @@ export class FertilizacionesComponent implements OnInit {
           return {
             ...element,
 
-            inicioCosechaDate: inicioDate,
-            finCosechaDate: finDate,
+            inicioFertilizacionDate: inicioDate,
+            finFertilizacionDate: finDate,
 
             fecha_inicio: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
             fecha_fin: finDate ? moment(finDate).locale("es").format('LL') : ''
