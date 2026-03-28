@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  padding: 1rem;
+}
+
+.fertilizaciones {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.fertilizaciones h1 {
+  margin-top: 0;
+}

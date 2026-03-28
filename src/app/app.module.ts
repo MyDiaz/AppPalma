@@ -45,6 +45,7 @@ import { EditarLoteComponent } from "./components/lotes/editar-lote/editar-lote.
 import { EditarEnfermedadComponent } from "./components/enfermedades/editar-enfermedad/editar-enfermedad.component";
 import { EditarEtapaEnfermedadComponent } from "./components/enfermedades/editar-etapa-enfermedad/editar-etapa-enfermedad.component";
 import { CosechasComponent } from "./components/cosechas/cosechas.component";
+import { FertilizacionesComponent } from "./components/fertilizaciones/fertilizaciones.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { MatTableModule } from "@angular/material/table";
 import { MatCheckboxModule } from "@angular/material/checkbox";
@@ -104,6 +105,7 @@ registerLocaleData(localeEs);
     EditarEnfermedadComponent,
     EditarEtapaEnfermedadComponent,
     CosechasComponent,
+    FertilizacionesComponent,
     DynamicTableComponent,
     PodasComponent,
     PlateosComponent,

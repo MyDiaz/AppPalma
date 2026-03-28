@@ -19,6 +19,7 @@ import { NuevoAgroquimicosComponent } from "./components/aplicaciones/nuevo-agro
 import { NuevaEnfermedadComponent } from "./components/enfermedades/nueva-enfermedad/nueva-enfermedad.component";
 import { EditarEnfermedadComponent } from "./components/enfermedades/editar-enfermedad/editar-enfermedad.component";
 import { CosechasComponent } from "./components/cosechas/cosechas.component";
+import { FertilizacionesComponent } from "./components/fertilizaciones/fertilizaciones.component";
 import { PodasComponent } from "./components/podas/podas.component";
 import { PlateosComponent } from "./components/plateos/plateos.component";
 import { ViajesComponent } from "./components/viajes/viajes.component";
@@ -140,6 +141,11 @@ const APP_ROUTES: Routes = [
     canActivate: [AuthGuard],
   },
   { path: "cosechas", component: CosechasComponent, canActivate: [AuthGuard] },
+  {
+    path: "fertilizaciones",
+    component: FertilizacionesComponent,
+    canActivate: [AuthGuard],
+  },
   { path: "podas", component: PodasComponent, canActivate: [AuthGuard] },
   { path: "plateos", component: PlateosComponent, canActivate: [AuthGuard] },
   { path: "viajes", component: ViajesComponent, canActivate: [AuthGuard] },
