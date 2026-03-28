@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { LoteService } from '../../Servicios/lote.service';
+import { FertilizacionesService } from '../../Servicios/fertilizaciones.service';
 
 const estadosBusqueda = {
   inicio: "inicio",
@@ -21,13 +22,11 @@ export class FertilizacionesComponent implements OnInit {
 
   
   columnsFertilizaciones = [
-    //{ columnDef: 'id_cosecha', header: ''},
     { columnDef: 'nombre_lote', header: 'Lote' },
-    { columnDef: 'inicio_cosecha', header: 'Fecha de inicio' },
-    { columnDef: 'fin_cosecha', header: 'Fecha de finalización' },
-    { columnDef: 'estado_cosecha', header: 'Estado del proceso de cosecha' },
-    { columnDef: 'kilos_totales', header: 'Kilos totales cosechados' },
-    { columnDef: 'racimos_totales', header: 'Racimos totales cosechados' }
+    { columnDef: 'fecha_inicio', header: 'Fecha de inicio' },
+    { columnDef: 'fecha_fin', header: 'Fecha de fin' },
+    { columnDef: 'estado_fertilizacion', header: 'Estado de la fertilización' },
+    { columnDef: 'total_palmas', header: 'Total de palmas fertilizadas' }
   ]
 
   columnsFertilizacionesDetalle = [
@@ -61,7 +60,12 @@ export class FertilizacionesComponent implements OnInit {
   nombreLoteParams:string;
   lotes:any = [];
 
-  constructor(private cosechasService: CosechasService, private activatedRoute: ActivatedRoute, private _loteService: LoteService) {
+  constructor(
+    private cosechasService: CosechasService,
+    private fertilizacionesService: FertilizacionesService,
+    private activatedRoute: ActivatedRoute,
+    private _loteService: LoteService
+  ) {
     this.procesoFertilizaciones = new FormGroup({
       activas: new FormControl(),
       finalizadas: new FormControl(),
@@ -72,8 +76,8 @@ export class FertilizacionesComponent implements OnInit {
     this.detalleFertilizacion = new MatTableDataSource<any>([]);
    }
    
-  idBd(id_cosecha:string){
-    this.cosechasService.getCosecha(id_cosecha).subscribe(
+  idBd(id:string){
+    this.cosechasService.getCosecha(id).subscribe(
       data => { this.detalleFertilizacion.data = data.map( element => {
           element.fecha_cosecha = moment(element.fecha_cosecha).format('LL')
           return element
@@ -106,8 +110,8 @@ export class FertilizacionesComponent implements OnInit {
 
       if (filtros.activas || filtros.finalizadas) {
         cumpleEstado =
-          (fertilizacion.estado_cosecha === 'ACTIVA' && filtros.activas) ||
-          (fertilizacion.estado_cosecha === 'FINALIZADA' && filtros.finalizadas);
+          (fertilizacion.estado_fertilizacion === 'ACTIVA' && filtros.activas) ||
+          (fertilizacion.estado_fertilizacion === 'FINALIZADA' && filtros.finalizadas);
       }
 
       const cumpleLote =
@@ -126,23 +130,23 @@ export class FertilizacionesComponent implements OnInit {
   };
 
 
-    this.cosechasService.getCosechas().subscribe(
+    this.fertilizacionesService.getFertilizaciones().subscribe(
       data => {
         this.fertilizaciones = data.map( element => {  
           
-          const inicioDate = element.inicio_cosecha ? new Date(element.inicio_cosecha): null;
-          const finDate = element.fin_cosecha ? new Date(element.fin_cosecha) : null;
+          const inicioDate = element.fecha_inicio ? new Date(element.fecha_inicio) : null;
+          const finDate = element.fecha_fin ? new Date(element.fecha_fin) : null;
 
           return {
             ...element,
 
-          inicioCosechaDate: inicioDate,
-          finCosechaDate: finDate,
+            inicioCosechaDate: inicioDate,
+            finCosechaDate: finDate,
 
-          inicio_cosecha: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
-          fin_cosecha: finDate ? moment(finDate).locale("es").format('LL') : '',
+            fecha_inicio: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
+            fecha_fin: finDate ? moment(finDate).locale("es").format('LL') : '',
 
-          callback: () => { this.idBd(element.id_cosecha) } 
+            callback: () => { this.idBd(element.id_fertilizacion || element.id_cosecha) } 
 
           }
         });
