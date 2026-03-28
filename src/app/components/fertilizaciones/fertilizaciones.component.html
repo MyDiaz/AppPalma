@@ -58,12 +58,18 @@
                 </form>    
             </div>
             <div class="col-md-12 mt-4" *ngIf="filtradas == 'encontro'">
-                <app-dynamic-table [dataSource]="estadoFertilizaciones" [columns]="columnsFertilizaciones" [mostrarPaginador]="mostrarPaginador"> </app-dynamic-table>
-                <p>Para consultar el detalle de la fertilización da clic en el registro.</p>
+                <p class="mb-2" >Para consultar el detalle de la fertilización da clic en un registro.</p>
+                <app-dynamic-table
+                  [dataSource]="estadoFertilizaciones"
+                  [columns]="columnsFertilizaciones"
+                  [mostrarPaginador]="mostrarPaginador"
+                  (rowSelected)="onFertilizacionRowClick($event)">
+                </app-dynamic-table>
             </div>
 
             <!--El detalle de cada registro de una fertilización-->
             <div class="col-md-12 mt-4" *ngIf="mostrarTablaDetalle && filtradas == 'encontro'">
+                <h4 class="mb-2" >Detalle de la fertilización</h4>
                 <app-dynamic-table [dataSource]="detalleFertilizacion" [columns]="columnsFertilizacionesDetalle" [mostrarPaginador]="mostrarPaginadorDetalle"> </app-dynamic-table>
             </div>
 

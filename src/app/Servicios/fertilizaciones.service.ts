@@ -13,4 +13,10 @@ export class FertilizacionesService {
   getFertilizaciones() {
     return this.http.get<any>(`${environment.url}/fertilizaciones`).pipe(map(data => data));
   }
+
+  getFertilizacion(id_fertilizacion: string) {
+    return this.http
+      .get<any>(`${environment.url}/fertilizaciones/${id_fertilizacion}`)
+      .pipe(map(data => data));
+  }
 }

@@ -3,7 +3,6 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild, AfterViewIni
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { TableColumn } from '../../../models/columnsDynamicTable';
-import { ModalService } from '../../../Servicios/modal.service'; // Adjust the path
 @Component({
   selector: 'app-dynamic-table',
   templateUrl: './dynamic-table.component.html',
@@ -16,10 +15,11 @@ export class DynamicTableComponent implements OnInit, AfterViewInit  {
     @Input() dataSource: MatTableDataSource<any>; //listado de lo que sea (cosechas, viajes...) filtrado 
     displayedColumns: string[] = []; //nombre de las columnas obtenido a partir de columns
     @Input() mostrarPaginador:boolean;
+    @Output() rowSelected = new EventEmitter<any>();
     ////@Input() mostrarTablaDetalle:boolean;
 
   
-    constructor(private modalService: ModalService) { }
+    constructor() { }
   
     ngOnInit(): void {
       console.log("this.dataSource.data", this.dataSource.data)
@@ -36,8 +36,9 @@ export class DynamicTableComponent implements OnInit, AfterViewInit  {
       this.dataSource.paginator = this.paginator;
     }
     
-    openModal(rowData: any) {
-      this.modalService.openModal(rowData);
+    onRowClick(row: any) {
+      this.selection.toggle(row);
+      this.rowSelected.emit(row);
     }
   
 }

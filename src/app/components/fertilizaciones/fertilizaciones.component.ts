@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CosechasService } from '../../Servicios/cosechas.service';
-import { FormGroup, FormControl, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormControl } from '@angular/forms';
 import * as moment from 'moment';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
@@ -30,9 +29,17 @@ export class FertilizacionesComponent implements OnInit {
   ]
 
   columnsFertilizacionesDetalle = [
-    { columnDef: 'kilos_racimos_dia', header: 'Cantidad kilos cosechados en el día'},
-    { columnDef: 'cantidad_racimos_dia', header: 'Cantidad racimos cosechados en el día'},
-    { columnDef: 'fecha_cosecha', header: 'Fecha de la cosecha'}
+    { columnDef: 'fecha_fertilizacion_diaria', header: 'Fecha fertilización' },
+    { columnDef: 'nombre_fertilizante', header: 'Fertilizante' },
+    { columnDef: 'dosis', header: 'Dosis' },
+    { columnDef: 'unidades', header: 'Unidades' },
+    { columnDef: 'cantidad_fertilizacion_diaria', header: 'Palmas fertilizadas diario' },
+    { columnDef: 'orientacion_inicio', header: 'Orientación inicio' },
+    { columnDef: 'linea_inicio', header: 'Línea inicio' },
+    { columnDef: 'numero_inicio', header: 'Número inicio' },
+    { columnDef: 'orientacion_fin', header: 'Orientación fin'},
+    { columnDef: 'linea_fin', header: 'Línea fin' },
+    { columnDef: 'numero_fin', header: 'Número fin' }
   ]
   // displayedColumns: string[] = ['nombre_lote', 'kilos_totales', 'racimos_totales', 'inicio_cosecha', 'fin_cosecha', 'estado_cosecha'];
   // namedColumns: string[] = ['Lote', 'Kilos totales', 'Racimos totales', 'Inicio cosecha', 'Fin cosecha', 'Estado'];
@@ -61,7 +68,6 @@ export class FertilizacionesComponent implements OnInit {
   lotes:any = [];
 
   constructor(
-    private cosechasService: CosechasService,
     private fertilizacionesService: FertilizacionesService,
     private activatedRoute: ActivatedRoute,
     private _loteService: LoteService
@@ -76,14 +82,37 @@ export class FertilizacionesComponent implements OnInit {
     this.detalleFertilizacion = new MatTableDataSource<any>([]);
    }
    
-  idBd(id:string){
-    this.cosechasService.getCosecha(id).subscribe(
-      data => { this.detalleFertilizacion.data = data.map( element => {
-          element.fecha_cosecha = moment(element.fecha_cosecha).format('LL')
-          return element
-      })      
-    })
-    this.mostrarTablaDetalle = true;
+  cargarDetalleFertilizacion(id_fertilizacion: string) {
+    if (!id_fertilizacion) {
+      return;
+    }
+    this.bandera_error = false;
+    this.mostrarTablaDetalle = false;
+    this.fertilizacionesService.getFertilizacion(id_fertilizacion).subscribe(
+      data => {
+        const detalle = Array.isArray(data) ? data : [data];
+        this.detalleFertilizacion.data = detalle.map(element => {
+          const fecha = element.fecha_fertilizacion_diaria ? moment(element.fecha_fertilizacion_diaria).locale("es").format('LL') : '';
+          return {
+            ...element,
+            fecha_fertilizacion_diaria: fecha
+          };
+        });
+        this.mostrarTablaDetalle = this.detalleFertilizacion.data.length > 0;
+      },
+      error => {
+        this.bandera_error = true;
+        this.mensaje_error = error.error?.message || 'No se pudo cargar el detalle de fertilización';
+        if (error.status == 0) {
+          this.mensaje_error = "Servicio no disponible";
+        }
+      }
+    );
+  }
+
+  onFertilizacionRowClick(row: any) {
+    const id = row.id_fertilizacion || row.id_cosecha;
+    this.cargarDetalleFertilizacion(id);
   }
 
   ngOnInit() {
@@ -144,10 +173,7 @@ export class FertilizacionesComponent implements OnInit {
             finCosechaDate: finDate,
 
             fecha_inicio: inicioDate ? moment(inicioDate).locale("es").format('LL') : '',
-            fecha_fin: finDate ? moment(finDate).locale("es").format('LL') : '',
-
-            callback: () => { this.idBd(element.id_fertilizacion || element.id_cosecha) } 
-
+            fecha_fin: finDate ? moment(finDate).locale("es").format('LL') : ''
           }
         });
 
