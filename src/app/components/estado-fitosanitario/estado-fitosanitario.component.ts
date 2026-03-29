@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { LoteService } from "../../Servicios/lote.service";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
+import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
 import { ActivatedRoute } from "@angular/router";
 import { Chart } from "chart.js";
 import {
@@ -43,6 +44,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalpendientesporerradicar: number;
   totalerradicadas: number;
 
+  erradicaciones: any[] = [];
+  erradicacionesFiltradasCount = 0;
+  loteErradicacionesSeleccionado: string = "Todos";
+  lotesErradicaciones: string[] = [];
+
   casosmes: number;
   casosacumulados: number;
   incidenciareal: number;
@@ -61,6 +67,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   constructor(
     private _loteService: LoteService,
     private _enfermedadesService: EnfermedadesService,
+    private _erradicacionesService: ErradicacionesService,
     private activatedRoute: ActivatedRoute
   ) {}
 
@@ -72,6 +79,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
         return;
       }
       this.estadoCargaMensaje = "";
+      this.loteErradicacionesSeleccionado =
+        this.nombreLoteParams || "Todos";
+      this.cargarLotesErradicaciones();
+      this.cargarErradicaciones();
 
       this._loteService.getLote(this.nombreLoteParams).subscribe(
         (lote: LoteModel) => {
@@ -161,6 +172,92 @@ export class EstadoFitosanitarioComponent implements OnInit {
         console.error(error);
       }
     );
+  }
+
+  private cargarErradicaciones(): void {
+    this._erradicacionesService.getErradicaciones().subscribe(
+      (data) => {
+        this.erradicaciones = data ?? [];
+        this.actualizarContadorErradicaciones();
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  private cargarLotesErradicaciones(): void {
+    this._loteService.getLotes().subscribe(
+      (data) => {
+        const nombres = Array.from(
+          new Set(
+            (data ?? [])
+              .map((lote) => lote.nombre_lote)
+              .filter((nombre) => !!nombre)
+          )
+        );
+        if (
+          this.nombreLoteParams &&
+          !nombres.some(
+            (nombre) =>
+              this.normalizeLoteName(nombre) ===
+              this.normalizeLoteName(this.nombreLoteParams)
+          )
+        ) {
+          nombres.push(this.nombreLoteParams);
+        }
+        this.lotesErradicaciones = nombres.sort((a, b) =>
+          a.localeCompare(b, undefined, { sensitivity: "base" })
+        );
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  private actualizarContadorErradicaciones(): void {
+    const loteFiltro =
+      this.loteErradicacionesSeleccionado &&
+      this.loteErradicacionesSeleccionado !== "Todos"
+        ? this.normalizeLoteName(this.loteErradicacionesSeleccionado)
+        : null;
+
+    const filtered = this.erradicaciones.filter((item) => {
+      if (loteFiltro) {
+        const nombreLoteItem = this.normalizeLoteName(item.nombre_lote);
+        if (nombreLoteItem !== loteFiltro) {
+          return false;
+        }
+      }
+
+      if (!item?.fecha_erradicacion) {
+        return false;
+      }
+
+      const fecha = new Date(item.fecha_erradicacion);
+      if (!fecha || Number.isNaN(fecha.getTime())) {
+        return false;
+      }
+
+      if (
+        this.yearSeleccionado !== "Todos" &&
+        fecha.getFullYear() !== Number.parseInt(this.yearSeleccionado, 10)
+      ) {
+        return false;
+      }
+
+      if (
+        this.mesSeleccionado !== "Todos" &&
+        fecha.getMonth() !== Number.parseInt(this.mesSeleccionado, 10)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    this.erradicacionesFiltradasCount = filtered.length;
   }
 
   createChart(data: RegistroEnfermedad[]) {
@@ -307,6 +404,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     } else {
       this.createChart(newData);
     }
+    this.actualizarContadorErradicaciones();
   }
 
   crearPdf() {
