@@ -18,20 +18,20 @@
                 <p>{{this.totalsanas}}</p>
             </div>
             <div class="card">
-                <p>En tratamiento</p>
-                <p>{{this.totalentratamiento}}</p>
-            </div>
-            <div class="card">
                 <p>Pendientes por tratar</p>
                 <p>{{this.totalpendientesportratar}}</p>
+            </div>
+            <div class="card">
+                <p>En tratamiento</p>
+                <p>{{this.totalentratamiento}}</p>
             </div>
             <div class="card" style="width: 250px;">
                 <p>Pendiente por erradicar</p>
                 <p>{{this.totalpendientesporerradicar}}</p>
             </div>
-            <div class="card">
+            <div *ngIf="totalerradicadas !== undefined" class="card">
                 <p>Erradicadas</p>
-                <p>{{this.totalerradicadas}}</p>
+                <p>{{this.erradicacionesFiltradasCount}}</p>
             </div>
         </div>
        
@@ -56,6 +56,10 @@
         <select class="col-1 form-control form-control-sm mr-2" [(ngModel)]="yearSeleccionado">
             <option value="Todos"> --- </option>
             <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+        </select>
+        <select class="col-2 form-control form-control-sm mr-2" [(ngModel)]="loteErradicacionesSeleccionado">
+            <option value="Todos">---</option>
+            <option *ngFor="let lote of lotesErradicaciones" [value]="lote">{{ lote }}</option>
         </select>
         <select class="col-2 form-control form-control-sm" [(ngModel)]="enfermedadSeleccionada">
             <option value="Todas"> --- </option>
