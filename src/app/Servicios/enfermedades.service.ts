@@ -4,6 +4,7 @@ import { respuesta } from "../models/resp.model";
 import { map } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
+import { RegistroEnfermedad } from "../models/registroEnfermedad";
 
 @Injectable({
   providedIn: "root",
@@ -81,6 +82,12 @@ export class EnfermedadesService {
   getEnfermedadesRegistradas() {
     return this.http
       .get<any>(`${environment.url}/registro-enfermedades`)
+      .pipe(map((data) => data));
+  }
+
+  getPendientesPorTratar(): Observable<RegistroEnfermedad[]> {
+    return this.http
+      .get<RegistroEnfermedad[]>(`${environment.url}/registro-enfermedades/pend-por-tratar`)
       .pipe(map((data) => data));
   }
 

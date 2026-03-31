@@ -5,4 +5,5 @@ export class RegistroEnfermedad {
     nombre_lote: string;
     fecha_registro_enfermedad: string;
     observacion_registro_enfermedad: string;
+    dada_de_alta?: boolean;
   }
