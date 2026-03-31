@@ -5,5 +5,7 @@ export class RegistroEnfermedad {
     nombre_lote: string;
     fecha_registro_enfermedad: string;
     observacion_registro_enfermedad: string;
+    tratamiento_etapa_enfermedad?: string;
+    procedimiento_tratamiento_enfermedad?: string;
     dada_de_alta?: boolean;
   }

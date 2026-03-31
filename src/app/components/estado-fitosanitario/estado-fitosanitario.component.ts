@@ -41,7 +41,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalsanas: number;
   totalentratamiento: number;
   totalpendientesportratar: number;
-  totalpendientesporerradicar: number;
+  totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
   registrosPendientesPorTratar: RegistroEnfermedad[] = [];
   pendientesPorTratarDesdeServicio = 0;
@@ -101,9 +101,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
               this.totalpendientesportratar = palmas.filter(
                 (p) => p.estado_palma === "Pendiente por tratar"
               ).length;
-              this.totalpendientesporerradicar = palmas.filter(
-                (p) => p.estado_palma === "Pendiente por erradicar"
-              ).length;
               this.totalerradicadas = palmas.filter(
                 (p) => p.estado_palma === "Erradicada"
               ).length;
@@ -139,6 +136,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
           this.registroEnfermedadesLote = registros.filter(
             (d) => this.normalizeLoteName(d.nombre_lote) === loteParam
           );
+          this.totalpendientesporerradicar =
+            this.contarPendientesPorErradicar(this.registroEnfermedadesLote);
           this.availableYears = Array.from(
             new Set(
               this.registroEnfermedadesLote
@@ -317,6 +316,85 @@ export class EstadoFitosanitarioComponent implements OnInit {
     }
     return registros.filter((registro) => registro.dada_de_alta === true)
       .length;
+  }
+
+  private contarPendientesPorErradicar(
+    registros: RegistroEnfermedad[]
+  ): number {
+    if (!Array.isArray(registros) || registros.length === 0) {
+      return 0;
+    }
+
+    const nombrePudricion = this.normalizeText("Pudrición Cogollo - PC");
+
+    return registros.filter((registro) => {
+      const nombre = this.normalizeText(registro?.nombre_enfermedad);
+      if (!nombre) {
+        return false;
+      }
+
+      const etapa = this.normalizeText(registro?.etapa_enfermedad);
+      const tratamiento = this.normalizeText(
+        registro?.tratamiento_etapa_enfermedad
+      );
+      const procedimiento = this.normalizeText(
+        registro?.procedimiento_tratamiento_enfermedad
+      );
+
+      const contieneErradicacion =
+        tratamiento.includes("erradicacion") ||
+        procedimiento.includes("erradicacion");
+
+      if (contieneErradicacion) {
+        return true;
+      }
+
+      const esGrado = this.esEtapaGradoValida(etapa);
+
+      if (nombre === nombrePudricion) {
+        return !esGrado;
+      }
+
+      return esGrado;
+    }).length;
+  }
+
+  private esEtapaGradoValida(etapa: string): boolean {
+    if (!etapa) {
+      return false;
+    }
+
+    const etapaNormalizada = etapa.replace(/\s+/g, " ").trim();
+    const patrones = [
+      "grado uno",
+      "grado 1",
+      "grado dos",
+      "grado 2",
+      "grado tres",
+      "grado 3",
+      "grado i",
+      "grado ii",
+      "grado iii",
+      "etapa 1",
+      "etapa 2",
+      "etapa 3",
+      "etapa uno",
+      "etapa dos",
+      "etapa tres",
+      "1",
+      "2",
+      "3",
+    ];
+
+    return patrones.some((patron) => etapaNormalizada.includes(patron));
+  }
+
+  private normalizeText(value: unknown): string {
+    return String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
   }
 
   createChart(data: RegistroEnfermedad[]) {
