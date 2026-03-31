@@ -43,6 +43,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalpendientesportratar: number;
   totalpendientesporerradicar: number;
   totalerradicadas: number;
+  registrosPendientesPorTratar: RegistroEnfermedad[] = [];
+  pendientesPorTratarDesdeServicio = 0;
+  registrosEnTratamiento = 0;
+  registrosDadasDeAlta = 0;
 
   erradicaciones: any[] = [];
   erradicacionesFiltradasCount = 0;
@@ -83,6 +87,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
         this.nombreLoteParams || "Todos";
       this.cargarLotesErradicaciones();
       this.cargarErradicaciones();
+      this.cargarPendientesPorTratar();
 
       this._loteService.getLote(this.nombreLoteParams).subscribe(
         (lote: LoteModel) => {
@@ -154,6 +159,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
             this.estadoCargaMensaje =
               "No hay registros de enfermedades para este lote.";
           }
+          this.registrosEnTratamiento = this.registroEnfermedadesLote.length;
+          this.registrosDadasDeAlta = this.calcularRegistrosDadasDeAlta(
+            this.registroEnfermedadesLote
+          );
           this.createChart(this.registroEnfermedadesLote);
         },
         (error) => {
@@ -258,6 +267,56 @@ export class EstadoFitosanitarioComponent implements OnInit {
     });
 
     this.erradicacionesFiltradasCount = filtered.length;
+  }
+
+  private cargarPendientesPorTratar(): void {
+    this._enfermedadesService.getPendientesPorTratar().subscribe(
+      (registros) => {
+        this.registrosPendientesPorTratar = registros ?? [];
+        const registrosFiltrados = this.filtrarRegistrosPendientesPorLote(
+          this.registrosPendientesPorTratar
+        );
+        this.pendientesPorTratarDesdeServicio = this.calcularCantidadRegistrosPendientes(
+          registrosFiltrados
+        );
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
+
+  private filtrarRegistrosPendientesPorLote(
+    registros: RegistroEnfermedad[]
+  ): RegistroEnfermedad[] {
+    if (!Array.isArray(registros) || registros.length === 0) {
+      return [];
+    }
+    const lote = this.normalizeLoteName(this.nombreLoteParams);
+    if (!lote) {
+      return registros;
+    }
+    return registros.filter(
+      (item) =>
+        typeof item?.nombre_lote === "string" &&
+        this.normalizeLoteName(item.nombre_lote) === lote
+    );
+  }
+
+  private calcularCantidadRegistrosPendientes(
+    registros: RegistroEnfermedad[]
+  ): number {
+    return registros?.length ?? 0;
+  }
+
+  private calcularRegistrosDadasDeAlta(
+    registros: RegistroEnfermedad[]
+  ): number {
+    if (!Array.isArray(registros) || registros.length === 0) {
+      return 0;
+    }
+    return registros.filter((registro) => registro.dada_de_alta === true)
+      .length;
   }
 
   createChart(data: RegistroEnfermedad[]) {
@@ -433,8 +492,12 @@ export class EstadoFitosanitarioComponent implements OnInit {
     doc.setFontSize(11);
     doc.text(`${this.totalpalmas}`, xCol1 + col1Offset, yLine1);
     doc.text(`${this.totalsanas}`, xCol2 + col2Offset, yLine1);
-    doc.text(`${this.totalpendientesportratar}`, xCol1 + col1Offset, yLine1 + lineOffset);
-    doc.text(`${this.totalentratamiento}`, xCol2 + col2Offset, yLine1 + lineOffset);
+    doc.text(
+      `${this.pendientesPorTratarDesdeServicio}`,
+      xCol1 + col1Offset,
+      yLine1 + lineOffset
+    );
+    doc.text(`${this.registrosEnTratamiento}`, xCol2 + col2Offset, yLine1 + lineOffset);
     doc.text(`${this.totalpendientesporerradicar}`, xCol1 + col1Offset, yLine1 + 2 * lineOffset);
     doc.text(`${this.totalerradicadas}`, xCol2 + col2Offset, yLine1 + 2 * lineOffset);
 

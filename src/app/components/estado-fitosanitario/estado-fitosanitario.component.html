@@ -14,16 +14,12 @@
                 <p>{{this.totalpalmas}}</p>
             </div>
             <div class="card">
-                <p>Sanas</p>
-                <p>{{this.totalsanas}}</p>
-            </div>
-            <div class="card">
                 <p>Pendientes por tratar</p>
-                <p>{{this.totalpendientesportratar}}</p>
+                <p>{{ pendientesPorTratarDesdeServicio }}</p>
             </div>
             <div class="card">
                 <p>En tratamiento</p>
-                <p>{{this.totalentratamiento}}</p>
+                <p>{{ registrosEnTratamiento }}</p>
             </div>
             <div class="card" style="width: 250px;">
                 <p>Pendiente por erradicar</p>
@@ -32,6 +28,10 @@
             <div *ngIf="totalerradicadas !== undefined" class="card">
                 <p>Erradicadas</p>
                 <p>{{this.erradicacionesFiltradasCount}}</p>
+            </div>
+            <div class="card">
+                <p>Dadas de alta</p>
+                <p>{{ registrosDadasDeAlta }}</p>
             </div>
         </div>
        
