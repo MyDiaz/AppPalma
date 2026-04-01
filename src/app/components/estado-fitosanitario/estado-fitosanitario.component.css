@@ -1,57 +1,80 @@
-.enf-seleccionada {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-
 .results {
   display: flex;
-  gap: 10px;
-  flex-direction: row;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
 }
+
+.chart-panel {
+  flex: 2;
+  min-width: 280px;
+}
+
+.stats-column {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .row-text {
-  width: 150px;
+  width: 100%;
   padding: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   border-radius: 10px;
   align-items: center;
+  justify-content: center;
+  min-height: 100px;
 }
 
 .row-text p {
   color: #fff;
+  margin: 0;
 }
 
-.firstData {
-  display: flex;
-  flex-direction: row;
-}
-
-.card {
-  padding: 15px;
-  width: 180px;
-  display: flex;
-  align-items: center;
-  height: 80px;
-}
 .card-row {
   display: flex;
   flex-direction: row;
   gap: 10px;
-}
-.card-column {
-  display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 .datosgenerales {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.datosgenerales .card {
+  padding: 1rem;
+  min-height: 110px;
   display: flex;
-  flex-direction: row;
-  gap: 10px;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.datosgenerales .card p {
+  margin: 0;
+}
+
+.datosgenerales .card p:first-child {
+  font-weight: 600;
+  color: #1f2a37;
+  opacity: 0.8;
+}
+
+.datosgenerales .card p:last-child {
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
 .generar-pdf {
-  margin-top: 50px;
+  margin-top: 2rem;
 }
