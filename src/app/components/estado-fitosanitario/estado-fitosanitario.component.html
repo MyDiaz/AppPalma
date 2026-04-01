@@ -1,98 +1,86 @@
 <div class="container">
-    <div class="row mt-5 mb-3">
-        <div class="col-md-9">
-            <h3> Estado fitosanitario </h3>
+    <div class="row mt-5 mb-3 align-items-center">
+        <div class="col-md-8">
+            <h3 class="mb-0">Estado fitosanitario</h3>
         </div>
-        <div class="col-md-3">
-            <app-fecha> </app-fecha>
+        <div class="col-md-4 text-end">
+            <app-fecha></app-fecha>
         </div>
     </div>
-    <div class="row" style="width: 50%; gap: 5px;">
-        <div class="datosgenerales">
-            <div class="card">
-                <p>Total de palmas</p>
-                <p>{{this.totalpalmas}}</p>
-            </div>
-            <div class="card">
-                <p>Pendientes por tratar</p>
-                <p>{{ pendientesPorTratarDesdeServicio }}</p>
-            </div>
-            <div class="card">
-                <p>En tratamiento</p>
-                <p>{{ registrosEnTratamiento }}</p>
-            </div>
-            <div class="card" style="width: 250px;">
-                <p>Pendiente por erradicar</p>
-                <p>{{this.totalpendientesporerradicar}}</p>
-            </div>
-            <div *ngIf="totalerradicadas !== undefined" class="card">
-                <p>Erradicadas</p>
-                <p>{{this.erradicacionesFiltradasCount}}</p>
-            </div>
-            <div class="card">
-                <p>Dadas de alta</p>
-                <p>{{ registrosDadasDeAlta }}</p>
-            </div>
+    <hr />
+    <div class="mb-2">
+        <p>Seleccione la fecha para consultar el informe fitosanitario. </p>
+    </div>
+    <div class="row gx-2 gy-2 align-items-end mb-4 filtros">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="visually-hidden" for="fechaSelect">Fecha</label>
+            <input
+                id="fechaSelect"
+                type="date"
+                class="form-control form-control-sm"
+                [(ngModel)]="fechaSeleccionada"
+                placeholder="---"
+            />
         </div>
-       
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="visually-hidden" for="loteSelect">Lote</label>
+            <select id="loteSelect" class="form-control form-control-sm" [(ngModel)]="loteErradicacionesSeleccionado">
+                <option value="Todos">---</option>
+                <option *ngFor="let lote of lotesErradicaciones" [value]="lote">{{ lote }}</option>
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="visually-hidden" for="enfermedadSelect">Enfermedad</label>
+            <select id="enfermedadSelect" class="form-control form-control-sm" [(ngModel)]="enfermedadSeleccionada">
+                <option value="Todas"> --- </option>
+                <option *ngFor="let option of enfermedades" [value]="option.nombre">{{ option.nombre }}</option>
+            </select>
+        </div>
+        <div class="col-12 col-sm-auto">
+            <button type="button" class="btn btn-info btn-sm font-weight-bold" (click)="cambiarChart()">Consultar</button>
+        </div>
     </div>
-    <br/>
-    <div class="form row ">
-        <select class="col-1 form-control form-control-sm mr-2" [(ngModel)]="mesSeleccionado">
-            <option value="Todos">---</option>
-            <option value="0">Enero</option>
-            <option value="1">Febrero</option>
-            <option value="2">Marzo</option>
-            <option value="3">Abril</option>
-            <option value="4">Mayo</option>
-            <option value="5">Junio</option>
-            <option value="6">Julio</option>
-            <option value="7">Agosto</option>
-            <option value="8">Septiembre</option>
-            <option value="9">Octubre</option>
-            <option value="10">Noviembre</option>
-            <option value="11">Diciembre</option>
-        </select>
-        <select class="col-1 form-control form-control-sm mr-2" [(ngModel)]="yearSeleccionado">
-            <option value="Todos"> --- </option>
-            <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
-        </select>
-        <select class="col-2 form-control form-control-sm mr-2" [(ngModel)]="loteErradicacionesSeleccionado">
-            <option value="Todos">---</option>
-            <option *ngFor="let lote of lotesErradicaciones" [value]="lote">{{ lote }}</option>
-        </select>
-        <select class="col-2 form-control form-control-sm" [(ngModel)]="enfermedadSeleccionada">
-            <option value="Todas"> --- </option>
-            <option *ngFor="let option of enfermedades" [value]="option.nombre">{{ option.nombre }}</option>
-        </select>
-        <br>
-
-        <button class="ml-3 btn btn-info btn-sm font-weight-bold" (click)="cambiarChart()"> Consultar </button>
+    <div class="datosgenerales">
+        <div class="card">
+            <p>Total de palmas</p>
+            <p>{{this.totalpalmas}}</p>
+        </div>
+        <div class="card">
+            <p>Pendientes por tratar</p>
+            <p>{{ pendientesPorTratarDesdeServicio }}</p>
+        </div>
+        <div class="card">
+            <p>En tratamiento</p>
+            <p>{{ registrosEnTratamiento }}</p>
+        </div>
+        <div class="card">
+            <p>Pendiente por erradicar</p>
+            <p>{{this.totalpendientesporerradicar}}</p>
+        </div>
+        <div *ngIf="totalerradicadas !== undefined" class="card">
+            <p>Erradicadas</p>
+            <p>{{this.erradicacionesFiltradasCount}}</p>
+        </div>
+        <div class="card">
+            <p>Dadas de alta</p>
+            <p>{{ registrosDadasDeAlta }}</p>
+        </div>
     </div>
-    <div  class="results">
-        <div style="width: 600px;">
+    <div class="results">
+        <div class="chart-panel">
             <p class="text-muted mb-2" *ngIf="estadoCargaMensaje">{{ estadoCargaMensaje }}</p>
             <canvas id="myChart"></canvas>
         </div>
-        <div style="display: flex; gap: 10px; flex-direction: column;">
+        <div class="stats-column">
             <div class="card-row">
                 <div class="row-text" style="background-color: #619885;">
-                    <!-- <p>{{mesSeleccionado == "Todos" }} Casos de mes</p>
-                    <p style="font-size: 20px;">{{enfermedades.length}}</p> -->
-                    <p *ngIf="mesSeleccionado != 'Todos' ">
-                       Casos de mes
-                    </p>
-                    <p *ngIf="mesSeleccionado == 'Todos' && yearSeleccionado != 'Todos' ">
-                        Casos del año
-                    </p> 
-                    <p *ngIf="mesSeleccionado == 'Todos' && yearSeleccionado == 'Todos' ">
-                        Casos totales
-                    </p> 
-                    <p style="font-size: 20px;">{{registroEnfermedadesLote.length}}</p>
+                    <p *ngIf="fechaSeleccionada">Casos del mes</p>
+                    <p *ngIf="!fechaSeleccionada">Casos totales</p>
+                    <p style="font-size: 20px;">{{casosFiltrados}}</p>
                 </div>
                 <div class="row-text" style="background-color: #466067;">
                     <p>Incidencia real (%)</p>
-                    <p style="font-size: 20px;">{{incidenciareal}}</p>
+                    <p style="font-size: 20px;">{{incidenciaFiltrada}}</p>
                 </div>
             </div>
             <div class="card-row">

@@ -19,6 +19,11 @@ interface GraficoArrayMap {
   [key: string]: any[]; // Index signature with string keys and array values
 }
 
+interface FechaFiltro {
+  year: number;
+  month: number;
+}
+
 @Component({
   selector: "app-estado-fitosanitario",
   templateUrl: "./estado-fitosanitario.component.html",
@@ -32,9 +37,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   registroEnfermedadesLote: RegistroEnfermedad[] = [];
   nombreLoteParams: string;
   chart: Chart;
-  mesSeleccionado: string = "Todos";
-  yearSeleccionado: string = "Todos";
-  availableYears: string[] = [];
+  fechaSeleccionada: string = "";
   enfermedadSeleccionada: string = "Todas";
 
   totalpalmas: number;
@@ -53,10 +56,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
   loteErradicacionesSeleccionado: string = "Todos";
   lotesErradicaciones: string[] = [];
 
-  casosmes: number;
   casosacumulados: number;
   incidenciareal: number;
   incidenciaacumulada: number;
+  casosFiltrados: number = 0;
+  incidenciaFiltrada: number = 0;
   estadoCargaMensaje: string = "";
 
   private normalizeLoteName(value: string): string {
@@ -77,99 +81,12 @@ export class EstadoFitosanitarioComponent implements OnInit {
 
   ngOnInit() {
     this.activatedRoute.queryParamMap.subscribe((params) => {
-      this.nombreLoteParams = params.get("lote");
-      if (!this.nombreLoteParams) {
-        this.estadoCargaMensaje = "No se recibió el parámetro de lote en la URL.";
-        return;
+      const loteParam = params.get("lote");
+      if (loteParam) {
+        this.prepararLote(loteParam);
+      } else {
+        this.cargarLotePorDefecto();
       }
-      this.estadoCargaMensaje = "";
-      this.loteErradicacionesSeleccionado =
-        this.nombreLoteParams || "Todos";
-      this.cargarLotesErradicaciones();
-      this.cargarErradicaciones();
-      this.cargarPendientesPorTratar();
-
-      this._loteService.getLote(this.nombreLoteParams).subscribe(
-        (lote: LoteModel) => {
-          this.lote = lote;
-          this._loteService.getPalmasLote(this.nombreLoteParams).subscribe(
-            (palmas: PalmaModel[]) => {
-              console.log("palmas.length", palmas.length);
-              this.totalentratamiento = palmas.filter(
-                (p) => p.estado_palma === "En tratamiento"
-              ).length;
-              this.totalpendientesportratar = palmas.filter(
-                (p) => p.estado_palma === "Pendiente por tratar"
-              ).length;
-              this.totalerradicadas = palmas.filter(
-                (p) => p.estado_palma === "Erradicada"
-              ).length;
-              this.totalpalmas = this.lote.numero_palmas - this.totalerradicadas;
-              this.totalsanas = this.totalpalmas - (this.totalentratamiento + this.totalpendientesportratar + this.totalpendientesporerradicar + this.totalerradicadas);
-              this.incidenciareal = parseFloat((100*(this.totalentratamiento + this.totalpendientesportratar)/this.totalpalmas).toFixed(2));
-              this.casosacumulados = palmas.length;
-              this.incidenciaacumulada = parseFloat((100*(this.casosacumulados)/this.totalpalmas).toFixed(2));
-            },
-            (error) => {
-              console.error(error);
-            }
-          );
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-
-      forkJoin({
-        enfermedades: this._loteService.getEnfermedadesServer(),
-        registros: this._enfermedadesService.getEnfermedadesRegistradas(),
-      }).subscribe(
-        ({ enfermedades, registros }) => {
-          const fromCatalog = enfermedades.map((e) => e.nombre);
-          const fromRegistros = registros
-            .map((r) => r.nombre_enfermedad)
-            .filter((n) => !!n);
-          const uniqueNames = Array.from(new Set([...fromCatalog, ...fromRegistros]));
-          this.enfermedades = uniqueNames.map((nombre) => ({ nombre }));
-
-          const loteParam = this.normalizeLoteName(this.nombreLoteParams);
-          this.registroEnfermedadesLote = registros.filter(
-            (d) => this.normalizeLoteName(d.nombre_lote) === loteParam
-          );
-          this.totalpendientesporerradicar =
-            this.contarPendientesPorErradicar(this.registroEnfermedadesLote);
-          this.availableYears = Array.from(
-            new Set(
-              this.registroEnfermedadesLote
-                .map((r) => new Date(r.fecha_registro_enfermedad).getFullYear())
-                .filter((y) => !Number.isNaN(y))
-                .map((y) => String(y))
-            )
-          ).sort((a, b) => Number(b) - Number(a));
-
-          if (
-            this.yearSeleccionado !== "Todos" &&
-            !this.availableYears.includes(this.yearSeleccionado)
-          ) {
-            this.yearSeleccionado = "Todos";
-          }
-
-          if (this.registroEnfermedadesLote.length === 0) {
-            this.estadoCargaMensaje =
-              "No hay registros de enfermedades para este lote.";
-          }
-          this.registrosEnTratamiento = this.registroEnfermedadesLote.length;
-          this.registrosDadasDeAlta = this.calcularRegistrosDadasDeAlta(
-            this.registroEnfermedadesLote
-          );
-          this.createChart(this.registroEnfermedadesLote);
-        },
-        (error) => {
-          console.error(error);
-          this.estadoCargaMensaje =
-            "No fue posible cargar enfermedades registradas.";
-        }
-      );
     });
 
     this._loteService.getEtapasServer().subscribe(
@@ -178,6 +95,143 @@ export class EstadoFitosanitarioComponent implements OnInit {
       },
       (error) => {
         console.error(error);
+      }
+    );
+  }
+
+  private prepararLote(loteNombre: string): void {
+    debugger
+    if (!loteNombre?.trim()) {
+      this.estadoCargaMensaje = "No se especificó un lote válido.";
+      return;
+    }
+
+    this.nombreLoteParams = loteNombre;
+    this.estadoCargaMensaje = "";
+    this.loteErradicacionesSeleccionado = loteNombre;
+    this.fechaSeleccionada = "";
+    this.enfermedadSeleccionada = "Todas";
+    this.registroEnfermedadesLote = [];
+    this.enfermedades = [];
+    this.erradicacionesFiltradasCount = 0;
+    this.registrosEnTratamiento = 0;
+    this.registrosDadasDeAlta = 0;
+    this.pendientesPorTratarDesdeServicio = 0;
+    this.totalpendientesporerradicar = 0;
+    this.totalpalmas = 0;
+    this.totalsanas = 0;
+    this.totalentratamiento = 0;
+    this.totalpendientesportratar = 0;
+    this.totalerradicadas = 0;
+    this.casosacumulados = 0;
+    this.incidenciareal = 0;
+    this.incidenciaacumulada = 0;
+
+    this.cargarLotesErradicaciones();
+    this.cargarErradicaciones();
+    this.cargarPendientesPorTratar();
+
+    this._loteService.getLote(loteNombre).subscribe(
+      (lote: LoteModel) => {
+        this.lote = lote;
+        this._loteService.getPalmasLote(loteNombre).subscribe(
+          (palmas: PalmaModel[]) => {
+            this.totalentratamiento = palmas.filter(
+              (p) => p.estado_palma === "En tratamiento"
+            ).length;
+            this.totalpendientesportratar = palmas.filter(
+              (p) => p.estado_palma === "Pendiente por tratar"
+            ).length;
+            this.totalerradicadas = palmas.filter(
+              (p) => p.estado_palma === "Erradicada"
+            ).length;
+            this.totalpalmas = this.lote.numero_palmas - this.totalerradicadas;
+            this.totalsanas =
+              this.totalpalmas -
+              (this.totalentratamiento +
+                this.totalpendientesportratar +
+                this.totalpendientesporerradicar +
+                this.totalerradicadas);
+            this.incidenciareal = parseFloat(
+              (
+                (100 * (this.totalentratamiento + this.totalpendientesportratar)) /
+                this.totalpalmas
+              ).toFixed(2)
+            );
+            this.casosacumulados = palmas.length;
+            this.incidenciaacumulada = parseFloat(
+              ((100 * this.casosacumulados) / this.totalpalmas).toFixed(2)
+            );
+          },
+          (error) => {
+            console.error(error);
+          }
+        );
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+
+    forkJoin({
+      enfermedades: this._loteService.getEnfermedadesServer(),
+      registros: this._enfermedadesService.getEnfermedadesRegistradas(),
+    }).subscribe(
+      ({ enfermedades, registros }) => {
+        const fromCatalog = enfermedades.map((e) => e.nombre);
+        const fromRegistros = registros
+          .map((r) => r.nombre_enfermedad)
+          .filter((n) => !!n);
+        const uniqueNames = Array.from(
+          new Set([...fromCatalog, ...fromRegistros])
+        );
+        this.enfermedades = uniqueNames.map((nombre) => ({ nombre }));
+
+        const loteParam = this.normalizeLoteName(loteNombre);
+        this.registroEnfermedadesLote = registros.filter(
+          (d) => this.normalizeLoteName(d.nombre_lote) === loteParam
+        );
+        this.totalpendientesporerradicar =
+          this.contarPendientesPorErradicar(this.registroEnfermedadesLote);
+
+        if (this.registroEnfermedadesLote.length === 0) {
+          this.estadoCargaMensaje =
+            "No hay registros de enfermedades para este lote.";
+        }
+        this.actualizarTarjetasFiltradas(
+          this.registroEnfermedadesLote,
+          null
+        );
+        this.cambiarChart();
+        },
+      (error) => {
+        console.error(error);
+        this.estadoCargaMensaje =
+          "No fue posible cargar enfermedades registradas.";
+      }
+    );
+  }
+
+  private cargarLotePorDefecto(): void {
+    this._loteService.getLotes().subscribe(
+      (data) => {
+        const lotesDisponibles = (data ?? []).filter(
+          (lote) => !!(lote?.nombre_lote ?? lote?.nombre)
+        );
+        const primerLote = lotesDisponibles[0];
+        const nombreLote =
+          primerLote?.nombre_lote ?? primerLote?.nombre ?? null;
+        if (!nombreLote) {
+          this.estadoCargaMensaje =
+            "No hay lotes disponibles para mostrar este informe.";
+          return;
+        }
+        this.prepararLote(nombreLote);
+      },
+      (error) => {
+        console.error(error);
+        this.estadoCargaMensaje =
+          "No fue posible cargar los lotes disponibles.";
       }
     );
   }
@@ -231,6 +285,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
         ? this.normalizeLoteName(this.loteErradicacionesSeleccionado)
         : null;
 
+    const fechaFiltro = this.obtenerFiltroMesAnio();
+
     const filtered = this.erradicaciones.filter((item) => {
       if (loteFiltro) {
         const nombreLoteItem = this.normalizeLoteName(item.nombre_lote);
@@ -248,18 +304,13 @@ export class EstadoFitosanitarioComponent implements OnInit {
         return false;
       }
 
-      if (
-        this.yearSeleccionado !== "Todos" &&
-        fecha.getFullYear() !== Number.parseInt(this.yearSeleccionado, 10)
-      ) {
-        return false;
-      }
-
-      if (
-        this.mesSeleccionado !== "Todos" &&
-        fecha.getMonth() !== Number.parseInt(this.mesSeleccionado, 10)
-      ) {
-        return false;
+      if (fechaFiltro) {
+        if (
+          fecha.getFullYear() !== fechaFiltro.year ||
+          fecha.getMonth() !== fechaFiltro.month
+        ) {
+          return false;
+        }
       }
 
       return true;
@@ -272,12 +323,12 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this._enfermedadesService.getPendientesPorTratar().subscribe(
       (registros) => {
         this.registrosPendientesPorTratar = registros ?? [];
-        const registrosFiltrados = this.filtrarRegistrosPendientesPorLote(
-          this.registrosPendientesPorTratar
+        this.pendientesPorTratarDesdeServicio = this.calcularPendientesPorTratarPorFecha(
+          this.obtenerFiltroMesAnio()
         );
-        this.pendientesPorTratarDesdeServicio = this.calcularCantidadRegistrosPendientes(
-          registrosFiltrados
-        );
+        if (this.registroEnfermedadesLote.length) {
+          this.cambiarChart();
+        }
       },
       (error) => {
         console.error(error);
@@ -454,6 +505,18 @@ export class EstadoFitosanitarioComponent implements OnInit {
       },
     });
   }
+
+  private actualizarResumenFiltrado(data: RegistroEnfermedad[]) {
+    const cantidad = data?.length ?? 0;
+    this.casosFiltrados = cantidad;
+    if (this.totalpalmas && this.totalpalmas > 0) {
+      this.incidenciaFiltrada = parseFloat(
+        ((cantidad * 100) / this.totalpalmas).toFixed(2)
+      );
+    } else {
+      this.incidenciaFiltrada = 0;
+    }
+  }
   createChartFiltrado(data: any[], etiquetas: string[], hasEtapas: boolean) {
     const canvas = document.getElementById("myChart") as HTMLCanvasElement;
     const ctx = canvas.getContext("2d");
@@ -504,44 +567,127 @@ export class EstadoFitosanitarioComponent implements OnInit {
     });
   }
 
-  cambiarChart() {
-    let newData = [];
-    //Aqui filtra por año o por mes si se ha seleccionado
-    if (this.yearSeleccionado != "Todos" || this.mesSeleccionado != "Todos") {
-      const filteredData = this.registroEnfermedadesLote.filter((obj) => {
-        const date = new Date(obj.fecha_registro_enfermedad);
-        const objectYear = date.getFullYear();
-        const objectMonth = date.getMonth();
-        return (
-          (this.yearSeleccionado === "Todos" ||
-            objectYear === parseInt(this.yearSeleccionado)) &&
-          (this.mesSeleccionado === "Todos" ||
-            objectMonth === parseInt(this.mesSeleccionado))
-        );
-      });
-      newData = [...filteredData];
-    } else {
-      newData = this.registroEnfermedadesLote;
+  private obtenerFiltroMesAnio(): FechaFiltro | null {
+    if (!this.fechaSeleccionada) {
+      return null;
     }
-    //Luego de filtrado por año y mes se filtra por enfermedad si se ha seleccionado
-    if (this.enfermedadSeleccionada != "Todas") {
-      let newDataFiltrada = newData.filter(
-        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
-      );
-      let etapas = this.etapasEnfermedades.filter(
-        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
-      );
-      let etiquetas = [];
-      if (etapas.length != 0) {
-        etiquetas = etapas.map((obj) => obj.nombre_etapa);
-      } else {
-        etiquetas = [this.enfermedadSeleccionada];
+
+    const parsed = new Date(this.fechaSeleccionada);
+    if (Number.isNaN(parsed.getTime())) {
+      return null;
+    }
+
+    return {
+      year: parsed.getFullYear(),
+      month: parsed.getMonth(),
+    };
+  }
+
+  private filtrarRegistrosPorFecha(
+    registros: RegistroEnfermedad[],
+    filtro: FechaFiltro | null
+  ): RegistroEnfermedad[] {
+    if (!Array.isArray(registros)) {
+      return [];
+    }
+    if (!filtro) {
+      return registros;
+    }
+
+    return registros.filter((registro) => {
+      const fecha = new Date(registro.fecha_registro_enfermedad);
+      if (Number.isNaN(fecha.getTime())) {
+        return false;
       }
-      this.createChartFiltrado(newDataFiltrada, etiquetas, etapas.length > 0);
-    } else {
-      this.createChart(newData);
+
+      return (
+        fecha.getFullYear() === filtro.year &&
+        fecha.getMonth() === filtro.month
+      );
+    });
+  }
+
+  private calcularPendientesPorTratarPorFecha(filtro: FechaFiltro | null): number {
+    const registrosLote = this.filtrarRegistrosPendientesPorLote(
+      this.registrosPendientesPorTratar
+    );
+    if (!filtro) {
+      return registrosLote.length;
     }
+
+    return registrosLote.filter((registro) => {
+      const fecha = new Date(registro.fecha_registro_enfermedad);
+      if (Number.isNaN(fecha.getTime())) {
+        return false;
+      }
+
+      return (
+        fecha.getFullYear() === filtro.year &&
+        fecha.getMonth() === filtro.month
+      );
+    }).length;
+  }
+
+  private actualizarPendientesPorTratar(filtro: FechaFiltro | null) {
+    this.pendientesPorTratarDesdeServicio =
+      this.calcularPendientesPorTratarPorFecha(filtro);
+  }
+
+  private actualizarEnTratamiento(registros: RegistroEnfermedad[]) {
+    this.registrosEnTratamiento = registros.length;
+  }
+
+  private actualizarPendientePorErradicar(registros: RegistroEnfermedad[]) {
+    this.totalpendientesporerradicar =
+      this.contarPendientesPorErradicar(registros);
+  }
+
+  private actualizarDadasDeAlta(registros: RegistroEnfermedad[]) {
+    this.registrosDadasDeAlta = this.calcularRegistrosDadasDeAlta(registros);
+  }
+
+  private actualizarTarjetasFiltradas(
+    registros: RegistroEnfermedad[],
+    filtro: FechaFiltro | null
+  ) {
+    this.actualizarEnTratamiento(registros);
+    this.actualizarDadasDeAlta(registros);
+    this.actualizarPendientePorErradicar(registros);
+    this.actualizarPendientesPorTratar(filtro);
+    this.actualizarResumenFiltrado(registros);
+  }
+
+  cambiarChart() {
+    if (!this.registroEnfermedadesLote.length) {
+      return;
+    }
+    const filtroFecha = this.obtenerFiltroMesAnio();
+    const registrosPorFecha = this.filtrarRegistrosPorFecha(
+      this.registroEnfermedadesLote,
+      filtroFecha
+    );
+    let datosFiltrados = registrosPorFecha;
+    if (this.enfermedadSeleccionada != "Todas") {
+      const newDataFiltrada = registrosPorFecha.filter(
+        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
+      );
+      const etapas = this.etapasEnfermedades.filter(
+        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
+      );
+      const etiquetas = etapas.length
+        ? etapas.map((obj) => obj.nombre_etapa)
+        : [this.enfermedadSeleccionada];
+      this.createChartFiltrado(newDataFiltrada, etiquetas, etapas.length > 0);
+      datosFiltrados = newDataFiltrada;
+    } else {
+      this.createChart(registrosPorFecha);
+    }
+    this.actualizarTarjetasFiltradas(datosFiltrados, filtroFecha);
     this.actualizarContadorErradicaciones();
+    this.estadoCargaMensaje =
+      registrosPorFecha.length === 0
+        ? "No hay registros disponibles para ese mes y año."
+        : "";
   }
 
   crearPdf() {
