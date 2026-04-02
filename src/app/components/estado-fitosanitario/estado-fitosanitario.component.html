@@ -24,8 +24,13 @@
         </div>
         <div class="col-12 col-sm-6 col-lg-3">
             <label class="visually-hidden" for="loteSelect">Lote</label>
-            <select id="loteSelect" class="form-control form-control-sm" [(ngModel)]="loteErradicacionesSeleccionado">
-                <option value="Todos">---</option>
+            <select
+                id="loteSelect"
+                class="form-control form-control-sm"
+                [(ngModel)]="loteErradicacionesSeleccionado"
+                (change)="aplicarFiltroLote($event.target.value)"
+            >
+                <option value="Todos">Todos</option>
                 <option *ngFor="let lote of lotesErradicaciones" [value]="lote">{{ lote }}</option>
             </select>
         </div>
@@ -57,7 +62,7 @@
             <p>Pendiente por erradicar</p>
             <p>{{this.totalpendientesporerradicar}}</p>
         </div>
-        <div *ngIf="totalerradicadas !== undefined" class="card">
+        <div class="card">
             <p>Erradicadas</p>
             <p>{{this.erradicacionesFiltradasCount}}</p>
         </div>
