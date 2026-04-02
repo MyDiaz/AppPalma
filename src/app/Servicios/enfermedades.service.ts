@@ -85,12 +85,6 @@ export class EnfermedadesService {
       .pipe(map((data) => data));
   }
 
-  getPendientesPorTratar(): Observable<RegistroEnfermedad[]> {
-    return this.http
-      .get<RegistroEnfermedad[]>(`${environment.url}/registro-enfermedades/pend-por-tratar`)
-      .pipe(map((data) => data));
-  }
-
   filtrarEnfermedades() {}
 
   getImagenesRegistroEnfermedad(id: string) {

@@ -40,15 +40,12 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalpalmas: number;
   totalsanas: number;
   totalentratamiento: number;
-  totalpendientesportratar: number;
   totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
-  registrosPendientesPorTratar: RegistroEnfermedad[] = [];
-  pendientesPorTratarDesdeServicio = 0;
+  pendientesPorTratar: number = 0;
   registrosEnTratamiento = 0;
   registrosDadasDeAlta = 0;
   registrosGlobal: RegistroEnfermedad[] = [];
-  pendientesGlobal: RegistroEnfermedad[] = [];
   erradicacionesGlobal: any[] = [];
   registrosAgroquimicos: any[] = [];
   registrosAgroquimicosFiltrados: any[] = [];
@@ -90,20 +87,17 @@ export class EstadoFitosanitarioComponent implements OnInit {
   private cargarDatosGenerales(): void {
     this.estadoCargaMensaje = "Cargando registros...";
     this.registrosGlobal = [];
-    this.pendientesGlobal = [];
     this.erradicacionesGlobal = [];
     this.registrosAgroquimicos = [];
     this.registrosAgroquimicosFiltrados = [];
 
     forkJoin({
       registros: this._enfermedadesService.getEnfermedadesRegistradas(),
-      pendientes: this._enfermedadesService.getPendientesPorTratar(),
       erradicaciones: this._erradicacionesService.getErradicaciones(),
       agroquimicos: this._agroquimicosService.getRegistroAgroquimico(),
     }).subscribe(
-      ({ registros, pendientes, erradicaciones, agroquimicos }) => {
+      ({ registros, erradicaciones, agroquimicos }) => {
         this.registrosGlobal = Array.isArray(registros) ? registros : [];
-        this.pendientesGlobal = Array.isArray(pendientes) ? pendientes : [];
         this.erradicacionesGlobal = Array.isArray(erradicaciones)
           ? erradicaciones
           : [];
@@ -116,12 +110,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
       (error) => {
         console.error(error);
         this.registrosGlobal = [];
-        this.pendientesGlobal = [];
         this.erradicacionesGlobal = [];
         this.registrosAgroquimicos = [];
         this.registrosAgroquimicosFiltrados = [];
         this.registroEnfermedadesLote = [];
-        this.registrosPendientesPorTratar = [];
         this.erradicaciones = [];
         this.estadoCargaMensaje =
           "No fue posible cargar los registros del lote.";
@@ -162,10 +154,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
       this.registrosGlobal,
       filtroNormalizado
     );
-    const pendientesFiltrados = this.filtrarPorLote(
-      this.pendientesGlobal,
-      filtroNormalizado
-    );
     const erradicacionesFiltradas = this.filtrarPorLote(
       this.erradicacionesGlobal,
       filtroNormalizado
@@ -176,7 +164,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
     );
 
     this.registroEnfermedadesLote = registrosFiltrados;
-    this.registrosPendientesPorTratar = pendientesFiltrados;
     this.erradicaciones = erradicacionesFiltradas;
     this.registrosAgroquimicosFiltrados = agroquimicosFiltrados;
     this.nombreLoteParams = loteValido ? loteNombre : "Global";
@@ -515,30 +502,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
     });
   }
 
-  private calcularPendientesPorTratarPorFecha(filtro: FechaFiltro | null): number {
-    if (!Array.isArray(this.registrosPendientesPorTratar)) {
-      return 0;
-    }
-    if (!filtro) {
-      return this.registrosPendientesPorTratar.length;
-    }
-
-    return this.registrosPendientesPorTratar.filter((registro) => {
-      const fecha = new Date(registro.fecha_registro_enfermedad);
-      if (Number.isNaN(fecha.getTime())) {
-        return false;
-      }
-
-      return (
-        fecha.getFullYear() === filtro.year &&
-        fecha.getMonth() === filtro.month
-      );
-    }).length;
-  }
-
-  private actualizarPendientesPorTratar(filtro: FechaFiltro | null) {
-    this.pendientesPorTratarDesdeServicio =
-      this.calcularPendientesPorTratarPorFecha(filtro);
+  private actualizarPendientesPorTratarDesdeRegistros(registros: RegistroEnfermedad[]) {
+    const totalRegistros = registros?.length ?? 0;
+    const pendientesPorErradicar = this.totalpendientesporerradicar ?? 0;
+    const diferencia = totalRegistros - pendientesPorErradicar;
+    this.pendientesPorTratar = diferencia > 0 ? diferencia : 0;
   }
 
   private actualizarEnTratamiento() {
@@ -554,14 +522,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.registrosDadasDeAlta = this.calcularRegistrosDadasDeAlta(registros);
   }
 
-  private actualizarTarjetasFiltradas(
-    registros: RegistroEnfermedad[],
-    filtro: FechaFiltro | null
-  ) {
+  private actualizarTarjetasFiltradas(registros: RegistroEnfermedad[]) {
     this.actualizarEnTratamiento();
     this.actualizarDadasDeAlta(registros);
     this.actualizarPendientePorErradicar(registros);
-    this.actualizarPendientesPorTratar(filtro);
+    this.actualizarPendientesPorTratarDesdeRegistros(registros);
     this.actualizarResumenFiltrado(registros);
   }
 
@@ -587,7 +552,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     } else {
       this.createChart(registrosPorFecha);
     }
-    this.actualizarTarjetasFiltradas(datosFiltrados, filtroFecha);
+    this.actualizarTarjetasFiltradas(datosFiltrados);
     this.actualizarContadorErradicaciones();
     const sinRegistros = registrosPorFecha.length === 0;
     if (sinRegistros) {
@@ -632,7 +597,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     doc.text(`${this.totalpalmas}`, xCol1 + col1Offset, yLine1);
     doc.text(`${this.totalsanas}`, xCol2 + col2Offset, yLine1);
     doc.text(
-      `${this.pendientesPorTratarDesdeServicio}`,
+      `${this.pendientesPorTratar}`,
       xCol1 + col1Offset,
       yLine1 + lineOffset
     );
