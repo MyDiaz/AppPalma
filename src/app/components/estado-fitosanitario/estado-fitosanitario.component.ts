@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { LoteService } from "../../Servicios/lote.service";
+import { LoteModel } from "../../models/lote.models";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
 import { AgroquimicosService } from "src/app/Servicios/agroquimicos.service";
@@ -37,9 +38,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
   fechaSeleccionada: string = "";
   enfermedadSeleccionada: string = "Todas";
 
-  totalpalmas: number;
-  totalsanas: number;
-  totalentratamiento: number;
+  lotesDisponibles: LoteModel[] = [];
+  totalpalmas: number = 0;
+  totalsanas: number = 0;
+  totalentratamiento: number = 0;
   totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
   pendientesPorTratar: number = 0;
@@ -124,9 +126,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
   private cargarLotesDisponibles(): void {
     this._loteService.getLotes().subscribe(
       (data) => {
+        const lotes = Array.isArray(data) ? data : [];
+        this.lotesDisponibles = lotes;
         const nombres = Array.from(
           new Set(
-            (data ?? [])
+            lotes
               .map((lote) => lote?.nombre_lote ?? lote?.nombre)
               .filter((nombre) => !!nombre)
           )
@@ -134,6 +138,13 @@ export class EstadoFitosanitarioComponent implements OnInit {
         this.lotesErradicaciones = nombres.sort((a, b) =>
           a.localeCompare(b, undefined, { sensitivity: "base" })
         );
+        const loteSeleccionado =
+          this.loteErradicacionesSeleccionado &&
+          this.loteErradicacionesSeleccionado !== "Todos"
+            ? this.loteErradicacionesSeleccionado
+            : null;
+        this.actualizarTotalPalmas(loteSeleccionado);
+        this.actualizarResumenFiltrado(this.registroEnfermedadesLote);
       },
       (error) => {
         console.error(error);
@@ -167,6 +178,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.erradicaciones = erradicacionesFiltradas;
     this.registrosAgroquimicosFiltrados = agroquimicosFiltrados;
     this.nombreLoteParams = loteValido ? loteNombre : "Global";
+    this.actualizarTotalPalmas(loteValido ? loteNombre : null);
 
     this.actualizarCatalogoEnfermedades(registrosFiltrados);
     this.actualizarEtapasDesdeRegistros(registrosFiltrados);
@@ -188,6 +200,29 @@ export class EstadoFitosanitarioComponent implements OnInit {
         typeof item?.nombre_lote === "string" &&
         this.normalizeLoteName(item.nombre_lote) === loteNormalizado
     );
+  }
+
+  private actualizarTotalPalmas(loteNombre: string | null): void {
+    if (!Array.isArray(this.lotesDisponibles) || this.lotesDisponibles.length === 0) {
+      this.totalpalmas = 0;
+      return;
+    }
+
+    const loteNormalizado = loteNombre
+      ? this.normalizeLoteName(loteNombre)
+      : null;
+
+    const lotesSeleccionados = loteNormalizado
+      ? this.lotesDisponibles.filter((lote) => {
+          const nombre = lote?.nombre_lote ?? lote?.nombre ?? "";
+          return this.normalizeLoteName(nombre) === loteNormalizado;
+        })
+      : this.lotesDisponibles;
+
+    this.totalpalmas = lotesSeleccionados.reduce((total, lote) => {
+      const palmas = Number(lote?.numero_palmas ?? 0);
+      return total + (isNaN(palmas) ? 0 : palmas);
+    }, 0);
   }
 
   private actualizarContadorErradicaciones(): void {
