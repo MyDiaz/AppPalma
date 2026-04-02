@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { LoteService } from "../../Servicios/lote.service";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
+import { AgroquimicosService } from "src/app/Servicios/agroquimicos.service";
 import { Chart } from "chart.js";
 import {
   EtapaEnfermedad,
@@ -49,6 +50,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
   registrosGlobal: RegistroEnfermedad[] = [];
   pendientesGlobal: RegistroEnfermedad[] = [];
   erradicacionesGlobal: any[] = [];
+  registrosAgroquimicos: any[] = [];
+  registrosAgroquimicosFiltrados: any[] = [];
 
   erradicaciones: any[] = [];
   erradicacionesFiltradasCount = 0;
@@ -74,7 +77,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
   constructor(
     private _loteService: LoteService,
     private _enfermedadesService: EnfermedadesService,
-    private _erradicacionesService: ErradicacionesService
+    private _erradicacionesService: ErradicacionesService,
+    private _agroquimicosService: AgroquimicosService
   ) {}
 
   ngOnInit() {
@@ -88,17 +92,23 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.registrosGlobal = [];
     this.pendientesGlobal = [];
     this.erradicacionesGlobal = [];
+    this.registrosAgroquimicos = [];
+    this.registrosAgroquimicosFiltrados = [];
 
     forkJoin({
       registros: this._enfermedadesService.getEnfermedadesRegistradas(),
       pendientes: this._enfermedadesService.getPendientesPorTratar(),
       erradicaciones: this._erradicacionesService.getErradicaciones(),
+      agroquimicos: this._agroquimicosService.getRegistroAgroquimico(),
     }).subscribe(
-      ({ registros, pendientes, erradicaciones }) => {
+      ({ registros, pendientes, erradicaciones, agroquimicos }) => {
         this.registrosGlobal = Array.isArray(registros) ? registros : [];
         this.pendientesGlobal = Array.isArray(pendientes) ? pendientes : [];
         this.erradicacionesGlobal = Array.isArray(erradicaciones)
           ? erradicaciones
+          : [];
+        this.registrosAgroquimicos = Array.isArray(agroquimicos)
+          ? agroquimicos
           : [];
 
         this.aplicarFiltroLote(this.loteErradicacionesSeleccionado);
@@ -108,6 +118,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
         this.registrosGlobal = [];
         this.pendientesGlobal = [];
         this.erradicacionesGlobal = [];
+        this.registrosAgroquimicos = [];
+        this.registrosAgroquimicosFiltrados = [];
         this.registroEnfermedadesLote = [];
         this.registrosPendientesPorTratar = [];
         this.erradicaciones = [];
@@ -158,10 +170,15 @@ export class EstadoFitosanitarioComponent implements OnInit {
       this.erradicacionesGlobal,
       filtroNormalizado
     );
+    const agroquimicosFiltrados = this.filtrarPorLote(
+      this.registrosAgroquimicos,
+      filtroNormalizado
+    );
 
     this.registroEnfermedadesLote = registrosFiltrados;
     this.registrosPendientesPorTratar = pendientesFiltrados;
     this.erradicaciones = erradicacionesFiltradas;
+    this.registrosAgroquimicosFiltrados = agroquimicosFiltrados;
     this.nombreLoteParams = loteValido ? loteNombre : "Global";
 
     this.actualizarCatalogoEnfermedades(registrosFiltrados);
@@ -524,8 +541,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
       this.calcularPendientesPorTratarPorFecha(filtro);
   }
 
-  private actualizarEnTratamiento(registros: RegistroEnfermedad[]) {
-    this.registrosEnTratamiento = registros.length;
+  private actualizarEnTratamiento() {
+    this.registrosEnTratamiento = this.registrosAgroquimicosFiltrados.length;
   }
 
   private actualizarPendientePorErradicar(registros: RegistroEnfermedad[]) {
@@ -541,7 +558,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     registros: RegistroEnfermedad[],
     filtro: FechaFiltro | null
   ) {
-    this.actualizarEnTratamiento(registros);
+    this.actualizarEnTratamiento();
     this.actualizarDadasDeAlta(registros);
     this.actualizarPendientePorErradicar(registros);
     this.actualizarPendientesPorTratar(filtro);
