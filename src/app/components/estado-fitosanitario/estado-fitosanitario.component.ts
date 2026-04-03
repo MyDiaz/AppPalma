@@ -42,6 +42,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalpalmas: number = 0;
   totalsanas: number = 0;
   totalentratamiento: number = 0;
+  palmasSanas: number = 0;
   totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
   pendientesPorTratar: number = 0;
@@ -223,6 +224,17 @@ export class EstadoFitosanitarioComponent implements OnInit {
       const palmas = Number(lote?.numero_palmas ?? 0);
       return total + (isNaN(palmas) ? 0 : palmas);
     }, 0);
+    this.actualizarPalmasSanas();
+  }
+
+  private actualizarPalmasSanas(): void {
+    const pendientes = this.pendientesPorTratar ?? 0;
+    const enTratamiento = this.registrosEnTratamiento ?? 0;
+    const pendientesErradicar = this.totalpendientesporerradicar ?? 0;
+    const erradicadas = this.erradicacionesFiltradasCount ?? 0;
+    const suma = pendientes + enTratamiento + pendientesErradicar + erradicadas;
+    const resultado = (this.totalpalmas ?? 0) - suma;
+    this.palmasSanas = resultado > 0 ? resultado : 0;
   }
 
   private actualizarContadorErradicaciones(): void {
@@ -563,6 +575,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.actualizarPendientePorErradicar(registros);
     this.actualizarPendientesPorTratarDesdeRegistros(registros);
     this.actualizarResumenFiltrado(registros);
+    this.actualizarPalmasSanas();
   }
 
   cambiarChart() {
