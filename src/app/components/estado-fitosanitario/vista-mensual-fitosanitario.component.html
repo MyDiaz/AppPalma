@@ -1,0 +1,124 @@
+<section class="report-section report-section-accent">
+  <div class="section-header">
+    <div>
+      <h4 class="section-title">Vista mensual</h4>
+      <p class="section-copy">
+        Actividad y detalle fitosanitario del mes seleccionado.
+      </p>
+    </div>
+  </div>
+
+  <div class="row gx-2 gy-2 align-items-end mb-4 filtros">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="filter-label" for="fechaSelect">Mes</label>
+      <input
+        id="fechaSelect"
+        type="date"
+        class="form-control form-control-sm"
+        [ngModel]="fechaSeleccionada"
+        (ngModelChange)="onFechaChange($event)"
+        placeholder="---"
+      />
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <label class="filter-label" for="enfermedadSelect">Enfermedad</label>
+      <select
+        id="enfermedadSelect"
+        class="form-control form-control-sm"
+        [ngModel]="enfermedadSeleccionada"
+        (ngModelChange)="onEnfermedadChange($event)"
+      >
+        <option value="Todas">Todas</option>
+        <option *ngFor="let option of enfermedades" [value]="option.nombre">
+          {{ option.nombre }}
+        </option>
+      </select>
+    </div>
+    <div class="col-12 col-sm-auto">
+      <button
+        type="button"
+        class="btn btn-info btn-sm font-weight-bold"
+        (click)="onConsultar()"
+      >
+        Consultar
+      </button>
+    </div>
+    <div class="col-12 col-sm-auto">
+      <button
+        class="btn btn-outline-info btn-sm font-weight-bold"
+        (click)="onGenerarPdf()"
+      >
+        Generar PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="cards-grid cards-grid-monthly">
+    <article
+      class="summary-card summary-card-monthly"
+      *ngFor="let card of cards"
+      [attr.title]="card.description"
+    >
+      <p class="summary-card-label">{{ card.label }}</p>
+      <p class="summary-card-value">{{ card.value }}</p>
+      <p class="summary-card-hint">Pasa el cursor para ver el detalle</p>
+    </article>
+  </div>
+
+  <div class="results">
+    <div class="chart-panel">
+      <div class="panel-header">
+        <div>
+          <h5 class="panel-title">Detalle por enfermedad</h5>
+          <p class="panel-copy">
+            Distribución de incidencias del periodo consultado.
+          </p>
+        </div>
+      </div>
+      <p class="text-muted mb-2" *ngIf="estadoCargaMensaje">
+        {{ estadoCargaMensaje }}
+      </p>
+      <canvas #monthlyChart></canvas>
+    </div>
+  </div>
+
+  <div class="table-panel mt-4">
+    <div class="panel-header">
+      <div>
+        <h5 class="panel-title">Incidencias de enfermedades</h5>
+        <p class="panel-copy">
+          Listado base de incidencias registradas para el lote y mes
+          seleccionados.
+        </p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-sm table-hover incidencias-table">
+        <thead>
+          <tr>
+            <th>ID palma</th>
+            <th>Enfermedad</th>
+            <th>Etapa enfermedad</th>
+            <th>Estado</th>
+            <th>Fecha de registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let incidencia of incidenciasMensuales">
+            <td>{{ incidencia.id_palma }}</td>
+            <td>{{ incidencia.nombre_enfermedad }}</td>
+            <td>{{ incidencia.etapa_enfermedad }}</td>
+            <td>{{ incidencia.estado }}</td>
+            <td>{{ formatFechaRegistro(incidencia.fecha_registro_enfermedad) }}</td>
+          </tr>
+          <tr *ngIf="incidenciasMensuales.length === 0">
+            <td colspan="5" class="text-center">
+              No hay incidencias para los filtros actuales.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
