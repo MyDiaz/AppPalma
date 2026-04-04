@@ -8,102 +8,32 @@
         </div>
     </div>
     <hr />
-    <div class="mb-2">
-        <p>Seleccione la fecha para consultar el informe fitosanitario. </p>
-    </div>
-    <div class="row gx-2 gy-2 align-items-end mb-4 filtros">
-        <div class="col-12 col-sm-6 col-lg-3">
-            <label class="visually-hidden" for="fechaSelect">Fecha</label>
-            <input
-                id="fechaSelect"
-                type="date"
-                class="form-control form-control-sm"
-                [(ngModel)]="fechaSeleccionada"
-                placeholder="---"
-            />
-        </div>
-        <div class="col-12 col-sm-6 col-lg-3">
-            <label class="visually-hidden" for="loteSelect">Lote</label>
-            <select
-                id="loteSelect"
-                class="form-control form-control-sm"
-                [(ngModel)]="loteErradicacionesSeleccionado"
-                (change)="aplicarFiltroLote($event.target.value)"
-            >
-                <option value="Todos">Todos</option>
-                <option *ngFor="let lote of lotesErradicaciones" [value]="lote">{{ lote }}</option>
-            </select>
-        </div>
-        <div class="col-12 col-sm-6 col-lg-3">
-            <label class="visually-hidden" for="enfermedadSelect">Enfermedad</label>
-            <select id="enfermedadSelect" class="form-control form-control-sm" [(ngModel)]="enfermedadSeleccionada">
-                <option value="Todas"> --- </option>
-                <option *ngFor="let option of enfermedades" [value]="option.nombre">{{ option.nombre }}</option>
-            </select>
-        </div>
-        <div class="col-12 col-sm-auto">
-            <button type="button" class="btn btn-info btn-sm font-weight-bold" (click)="cambiarChart()">Consultar</button>
-        </div>
-    </div>
-    <div class="datosgenerales">
-        <div class="card">
-            <p>Total de palmas</p>
-            <p>{{this.totalpalmas}}</p>
-        </div>
-        <div class="card">
-            <p>Palmas sanas</p>
-            <p>{{ palmasSanas }}</p>
-        </div>
-        <div class="card">
-        <p>Pendientes por tratar</p>
-        <p>{{ pendientesPorTratar }}</p>
-        </div>
-        <div class="card">
-            <p>En tratamiento</p>
-            <p>{{ registrosEnTratamiento }}</p>
-        </div>
-        <div class="card">
-            <p>Pendiente por erradicar</p>
-            <p>{{this.totalpendientesporerradicar}}</p>
-        </div>
-        <div class="card">
-            <p>Erradicadas</p>
-            <p>{{this.erradicacionesFiltradasCount}}</p>
-        </div>
-        <div class="card">
-            <p>Dadas de alta</p>
-            <p>{{ registrosDadasDeAlta }}</p>
-        </div>
-    </div>
-    <div class="results">
-        <div class="chart-panel">
-            <p class="text-muted mb-2" *ngIf="estadoCargaMensaje">{{ estadoCargaMensaje }}</p>
-            <canvas id="myChart"></canvas>
-        </div>
-        <div class="stats-column">
-            <div class="card-row">
-                <div class="row-text" style="background-color: #619885;">
-                    <p *ngIf="fechaSeleccionada">Casos del mes</p>
-                    <p *ngIf="!fechaSeleccionada">Casos totales</p>
-                    <p style="font-size: 20px;">{{casosFiltrados}}</p>
-                </div>
-                <div class="row-text" style="background-color: #466067;">
-                    <p>Incidencia real (%)</p>
-                    <p style="font-size: 20px;">{{incidenciaFiltrada}}</p>
-                </div>
-            </div>
-            <div class="card-row">
-                <div class="row-text" style="background-color: #856a6a;">
-                    <p>Casos acumulados</p>
-                    <p style="font-size: 20px;">{{casosacumulados}}</p>
-                </div>
-                <div class="row-text" style="background-color: #6ca6a3;">
-                    <p>Incidencia acumulada (%)</p>
-                    <p style="font-size: 20px;">{{incidenciaacumulada}}</p>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <button class="ml-3 btn btn-info btn-sm font-weight-bold generar-pdf" (click)="crearPdf()"> Generar PDF </button>
+    <app-estado-actual-fitosanitario
+        [cards]="estadoActualCards"
+        [lotes]="lotesErradicaciones"
+        [loteSeleccionado]="loteErradicacionesSeleccionado"
+        [activePalms]="activePalms"
+        [totalPalmas]="totalpalmas"
+        [palmasSanas]="palmasSanas"
+        [palmasEnTratamiento]="registrosEnTratamiento"
+        [palmasPendientesPorTratar]="pendientesPorTratar"
+        [palmasPendientesPorErradicar]="totalpendientesporerradicar"
+        (loteSeleccionadoChange)="aplicarFiltroLote($event)"
+    ></app-estado-actual-fitosanitario>
+
+    <app-vista-mensual-fitosanitario
+        [cards]="vistaMensualCards"
+        [fechaSeleccionada]="fechaSeleccionada"
+        [enfermedadSeleccionada]="enfermedadSeleccionada"
+        [enfermedades]="enfermedades"
+        [estadoCargaMensaje]="estadoCargaMensaje"
+        [chartLabels]="monthlyChartLabels"
+        [chartData]="monthlyChartData"
+        [incidenciasMensuales]="incidenciasMensuales"
+        (fechaSeleccionadaChange)="fechaSeleccionada = $event"
+        (enfermedadSeleccionadaChange)="enfermedadSeleccionada = $event"
+        (consultar)="cambiarChart()"
+        (generarPdf)="crearPdf()"
+    ></app-vista-mensual-fitosanitario>
 </div>
