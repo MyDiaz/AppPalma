@@ -1,6 +1,4 @@
 import { Component, OnInit } from "@angular/core";
-import { LoteService } from "../../Servicios/lote.service";
-import { LoteModel } from "../../models/lote.models";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
 import { AgroquimicosService } from "src/app/Servicios/agroquimicos.service";
@@ -11,11 +9,11 @@ import {
 import { RegistroEnfermedad } from "src/app/models/registroEnfermedad";
 import {
   ActivePalmRow,
-  CurrentStateResponse,
   FechaFiltro,
   GraficoArrayMap,
   IncidenciaMensualRow,
   ResumenCard,
+  TotalPalmsByLoteRow,
 } from "./estado-fitosanitario.types";
 //import { Router } from '@angular/router';
 import { jsPDF } from "jspdf";
@@ -35,7 +33,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   fechaSeleccionada: string = "";
   enfermedadSeleccionada: string = "Todas";
 
-  lotesDisponibles: LoteModel[] = [];
+  totalPalmasPorLote: TotalPalmsByLoteRow[] = [];
   totalpalmas: number = 0;
   totalsanas: number = 0;
   totalentratamiento: number = 0;
@@ -64,6 +62,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   estadoActualCards: ResumenCard[] = [];
   vistaMensualCards: ResumenCard[] = [];
   activePalms: ActivePalmRow[] = [];
+  activePalmsGlobal: ActivePalmRow[] = [];
   monthlyChartLabels: string[] = [];
   monthlyChartData: number[] = [];
   incidenciasMensuales: IncidenciaMensualRow[] = [];
@@ -78,7 +77,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
   }
   
   constructor(
-    private _loteService: LoteService,
     private _enfermedadesService: EnfermedadesService,
     private _erradicacionesService: ErradicacionesService,
     private _agroquimicosService: AgroquimicosService
@@ -86,7 +84,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
 
   ngOnInit() {
     this.estadoCargaMensaje = "Cargando datos del lote...";
-    this.cargarLotesDisponibles();
     this.cargarDatosGenerales();
   }
 
@@ -99,17 +96,28 @@ export class EstadoFitosanitarioComponent implements OnInit {
 
     forkJoin({
       registros: this._enfermedadesService.getEnfermedadesRegistradas(),
+      estadoActual: this._enfermedadesService.getEstadoFitosanitarioActual(),
       erradicaciones: this._erradicacionesService.getErradicaciones(),
       agroquimicos: this._agroquimicosService.getRegistroAgroquimico(),
     }).subscribe(
-      ({ registros, erradicaciones, agroquimicos }) => {
+      ({ registros, estadoActual, erradicaciones, agroquimicos }) => {
         this.registrosGlobal = Array.isArray(registros) ? registros : [];
+        this.totalPalmasPorLote = Array.isArray(estadoActual?.total_palms_by_lote)
+          ? estadoActual.total_palms_by_lote
+          : [];
+        this.activePalmsGlobal = Array.isArray(estadoActual?.active_palms)
+          ? estadoActual.active_palms
+          : [];
         this.erradicacionesGlobal = Array.isArray(erradicaciones)
           ? erradicaciones
           : [];
         this.registrosAgroquimicos = Array.isArray(agroquimicos)
           ? agroquimicos
           : [];
+        this.lotesErradicaciones = this.totalPalmasPorLote
+          .map((item) => item?.nombre_lote)
+          .filter((nombre): nombre is string => !!nombre)
+          .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
         this.aplicarFiltroLote(this.loteErradicacionesSeleccionado);
       },
@@ -119,41 +127,13 @@ export class EstadoFitosanitarioComponent implements OnInit {
         this.erradicacionesGlobal = [];
         this.registrosAgroquimicos = [];
         this.registrosAgroquimicosFiltrados = [];
+        this.totalPalmasPorLote = [];
         this.registroEnfermedadesLote = [];
         this.erradicaciones = [];
+        this.activePalmsGlobal = [];
+        this.activePalms = [];
         this.estadoCargaMensaje =
           "No fue posible cargar los registros del lote.";
-      }
-    );
-  }
-
-  private cargarLotesDisponibles(): void {
-    this._loteService.getLotes().subscribe(
-      (data) => {
-        const lotes = Array.isArray(data) ? data : [];
-        this.lotesDisponibles = lotes;
-        const nombres = Array.from(
-          new Set(
-            lotes
-              .map((lote) => lote?.nombre_lote)
-              .filter((nombre) => !!nombre)
-          )
-        );
-        this.lotesErradicaciones = nombres.sort((a, b) =>
-          a.localeCompare(b, undefined, { sensitivity: "base" })
-        );
-        const loteSeleccionado =
-          this.loteErradicacionesSeleccionado &&
-          this.loteErradicacionesSeleccionado !== "Todos"
-            ? this.loteErradicacionesSeleccionado
-            : null;
-        this.actualizarTotalPalmas(loteSeleccionado);
-        this.actualizarResumenFiltrado(this.registroEnfermedadesLote);
-      },
-      (error) => {
-        console.error(error);
-        this.estadoCargaMensaje =
-          "No fue posible cargar los lotes disponibles.";
       }
     );
   }
@@ -186,7 +166,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
 
     this.actualizarCatalogoEnfermedades(registrosFiltrados);
     this.actualizarEtapasDesdeRegistros(registrosFiltrados);
-    this.actualizarEstadoActual(registrosFiltrados);
+    this.actualizarEstadoActual();
     this.cambiarChart();
   }
 
@@ -208,7 +188,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
   }
 
   private actualizarTotalPalmas(loteNombre: string | null): void {
-    if (!Array.isArray(this.lotesDisponibles) || this.lotesDisponibles.length === 0) {
+    if (
+      !Array.isArray(this.totalPalmasPorLote) ||
+      this.totalPalmasPorLote.length === 0
+    ) {
       this.totalpalmas = 0;
       return;
     }
@@ -218,14 +201,14 @@ export class EstadoFitosanitarioComponent implements OnInit {
       : null;
 
     const lotesSeleccionados = loteNormalizado
-      ? this.lotesDisponibles.filter((lote) => {
+      ? this.totalPalmasPorLote.filter((lote) => {
           const nombre = lote?.nombre_lote ?? "";
           return this.normalizeLoteName(nombre) === loteNormalizado;
         })
-      : this.lotesDisponibles;
+      : this.totalPalmasPorLote;
 
     this.totalpalmas = lotesSeleccionados.reduce((total, lote) => {
-      const palmas = Number(lote?.numero_palmas ?? 0);
+      const palmas = Number(lote?.total_palmas ?? 0);
       return total + (isNaN(palmas) ? 0 : palmas);
     }, 0);
     this.actualizarPalmasSanas();
@@ -241,10 +224,9 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.palmasSanas = resultado > 0 ? resultado : 0;
   }
 
-  private actualizarEstadoActual(registros: RegistroEnfermedad[]): void {
-    const currentState = this.buildCurrentStateResponse(registros);
-    const activePalms = currentState.active_palms;
-    const palmasTotales = currentState.total_palms ?? 0;
+  private actualizarEstadoActual(): void {
+    const activePalms = this.obtenerPalmasActivasFiltradas();
+    const palmasTotales = this.totalpalmas ?? 0;
     this.activePalms = activePalms;
 
     const pendientesPorErradicar = activePalms.filter(
@@ -282,7 +264,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
         description: "Palmas enfermas que requieren tratamiento pero aún no lo han iniciado.",
       },
       {
-        label: "Pendientes por erradicar",
+        label: "Palmas pendientes por erradicar",
         value: pendientesPorErradicar,
         description: "Palmas enfermas que deben retirarse porque la enfermedad no tiene cura.",
       },
@@ -295,67 +277,26 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.palmasSanas = palmasSanas;
   }
 
-  private buildCurrentStateResponse(
-    registros: RegistroEnfermedad[]
-  ): CurrentStateResponse {
-    return {
-      total_palms: this.totalpalmas ?? 0,
-      active_palms: this.buildMockActivePalms(registros),
-    };
-  }
-
-  private buildMockActivePalms(registros: RegistroEnfermedad[]): ActivePalmRow[] {
-    if (!Array.isArray(registros) || registros.length === 0) {
+  private obtenerPalmasActivasFiltradas(): ActivePalmRow[] {
+    if (!Array.isArray(this.activePalmsGlobal)) {
       return [];
     }
 
-    const latestByPalm = new Map<string, RegistroEnfermedad>();
-
-    registros.forEach((registro) => {
-      const idPalma = String(registro?.id_palma ?? "").trim();
-      if (!idPalma) {
-        return;
-      }
-
-      const current = latestByPalm.get(idPalma);
-      const currentDate = current ? new Date(current.fecha_registro_enfermedad).getTime() : -Infinity;
-      const nextDate = new Date(registro.fecha_registro_enfermedad).getTime();
-
-      if (!current || nextDate >= currentDate) {
-        latestByPalm.set(idPalma, registro);
-      }
-    });
-
-    return Array.from(latestByPalm.values())
-      .filter((registro) => !registro?.dada_de_alta)
-      .map((registro) => ({
-        nombre_lote: registro?.nombre_lote ?? this.nombreLoteParams ?? "-",
-        id_palma: registro?.id_palma ?? "-",
-        nombre_enfermedad: registro?.nombre_enfermedad ?? "-",
-        etapa_enfermedad: registro?.etapa_enfermedad ?? "-",
-        fecha: registro?.fecha_registro_enfermedad ?? "",
-        estado: this.obtenerEstadoActivoPalma(registro),
-      }));
-  }
-
-  private obtenerEstadoActivoPalma(
-    registro: RegistroEnfermedad
-  ): "en_tratamiento" | "pendiente_por_tratar" | "pendiente_por_erradicar" {
-    const requiereErradicacion = this.contarPendientesPorErradicar([registro]) > 0;
-    if (requiereErradicacion) {
-      return "pendiente_por_erradicar";
+    if (
+      !this.loteErradicacionesSeleccionado ||
+      this.loteErradicacionesSeleccionado === "Todos"
+    ) {
+      return [...this.activePalmsGlobal];
     }
 
-    const tieneTratamiento = this.registrosAgroquimicosFiltrados.some((item) => {
-      const mismoIdPalma =
-        String(item?.id_palma ?? "").trim() === String(registro?.id_palma ?? "").trim();
-      const mismoLote =
-        this.normalizeLoteName(item?.nombre_lote ?? "") ===
-        this.normalizeLoteName(registro?.nombre_lote ?? "");
-      return mismoIdPalma && mismoLote;
-    });
+    const loteNormalizado = this.normalizeLoteName(
+      this.loteErradicacionesSeleccionado
+    );
 
-    return tieneTratamiento ? "en_tratamiento" : "pendiente_por_tratar";
+    return this.activePalmsGlobal.filter(
+      (item) =>
+        this.normalizeLoteName(item?.nombre_lote ?? "") === loteNormalizado
+    );
   }
 
   private actualizarContadorErradicaciones(): void {

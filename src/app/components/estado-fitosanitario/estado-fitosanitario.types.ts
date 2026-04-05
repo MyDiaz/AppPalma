@@ -25,8 +25,13 @@ export interface ActivePalmRow {
     | "pendiente_por_erradicar";
 }
 
+export interface TotalPalmsByLoteRow {
+  nombre_lote: string;
+  total_palmas: number;
+}
+
 export interface CurrentStateResponse {
-  total_palms: number;
+  total_palms_by_lote: TotalPalmsByLoteRow[];
   active_palms: ActivePalmRow[];
 }
 
