@@ -24,11 +24,6 @@ export class EstadoActualFitosanitarioComponent
   @Input() lotes: string[] = [];
   @Input() loteSeleccionado: string = "Todos";
   @Input() activePalms: ActivePalmRow[] = [];
-  @Input() totalPalmas = 0;
-  @Input() palmasSanas = 0;
-  @Input() palmasEnTratamiento = 0;
-  @Input() palmasPendientesPorTratar = 0;
-  @Input() palmasPendientesPorErradicar = 0;
 
   @Output() loteSeleccionadoChange = new EventEmitter<string>();
 
@@ -52,6 +47,23 @@ export class EstadoActualFitosanitarioComponent
 
   onLoteChange(value: string): void {
     this.loteSeleccionadoChange.emit(value || "Todos");
+  }
+
+  getCardTooltip(card: ResumenCard): string {
+    const scope =
+      this.loteSeleccionado && this.loteSeleccionado !== "Todos"
+        ? `en ${this.loteSeleccionado}`
+        : "en toda la plantacion";
+
+    const messageMap: { [label: string]: string } = {
+      "Total de palmas": `Cantidad total de palmas sembradas ${scope}.`,
+      "Palmas sanas": `Palmas sin estado fitosanitario activo ${scope}.`,
+      "Palmas en tratamiento": `Palmas con tratamiento activo ${scope}.`,
+      "Palmas pendientes por tratar": `Palmas que aun no han iniciado tratamiento ${scope}.`,
+      "Palmas pendientes por erradicar": `Palmas que deben ser erradicadas ${scope}.`,
+    };
+
+    return messageMap[card.label] ?? card.description;
   }
 
   formatFechaRegistro(value: string): string {
@@ -93,12 +105,19 @@ export class EstadoActualFitosanitarioComponent
       this.overviewChart.destroy();
     }
 
-    const palmasEnfermas = Math.max(
-      this.totalPalmas - this.palmasSanas,
-      this.palmasEnTratamiento +
-        this.palmasPendientesPorTratar +
-        this.palmasPendientesPorErradicar
+    const totalPalmas = this.getCardValue("Total de palmas");
+    const palmasSanas = this.getCardValue("Palmas sanas");
+    const palmasEnTratamiento = this.getCardValue("Palmas en tratamiento");
+    const palmasPendientesPorTratar = this.getCardValue(
+      "Palmas pendientes por tratar"
     );
+    const palmasPendientesPorErradicar = this.getCardValue(
+      "Palmas pendientes por erradicar"
+    );
+    const palmasEnfermas =
+      palmasEnTratamiento +
+      palmasPendientesPorTratar +
+      palmasPendientesPorErradicar;
 
     this.overviewChart = new Chart(ctx, {
       type: "pie",
@@ -106,7 +125,7 @@ export class EstadoActualFitosanitarioComponent
         labels: ["Palmas sanas", "Palmas enfermas"],
         datasets: [
           {
-            data: [this.palmasSanas, palmasEnfermas],
+            data: [palmasSanas, Math.max(totalPalmas - palmasSanas, palmasEnfermas)],
             backgroundColor: ["#6ca870", "#ff9f1c"],
             borderWidth: 0,
           },
@@ -134,6 +153,14 @@ export class EstadoActualFitosanitarioComponent
       this.diseaseChart.destroy();
     }
 
+    const palmasEnTratamiento = this.getCardValue("Palmas en tratamiento");
+    const palmasPendientesPorTratar = this.getCardValue(
+      "Palmas pendientes por tratar"
+    );
+    const palmasPendientesPorErradicar = this.getCardValue(
+      "Palmas pendientes por erradicar"
+    );
+
     this.diseaseChart = new Chart(ctx, {
       type: "pie",
       data: {
@@ -145,9 +172,9 @@ export class EstadoActualFitosanitarioComponent
         datasets: [
           {
             data: [
-              this.palmasEnTratamiento,
-              this.palmasPendientesPorTratar,
-              this.palmasPendientesPorErradicar,
+              palmasEnTratamiento,
+              palmasPendientesPorTratar,
+              palmasPendientesPorErradicar,
             ],
             backgroundColor: ["#ffbf69", "#ff9f1c", "#ff7b00"],
             borderWidth: 0,
@@ -163,5 +190,11 @@ export class EstadoActualFitosanitarioComponent
         },
       },
     });
+  }
+
+  private getCardValue(label: string): number {
+    const card = this.cards.find((item) => item.label === label);
+    const value = Number(card?.value);
+    return Number.isFinite(value) ? value : 0;
   }
 }

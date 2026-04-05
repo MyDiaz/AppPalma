@@ -4,7 +4,7 @@ import { respuesta } from "../models/resp.model";
 import { map } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { RegistroEnfermedad } from "../models/registroEnfermedad";
+import { CurrentStateResponse } from "../components/estado-fitosanitario/estado-fitosanitario.types";
 
 @Injectable({
   providedIn: "root",
@@ -82,6 +82,14 @@ export class EnfermedadesService {
   getEnfermedadesRegistradas() {
     return this.http
       .get<any>(`${environment.url}/registro-enfermedades`)
+      .pipe(map((data) => data));
+  }
+
+  getEstadoFitosanitarioActual(): Observable<CurrentStateResponse> {
+    return this.http
+      .get<CurrentStateResponse>(
+        `${environment.url}/registro-enfermedades/estado-fitosanitario`
+      )
       .pipe(map((data) => data));
   }
 
