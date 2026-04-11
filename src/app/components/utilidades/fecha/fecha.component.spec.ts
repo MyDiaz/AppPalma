@@ -1,0 +1,23 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FechaComponent } from './fecha.component';
+
+describe('FechaComponent', () => {
+  let component: FechaComponent;
+  let fixture: ComponentFixture<FechaComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [FechaComponent],
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(FechaComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should create and expose a date', () => {
+    expect(component).toBeTruthy();
+    expect(component.fecha instanceof Date).toBe(true);
+  });
+});
