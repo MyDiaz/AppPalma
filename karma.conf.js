@@ -1,6 +1,18 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+const webpackDevMiddlewareUtil = require("webpack-dev-middleware/lib/util");
+const originalHandleRangeHeaders =
+  webpackDevMiddlewareUtil.handleRangeHeaders;
+
+webpackDevMiddlewareUtil.handleRangeHeaders = function (content, req, res) {
+  if (!req || !req.headers) {
+    return content;
+  }
+
+  return originalHandleRangeHeaders.call(this, content, req, res);
+};
+
 module.exports = function (config) {
   config.set({
     basePath: '',

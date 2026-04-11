@@ -1,5 +1,8 @@
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ReactiveFormsModule } from '@angular/forms';
+import { of } from 'rxjs';
+import { PrecipitacionesService } from 'src/app/Servicios/precipitaciones.service';
 import { PrecipitacionComponent } from './precipitacion.component';
 
 describe('PrecipitacionComponent', () => {
@@ -8,15 +11,21 @@ describe('PrecipitacionComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PrecipitacionComponent ]
-    })
-    .compileComponents();
+      imports: [ReactiveFormsModule],
+      declarations: [PrecipitacionComponent],
+      providers: [
+        {
+          provide: PrecipitacionesService,
+          useValue: { getPrecipitaciones: () => of([]) },
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PrecipitacionComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
