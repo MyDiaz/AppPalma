@@ -39,6 +39,7 @@ describe('ListadoPlagasComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ListadoPlagasComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create and load plagas', () => {
@@ -69,5 +70,6 @@ describe('ListadoPlagasComponent', () => {
     tick();
 
     expect(plagasServiceSpy.eliminarPlaga).toHaveBeenCalledWith('Plaga 1');
+    expect(plagasServiceSpy.getPlagas).toHaveBeenCalledTimes(2);
   }));
 });

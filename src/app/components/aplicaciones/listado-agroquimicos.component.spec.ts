@@ -41,6 +41,7 @@ describe('ListadoAgroquimicosComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ListadoAgroquimicosComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create and load agroquimicos', () => {
@@ -72,5 +73,6 @@ describe('ListadoAgroquimicosComponent', () => {
     tick();
 
     expect(agroquimicosServiceSpy.eliminarAgroquimico).toHaveBeenCalledWith('1');
+    expect(agroquimicosServiceSpy.getAgroquimicos).toHaveBeenCalledTimes(2);
   }));
 });

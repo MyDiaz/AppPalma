@@ -33,4 +33,19 @@ describe('ViajesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should filter viajes by date', () => {
+    component.viajes = [
+      {
+        diaViajeDate: new Date('2026-01-10T00:00:00Z'),
+      },
+    ];
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoViajes();
+
+    expect(component.estadoViaje.data.length).toBe(1);
+    expect(component.filtradas).toBe('encontro');
+  });
 });

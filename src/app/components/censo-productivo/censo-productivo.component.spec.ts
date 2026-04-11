@@ -28,4 +28,11 @@ describe('CensoProductivoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should load censo productivo and lotes', () => {
+    component.ngOnInit();
+
+    expect(component.censos_productivos).toEqual([]);
+    expect(component.lotes).toEqual([]);
+  });
 });

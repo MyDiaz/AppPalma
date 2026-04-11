@@ -37,4 +37,29 @@ describe('RendimientoProductivoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should filter chart data and format dates', () => {
+    const anyComponent = component as any;
+    const rows = [
+      {
+        nombre_lote: 'Lote 1',
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+        cantidad_flores_femeninas: 1,
+        cantidad_flores_masculinas: 2,
+        cantidad_racimos_verdes: 3,
+        cantidad_racimos_pintones: 4,
+        cantidad_racimos_sobremaduros: 5,
+        cantidad_racimos_maduros: 6,
+      },
+    ];
+
+    component.censoProductivo = rows as any;
+    component.yearSeleccionado = '2026';
+    component.loteSeleccionado = 'Lote 1';
+    component.mesSeleccionado = 'Todos';
+
+    expect(component.chartFilter(rows[0] as any)).toBe(true);
+    expect(anyComponent.aggregateChartData(rows as any).get('Flores Femeninas')).toBe(1);
+    expect(component.formatDateTime(new Date(2026, 0, 1))).toBe('2026-01-01');
+  });
 });

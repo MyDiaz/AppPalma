@@ -39,4 +39,26 @@ describe('PodasComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should filter podas by lote and state', () => {
+    component.ngOnInit();
+    component.podas = [
+      {
+        nombre_lote: 'Lote 1',
+        finPodaDate: new Date('2026-01-10T00:00:00Z'),
+        estado_poda: 'ACTIVA',
+      },
+    ];
+    component.estadoPodas.data = component.podas;
+    component.procesoPodas.get('nombreLote').setValue('Lote 1');
+    component.procesoPodas.get('activas').setValue(true);
+    component.procesoPodas.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoPodas();
+
+    expect(component.estadoPodas.filteredData.length).toBe(1);
+    expect(component.filtradas).toBe('encontro');
+  });
 });

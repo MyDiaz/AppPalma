@@ -38,4 +38,8 @@ describe('EstadoProductivoComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should format dates for reports', () => {
+    expect(component.formatDateTime(new Date(2026, 0, 1))).toBe('2026-01-01');
+  });
 });

@@ -45,6 +45,7 @@ describe('ListadoEnfermedadesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ListadoEnfermedadesComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create and load enfermedades', () => {
@@ -76,5 +77,7 @@ describe('ListadoEnfermedadesComponent', () => {
     tick();
 
     expect(enfermedadesServiceSpy.eliminarEnfermedad).toHaveBeenCalledWith('Rayo');
+    expect(enfermedadesServiceSpy.getEnfermedadesEtapas).toHaveBeenCalledTimes(2);
+    expect(enfermedadesServiceSpy.getEnfermedades).toHaveBeenCalledTimes(2);
   }));
 });

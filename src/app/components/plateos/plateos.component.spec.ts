@@ -39,4 +39,26 @@ describe('PlateosComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should filter plateos by lote and state', () => {
+    component.ngOnInit();
+    component.plateos = [
+      {
+        nombre_lote: 'Lote 1',
+        finPlateoDate: new Date('2026-01-10T00:00:00Z'),
+        estado_plateo: 'ACTIVA',
+      },
+    ];
+    component.estadoPlateos.data = component.plateos;
+    component.procesoPlateos.get('nombreLote').setValue('Lote 1');
+    component.procesoPlateos.get('activas').setValue(true);
+    component.procesoPlateos.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoPlateos();
+
+    expect(component.estadoPlateos.filteredData.length).toBe(1);
+    expect(component.filtradas).toBe('encontro');
+  });
 });

@@ -46,4 +46,9 @@ describe('EstadoFitosanitarioComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should normalize lote names', () => {
+    const anyComponent = component as any;
+    expect(anyComponent.normalizeLoteName('  Lote%201  ')).toBe('lote 1');
+  });
 });

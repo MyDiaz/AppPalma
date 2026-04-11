@@ -39,4 +39,27 @@ describe('FertilizacionesComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should filter fertilizaciones by lote and state', () => {
+    component.ngOnInit();
+    component.fertilizaciones = [
+      {
+        nombre_lote: 'Lote 1',
+        inicioFertilizacionDate: new Date('2026-01-01T00:00:00Z'),
+        finFertilizacionDate: new Date('2026-01-15T00:00:00Z'),
+        estado_fertilizacion: 'ACTIVA',
+      },
+    ];
+    component.estadoFertilizaciones.data = component.fertilizaciones;
+    component.procesoFertilizaciones.get('nombreLote').setValue('Lote 1');
+    component.procesoFertilizaciones.get('activas').setValue(true);
+    component.procesoFertilizaciones.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoFertilizaciones();
+
+    expect(component.estadoFertilizaciones.filteredData.length).toBe(1);
+    expect(component.filtradas).toBe('encontro');
+  });
 });
