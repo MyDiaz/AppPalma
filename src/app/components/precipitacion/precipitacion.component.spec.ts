@@ -49,6 +49,45 @@ describe('PrecipitacionComponent', () => {
     expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'semana').getDate()).toBe(8);
   });
 
+  it('should return default tiles when no range is selected', () => {
+    const anyComponent = component as any;
+    anyComponent.registrosActuales = [];
+
+    anyComponent.aplicarResumen();
+
+    expect(component.encontro).toBe(false);
+    expect(component.rangoSeleccionado).toBe(false);
+    expect(component.resumenTiles[0].value).toBe('-- mm');
+  });
+
+  it('should calculate summary tiles and chart points for a selected range', () => {
+    const anyComponent = component as any;
+    anyComponent.registrosActuales = [
+      { fecha: new Date(2026, 0, 1), milimetros: 4 },
+      { fecha: new Date(2026, 0, 2), milimetros: 0 },
+      { fecha: new Date(2026, 0, 3), milimetros: 6 },
+    ];
+    component.rangeForm.get('start').setValue(new Date(2026, 0, 1));
+    component.rangeForm.get('end').setValue(new Date(2026, 0, 3));
+    component.rangeForm.get('granularity').setValue('dia');
+
+    const puntos = anyComponent.generarPuntosParaGrafico(
+      anyComponent.registrosActuales,
+      new Date(2026, 0, 1),
+      new Date(2026, 0, 3),
+      'dia'
+    );
+
+    anyComponent.aplicarResumen();
+
+    expect(component.encontro).toBe(true);
+    expect(component.rangoSeleccionado).toBe(true);
+    expect(component.resumenTiles[0].value).toBe('10.0 mm');
+    expect(component.resumenTiles[1].value).toBe('3.3 mm');
+    expect(component.resumenTiles[2].value).toBe('2 días');
+    expect(puntos.map((p: any) => p.y)).toEqual([4, 0, 6]);
+  });
+
   it('should update the range label', () => {
     component.rangeForm.get('start').setValue(new Date(2026, 0, 1));
     component.rangeForm.get('end').setValue(new Date(2026, 0, 3));

@@ -62,4 +62,36 @@ describe('RendimientoProductivoComponent', () => {
     expect(anyComponent.aggregateChartData(rows as any).get('Flores Femeninas')).toBe(1);
     expect(component.formatDateTime(new Date(2026, 0, 1))).toBe('2026-01-01');
   });
+
+  it('should filter by lote, year and month', () => {
+    component.yearSeleccionado = '2026';
+    component.mesSeleccionado = '0';
+    component.loteSeleccionado = 'Lote 1';
+
+    expect(
+      component.chartFilter({
+        nombre_lote: 'Lote 1',
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+      } as any)
+    ).toBe(true);
+
+    expect(
+      component.chartFilter({
+        nombre_lote: 'Lote 2',
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+      } as any)
+    ).toBe(false);
+  });
+
+  it('should aggregate missing values as zero', () => {
+    const anyComponent = component as any;
+    const totals = anyComponent.aggregateChartData([
+      { cantidad_flores_femeninas: 2 },
+      { cantidad_flores_femeninas: undefined, cantidad_racimos_maduros: 5 },
+    ]);
+
+    expect(totals.get('Flores Femeninas')).toBe(2);
+    expect(totals.get('Racimos Maduros')).toBe(5);
+    expect(totals.get('Racimos Verdes')).toBe(0);
+  });
 });

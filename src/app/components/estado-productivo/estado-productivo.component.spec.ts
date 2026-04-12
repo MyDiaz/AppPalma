@@ -42,4 +42,12 @@ describe('EstadoProductivoComponent', () => {
   it('should format dates for reports', () => {
     expect(component.formatDateTime(new Date(2026, 0, 1))).toBe('2026-01-01');
   });
+
+  it('should load the lote censos on init', () => {
+    component.ngOnInit();
+
+    expect(component.nombreLoteParams).toBe('Lote 1');
+    expect(component.censoProductivo.length).toBe(0);
+    expect(component.createChart).toHaveBeenCalled();
+  });
 });
