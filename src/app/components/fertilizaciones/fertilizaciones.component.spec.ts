@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { FertilizacionesService } from 'src/app/Servicios/fertilizaciones.service';
 import { LoteService } from 'src/app/Servicios/lote.service';
 import { createActivatedRouteMock } from 'src/testing/spec-helpers';
@@ -11,20 +11,25 @@ import { FertilizacionesComponent } from './fertilizaciones.component';
 describe('FertilizacionesComponent', () => {
   let component: FertilizacionesComponent;
   let fixture: ComponentFixture<FertilizacionesComponent>;
+  let fertilizacionesServiceSpy: jasmine.SpyObj<FertilizacionesService>;
+  let loteServiceSpy: jasmine.SpyObj<LoteService>;
 
   beforeEach(async () => {
+    fertilizacionesServiceSpy = jasmine.createSpyObj('FertilizacionesService', [
+      'getFertilizaciones',
+      'getFertilizacion',
+    ]);
+    loteServiceSpy = jasmine.createSpyObj('LoteService', ['getLotes']);
+    fertilizacionesServiceSpy.getFertilizaciones.and.returnValue(of([]));
+    fertilizacionesServiceSpy.getFertilizacion.and.returnValue(of([]));
+    loteServiceSpy.getLotes.and.returnValue(of([]));
+
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [FertilizacionesComponent],
       providers: [
-        {
-          provide: FertilizacionesService,
-          useValue: {
-            getFertilizaciones: () => of([]),
-            getFertilizacion: () => of([]),
-          },
-        },
-        { provide: LoteService, useValue: { getLotes: () => of([]) } },
+        { provide: FertilizacionesService, useValue: fertilizacionesServiceSpy },
+        { provide: LoteService, useValue: loteServiceSpy },
         { provide: ActivatedRoute, useValue: createActivatedRouteMock() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -63,6 +68,27 @@ describe('FertilizacionesComponent', () => {
     expect(component.filtradas).toBe('encontro');
   });
 
+  it('should load detail rows and format a single record', () => {
+    fertilizacionesServiceSpy.getFertilizacion.and.returnValue(
+      of({
+        fecha_fertilizacion_diaria: '2026-01-05T00:00:00Z',
+        nombre_fertilizante: 'Fert 1',
+      } as any)
+    );
+
+    component.cargarDetalleFertilizacion('fert-1');
+
+    expect(fertilizacionesServiceSpy.getFertilizacion).toHaveBeenCalledWith('fert-1');
+    expect(component.detalleFertilizacion.data.length).toBe(1);
+    expect(component.mostrarTablaDetalle).toBe(true);
+  });
+
+  it('should ignore row clicks without an id', () => {
+    component.onFertilizacionRowClick({} as any);
+
+    expect(fertilizacionesServiceSpy.getFertilizacion).not.toHaveBeenCalled();
+  });
+
   it('should mark no results when filters do not match', () => {
     component.ngOnInit();
     component.fertilizaciones = [
@@ -84,5 +110,24 @@ describe('FertilizacionesComponent', () => {
 
     expect(component.estadoFertilizaciones.filteredData.length).toBe(0);
     expect(component.filtradas).toBe('noEncontro');
+  });
+
+  it('should default the lote filter and load empty data on init', () => {
+    component.ngOnInit();
+
+    expect(component.nombreLoteParams).toBeNull();
+    expect(component.procesoFertilizaciones.get('nombreLote').value).toBe('TODOS');
+    expect(component.estadoFertilizaciones.data).toEqual([]);
+  });
+
+  it('should surface a service error from getFertilizaciones', () => {
+    fertilizacionesServiceSpy.getFertilizaciones.and.returnValue(
+      throwError({ error: { message: 'boom' }, status: 0 })
+    );
+
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('Servicio no disponible');
   });
 });
