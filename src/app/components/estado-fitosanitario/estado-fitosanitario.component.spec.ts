@@ -50,6 +50,7 @@ describe('EstadoFitosanitarioComponent', () => {
   it('should normalize lote names', () => {
     const anyComponent = component as any;
     expect(anyComponent.normalizeLoteName('  Lote%201  ')).toBe('lote 1');
+    expect(anyComponent.normalizeLoteName('Lote%')).toBe('lote%');
   });
 
   it('should build filtered charts by enfermedad and etapas', () => {
@@ -139,5 +140,59 @@ describe('EstadoFitosanitarioComponent', () => {
     expect(component.totalpalmas).toBe(0);
     expect(component.casosacumulados).toBe(0);
     expect(component.createChart).toHaveBeenCalledWith([]);
+  });
+
+  it('should stop early when no lote param is present', async () => {
+    await TestBed.resetTestingModule()
+      .configureTestingModule({
+        declarations: [EstadoFitosanitarioComponent],
+        providers: [
+          {
+            provide: LoteService,
+            useValue: {
+              getLote: jasmine.createSpy('getLote'),
+              getPalmasLote: jasmine.createSpy('getPalmasLote'),
+              getEnfermedadesServer: jasmine.createSpy('getEnfermedadesServer'),
+              getEtapasServer: () => of([]),
+            },
+          },
+          {
+            provide: EnfermedadesService,
+            useValue: { getEnfermedadesRegistradas: jasmine.createSpy('getEnfermedadesRegistradas') },
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: createActivatedRouteMock(),
+          },
+        ],
+        schemas: [NO_ERRORS_SCHEMA],
+      })
+      .compileComponents();
+
+    const noParamFixture = TestBed.createComponent(EstadoFitosanitarioComponent);
+    const noParamComponent = noParamFixture.componentInstance;
+
+    noParamComponent.ngOnInit();
+
+    expect(noParamComponent.estadoCargaMensaje).toBe('No se recibió el parámetro de lote en la URL.');
+  });
+
+  it('should reset the selected year when it is not available', () => {
+    component.registroEnfermedadesLote = [
+      {
+        nombre_lote: 'Lote 1',
+        fecha_registro_enfermedad: '2026-01-01T00:00:00Z',
+        nombre_enfermedad: 'rayo',
+        etapa_enfermedad: 'inicial',
+      },
+    ] as any;
+    component.etapasEnfermedades = [] as any;
+    component.yearSeleccionado = '1999';
+    component.mesSeleccionado = 'Todos';
+    component.enfermedadSeleccionada = 'Todas';
+
+    component.ngOnInit();
+
+    expect(component.yearSeleccionado).toBe('Todos');
   });
 });

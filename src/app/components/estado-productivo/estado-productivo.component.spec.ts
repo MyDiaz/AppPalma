@@ -80,6 +80,25 @@ describe('EstadoProductivoComponent', () => {
     expect(anyComponent.calcularTotales([]).get('Racimos Verdes')).toBe(0);
   });
 
+  it('should return all data when no period filters are selected', () => {
+    const anyComponent = component as any;
+    const rows = [
+      {
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+        cantidad_flores_femeninas: 1,
+      },
+      {
+        fecha_registro_censo_productivo: new Date(2026, 1, 1),
+        cantidad_flores_femeninas: 2,
+      },
+    ];
+
+    component.yearSeleccionado = 'Todos';
+    component.mesSeleccionado = 'Todos';
+
+    expect(anyComponent.filtrarCensosPorPeriodo(rows)).toEqual(rows);
+  });
+
   it('should load the lote censos on init', () => {
     component.ngOnInit();
 

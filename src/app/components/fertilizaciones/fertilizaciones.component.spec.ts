@@ -83,10 +83,39 @@ describe('FertilizacionesComponent', () => {
     expect(component.mostrarTablaDetalle).toBe(true);
   });
 
+  it('should load and format multiple detail rows', () => {
+    fertilizacionesServiceSpy.getFertilizacion.and.returnValue(
+      of([
+        {
+          fecha_fertilizacion_diaria: '2026-01-05T00:00:00Z',
+          nombre_fertilizante: 'Fert 1',
+        },
+        {
+          fecha_fertilizacion_diaria: '2026-01-06T00:00:00Z',
+          nombre_fertilizante: 'Fert 2',
+        },
+      ] as any)
+    );
+
+    component.cargarDetalleFertilizacion('fert-2');
+
+    expect(component.detalleFertilizacion.data.length).toBe(2);
+    expect(component.detalleFertilizacion.data[1].fecha_fertilizacion_diaria).toContain('2026');
+  });
+
   it('should ignore row clicks without an id', () => {
     component.onFertilizacionRowClick({} as any);
 
     expect(fertilizacionesServiceSpy.getFertilizacion).not.toHaveBeenCalled();
+  });
+
+  it('should keep the row detail hidden when an empty response is returned', () => {
+    fertilizacionesServiceSpy.getFertilizacion.and.returnValue(of([]));
+
+    component.cargarDetalleFertilizacion('fert-3');
+
+    expect(component.detalleFertilizacion.data.length).toBe(0);
+    expect(component.mostrarTablaDetalle).toBe(false);
   });
 
   it('should mark no results when filters do not match', () => {
@@ -112,6 +141,35 @@ describe('FertilizacionesComponent', () => {
     expect(component.filtradas).toBe('noEncontro');
   });
 
+  it('should allow both active and finalized states when state filters are empty', () => {
+    component.ngOnInit();
+    component.fertilizaciones = [
+      {
+        nombre_lote: 'Lote 1',
+        inicioFertilizacionDate: new Date('2026-01-01T00:00:00Z'),
+        finFertilizacionDate: new Date('2026-01-15T00:00:00Z'),
+        estado_fertilizacion: 'ACTIVA',
+      },
+      {
+        nombre_lote: 'Lote 1',
+        inicioFertilizacionDate: new Date('2026-01-01T00:00:00Z'),
+        finFertilizacionDate: new Date('2026-01-15T00:00:00Z'),
+        estado_fertilizacion: 'FINALIZADA',
+      },
+    ];
+    component.estadoFertilizaciones.data = component.fertilizaciones;
+    component.procesoFertilizaciones.get('nombreLote').setValue('Lote 1');
+    component.procesoFertilizaciones.get('activas').setValue(false);
+    component.procesoFertilizaciones.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoFertilizaciones();
+
+    expect(component.estadoFertilizaciones.filteredData.length).toBe(2);
+    expect(component.filtradas).toBe('encontro');
+  });
+
   it('should default the lote filter and load empty data on init', () => {
     component.ngOnInit();
 
@@ -129,5 +187,34 @@ describe('FertilizacionesComponent', () => {
 
     expect(component.bandera_error).toBe(true);
     expect(component.mensaje_error).toBe('Servicio no disponible');
+  });
+
+  it('should preserve backend error messages when the service is available', () => {
+    fertilizacionesServiceSpy.getFertilizaciones.and.returnValue(
+      throwError({ error: { message: 'bad request' }, status: 500 })
+    );
+
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('bad request');
+  });
+
+  it('should surface a service error when loading the fertilizacion detail', () => {
+    fertilizacionesServiceSpy.getFertilizacion.and.returnValue(
+      throwError({ error: { message: 'boom' }, status: 0 })
+    );
+
+    component.cargarDetalleFertilizacion('fert-1');
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('Servicio no disponible');
+    expect(component.mostrarTablaDetalle).toBe(false);
+  });
+
+  it('should ignore null detail ids', () => {
+    component.cargarDetalleFertilizacion(null as any);
+
+    expect(fertilizacionesServiceSpy.getFertilizacion).not.toHaveBeenCalled();
   });
 });

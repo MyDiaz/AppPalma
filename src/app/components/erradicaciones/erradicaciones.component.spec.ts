@@ -72,6 +72,16 @@ describe('ErradicacionesComponent', () => {
     expect(component.cargando).toBe(false);
   });
 
+  it('should not duplicate the TODOS lote if the API already returns it', () => {
+    lotesSpy.getLotes.and.returnValue(
+      of([{ nombre_lote: 'TODOS' } as any, { nombre_lote: 'Lote 1' } as any])
+    );
+
+    component.ngOnInit();
+
+    expect(component.lotes.filter((lote) => lote.nombre_lote === 'TODOS').length).toBe(1);
+  });
+
   it('should mark no results and keep the table empty when filters do not match', () => {
     component.erradicaciones = [
       {
@@ -87,6 +97,23 @@ describe('ErradicacionesComponent', () => {
 
     expect(component.estadoErradicaciones.data.length).toBe(0);
     expect(component.filtradas).toBe('noEncontro');
+  });
+
+  it('should accept TODOS as an all-lotes filter', () => {
+    component.erradicaciones = [
+      {
+        nombre_lote: 'Lote 2',
+        fecha_erradicacion: '2026-01-10T00:00:00Z',
+      },
+    ];
+    component.procesoErradicaciones.get('nombreLote').setValue('TODOS');
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoErradicaciones();
+
+    expect(component.estadoErradicaciones.data.length).toBe(1);
+    expect(component.filtradas).toBe('encontro');
   });
 
   it('should set filterApplied when a real filter is used', () => {
@@ -106,6 +133,14 @@ describe('ErradicacionesComponent', () => {
     expect(component.filterApplied).toBe(true);
   });
 
+  it('should call submit through the current filter path', () => {
+    spyOn(component, 'filtroEstadoErradicaciones');
+
+    component.submit();
+
+    expect(component.filtroEstadoErradicaciones).toHaveBeenCalled();
+  });
+
   it('should surface service errors when loading data', () => {
     erradicacionesSpy.getErradicaciones.and.returnValue(
       throwError({ error: {}, status: 0 })
@@ -115,5 +150,16 @@ describe('ErradicacionesComponent', () => {
 
     expect(component.bandera_error).toBe(true);
     expect(component.mensaje_error).toBe('Servicio no disponible');
+  });
+
+  it('should keep backend error messages when the API is reachable', () => {
+    erradicacionesSpy.getErradicaciones.and.returnValue(
+      throwError({ error: { message: 'bad request' }, status: 500 })
+    );
+
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('bad request');
   });
 });

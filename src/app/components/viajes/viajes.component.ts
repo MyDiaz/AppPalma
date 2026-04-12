@@ -64,6 +64,7 @@ export class ViajesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cargando = true;
     this._viajesService.getViajes().subscribe(
       data => {
         this.viajes = data.map( element => { 
@@ -80,9 +81,9 @@ export class ViajesComponent implements OnInit {
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
+        this.cargando = false;
       }
     );
-    this.cargando = true;
 
     // this.activatedRoute
     // .queryParamMap

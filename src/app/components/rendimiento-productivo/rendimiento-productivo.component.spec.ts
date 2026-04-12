@@ -143,6 +143,63 @@ describe('RendimientoProductivoComponent', () => {
     expect(component.years[0]).toBe(2000);
   });
 
+  it('should keep working when the censo request fails', () => {
+    censosProductivosServiceSpy.getCensosProductivos.and.returnValue(
+      throwError(() => new Error('boom-data'))
+    );
+
+    component.ngOnInit();
+
+    expect(component.censoProductivo).toEqual([]);
+    expect(component.censosFiltered).toEqual([]);
+  });
+
+  it('should build chart data and destroy an existing chart instance', () => {
+    const anyComponent = component as any;
+    const chartModule = require('chart.js');
+    const chartConstructorSpy = spyOn(chartModule, 'Chart').and.callFake(function () {
+      return { destroy: jasmine.createSpy('destroy') };
+    } as any);
+    const previousDestroy = jasmine.createSpy('destroy');
+    const canvas = {
+      getContext: jasmine.createSpy('getContext').and.returnValue({}),
+    } as any;
+
+    anyComponent.createChart.and.callThrough();
+    spyOn(document, 'getElementById').and.returnValue(canvas);
+
+    component.censoProductivo = [
+      {
+        nombre_lote: 'Lote 1',
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+        cantidad_flores_femeninas: 1,
+        cantidad_flores_masculinas: 2,
+        cantidad_racimos_verdes: 3,
+        cantidad_racimos_pintones: 4,
+        cantidad_racimos_sobremaduros: 5,
+        cantidad_racimos_maduros: 6,
+      } as any,
+      {
+        nombre_lote: 'Lote 2',
+        fecha_registro_censo_productivo: new Date(2025, 0, 1),
+        cantidad_flores_femeninas: 9,
+      } as any,
+    ];
+    component.yearSeleccionado = '2026';
+    component.mesSeleccionado = '0';
+    component.loteSeleccionado = 'Lote 1';
+    component.chart = { destroy: previousDestroy } as any;
+
+    component.createChart();
+
+    expect(previousDestroy).toHaveBeenCalled();
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+    expect(chartConstructorSpy).toHaveBeenCalled();
+    expect(component.censosFiltered.length).toBe(1);
+    expect(component.chartMap.get('Flores Femeninas')).toBe(1);
+    expect(component.dateFilteredChartMap.get('Flores Femeninas')).toBe(1);
+  });
+
   it('should map month names and unknown months', () => {
     const anyComponent = component as any;
 

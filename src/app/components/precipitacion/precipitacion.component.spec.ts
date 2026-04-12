@@ -175,4 +175,35 @@ describe('PrecipitacionComponent', () => {
     expect(component.bandera_error).toBe(true);
     expect(component.mensaje_error).toBe('No se pudo cargar la información de precipitaciones.');
   });
+  it('should handle missing form controls and empty chart surfaces', () => {
+    const anyComponent = component as any;
+    const getSpy = spyOn(component.rangeForm, 'get').and.returnValue(null as any);
+
+    expect(anyComponent.obtenerRangoActual()).toBeNull();
+    expect(component.rangoMostrar).toContain('Selecciona un rango para ver los indicadores');
+    expect(getSpy).toHaveBeenCalledWith('start');
+    expect(getSpy).toHaveBeenCalledWith('end');
+
+    spyOn(document, 'getElementById').and.returnValue(null);
+    expect(anyComponent.actualizarGraficoPrecipitacion([{ x: new Date(2026, 0, 1), y: 1 }], 'dia')).toBeUndefined();
+  });
+
+  it('should ignore chart updates when the canvas context is missing and destroy stale charts for empty datasets', () => {
+    const anyComponent = component as any;
+    const canvas = {
+      getContext: jasmine.createSpy('getContext').and.returnValue(null),
+    } as any;
+    const getElementSpy = spyOn(document, 'getElementById').and.returnValue(canvas);
+
+    expect(anyComponent.actualizarGraficoPrecipitacion([{ x: new Date(2026, 0, 1), y: 1 }], 'dia')).toBeUndefined();
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+    expect(getElementSpy).toHaveBeenCalledWith('chartPrecipitaciones');
+
+    const destroySpy = jasmine.createSpy('destroy');
+    anyComponent.lluviaChart = { destroy: destroySpy } as any;
+    canvas.getContext.and.returnValue({} as any);
+
+    expect(anyComponent.actualizarGraficoPrecipitacion([], 'dia')).toBeUndefined();
+    expect(destroySpy).toHaveBeenCalled();
+  });
 });

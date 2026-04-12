@@ -45,6 +45,21 @@ describe('CensoProductivoComponent', () => {
     expect(component.lotes).toEqual([]);
   });
 
+  it('should load both datasets when the services return data', () => {
+    viajesServiceSpy.getCensoProductivo.and.returnValue(
+      of([{ id: 1, nombre: 'Censo 1' } as any])
+    );
+    loteServiceSpy.getLotes.and.returnValue(
+      of([{ nombre_lote: 'Lote 1' } as any])
+    );
+
+    component.ngOnInit();
+
+    expect(component.censos_productivos).toEqual([{ id: 1, nombre: 'Censo 1' }]);
+    expect(component.lotes).toEqual([{ nombre_lote: 'Lote 1' }]);
+    expect(component.cargando).toBe(false);
+  });
+
   it('should set the error flag when loading censos fails', () => {
     viajesServiceSpy.getCensoProductivo.and.returnValue(
       throwError({ error: { message: 'boom' }, status: 0 })
@@ -54,5 +69,27 @@ describe('CensoProductivoComponent', () => {
 
     expect(component.bandera_error).toBe(true);
     expect(component.mensaje_error).toBe('Servicio no disponible');
+  });
+
+  it('should preserve backend error messages when the service is reachable', () => {
+    viajesServiceSpy.getCensoProductivo.and.returnValue(
+      throwError({ error: { message: 'bad request' }, status: 500 })
+    );
+
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('bad request');
+  });
+
+  it('should surface errors from the lote service', () => {
+    loteServiceSpy.getLotes.and.returnValue(
+      throwError({ error: { message: 'lotes failed' }, status: 500 })
+    );
+
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('lotes failed');
   });
 });
