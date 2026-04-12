@@ -61,4 +61,26 @@ describe('PlateosComponent', () => {
     expect(component.estadoPlateos.filteredData.length).toBe(1);
     expect(component.filtradas).toBe('encontro');
   });
+
+  it('should mark no results when filters do not match', () => {
+    component.ngOnInit();
+    component.plateos = [
+      {
+        nombre_lote: 'Lote 2',
+        finPlateoDate: new Date('2026-01-10T00:00:00Z'),
+        estado_plateo: 'FINALIZADA',
+      },
+    ];
+    component.estadoPlateos.data = component.plateos;
+    component.procesoPlateos.get('nombreLote').setValue('Lote 1');
+    component.procesoPlateos.get('activas').setValue(true);
+    component.procesoPlateos.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoPlateos();
+
+    expect(component.estadoPlateos.filteredData.length).toBe(0);
+    expect(component.filtradas).toBe('noEncontro');
+  });
 });

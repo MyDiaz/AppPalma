@@ -48,4 +48,19 @@ describe('ViajesComponent', () => {
     expect(component.estadoViaje.data.length).toBe(1);
     expect(component.filtradas).toBe('encontro');
   });
+
+  it('should mark no results when the date range excludes all viajes', () => {
+    component.viajes = [
+      {
+        diaViajeDate: new Date('2026-01-10T00:00:00Z'),
+      },
+    ];
+    component.range.get('start').setValue(new Date('2026-02-01'));
+    component.range.get('end').setValue(new Date('2026-02-28'));
+
+    component.filtroEstadoViajes();
+
+    expect(component.estadoViaje.data.length).toBe(0);
+    expect(component.filtradas).toBe('noEncontro');
+  });
 });
