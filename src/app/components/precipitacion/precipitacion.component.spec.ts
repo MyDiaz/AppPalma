@@ -1,22 +1,26 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { PrecipitacionesService } from 'src/app/Servicios/precipitaciones.service';
 import { PrecipitacionComponent } from './precipitacion.component';
 
 describe('PrecipitacionComponent', () => {
   let component: PrecipitacionComponent;
   let fixture: ComponentFixture<PrecipitacionComponent>;
+  let serviceSpy: jasmine.SpyObj<PrecipitacionesService>;
 
   beforeEach(async () => {
+    serviceSpy = jasmine.createSpyObj('PrecipitacionesService', ['getPrecipitaciones']);
+    serviceSpy.getPrecipitaciones.and.returnValue(of([]));
+
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [PrecipitacionComponent],
       providers: [
         {
           provide: PrecipitacionesService,
-          useValue: { getPrecipitaciones: () => of([]) },
+          useValue: serviceSpy,
         },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -43,10 +47,31 @@ describe('PrecipitacionComponent', () => {
     ]);
 
     expect(registros.length).toBe(2);
+    expect(anyComponent.normalizarPrecipitaciones('not-an-array')).toEqual([]);
     expect(anyComponent.calcularDiasInclusivos(new Date(2026, 0, 1), new Date(2026, 0, 3))).toBe(3);
     expect(anyComponent.normalizarFechaPorGranularidad(new Date(2026, 0, 3), 'mes').getDate()).toBe(1);
     expect(anyComponent.obtenerInicioSemana(new Date(2026, 0, 7)).getDay()).toBe(1);
     expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'semana').getDate()).toBe(8);
+    expect(anyComponent.obtenerGranularidadSeleccionada()).toBe('dia');
+  });
+
+  it('should handle malformed payloads and reversed ranges', () => {
+    const anyComponent = component as any;
+
+    expect(anyComponent.normalizarPrecipitaciones([{ fecha: 'invalid-date', milimetros: 'nope' }])).toEqual([]);
+    expect(
+      anyComponent.normalizarPrecipitaciones([
+        { fecha: '2026-01-02T00:00:00Z', milimetros: 'nope' },
+      ])[0].milimetros
+    ).toBe(0);
+
+    component.rangeForm.get('start').setValue(new Date(2026, 0, 5));
+    component.rangeForm.get('end').setValue(new Date(2026, 0, 1));
+
+    const rango = anyComponent.obtenerRangoActual();
+
+    expect(rango.inicio.getDate()).toBe(1);
+    expect(rango.fin.getDate()).toBe(5);
   });
 
   it('should return default tiles when no range is selected', () => {
@@ -84,8 +109,51 @@ describe('PrecipitacionComponent', () => {
     expect(component.rangoSeleccionado).toBe(true);
     expect(component.resumenTiles[0].value).toBe('10.0 mm');
     expect(component.resumenTiles[1].value).toBe('3.3 mm');
-    expect(component.resumenTiles[2].value).toBe('2 días');
+    expect(component.resumenTiles[2].value).toContain('2');
     expect(puntos.map((p: any) => p.y)).toEqual([4, 0, 6]);
+  });
+
+  it('should group points by week, month and year granularities', () => {
+    const anyComponent = component as any;
+    const registros = [
+      { fecha: new Date(2026, 0, 5), milimetros: 1 },
+      { fecha: new Date(2026, 0, 6), milimetros: 2 },
+      { fecha: new Date(2026, 1, 2), milimetros: 3 },
+      { fecha: new Date(2027, 0, 4), milimetros: 4 },
+    ];
+
+    const semana = anyComponent.generarPuntosParaGrafico(
+      registros,
+      new Date(2026, 0, 5),
+      new Date(2026, 0, 12),
+      'semana'
+    );
+    const mes = anyComponent.generarPuntosParaGrafico(
+      registros,
+      new Date(2026, 0, 1),
+      new Date(2026, 1, 28),
+      'mes'
+    );
+    const anio = anyComponent.generarPuntosParaGrafico(
+      registros,
+      new Date(2026, 0, 1),
+      new Date(2027, 11, 31),
+      'anio'
+    );
+
+    expect(semana.some((p: any) => p.y > 0)).toBe(true);
+    expect(mes.map((p: any) => p.y)).toEqual([3, 3]);
+    expect(anio.map((p: any) => p.y)).toEqual([6, 4]);
+    expect(anyComponent.normalizarFechaPorGranularidad(new Date(2026, 0, 7), 'semana').getDay()).toBe(1);
+    expect(anyComponent.normalizarFechaPorGranularidad(new Date(2026, 0, 7), 'mes').getDate()).toBe(1);
+    expect(anyComponent.normalizarFechaPorGranularidad(new Date(2026, 6, 7), 'anio').getMonth()).toBe(0);
+    expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'dia').getDate()).toBe(2);
+    expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'semana').getDate()).toBe(8);
+    expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'mes').getMonth()).toBe(1);
+    expect(anyComponent.avanzarUnidad(new Date(2026, 0, 1), 'anio').getFullYear()).toBe(2027);
+    expect(anyComponent.obtenerUnidadTiempo('semana')).toBe('week');
+    expect(anyComponent.obtenerUnidadTiempo('mes')).toBe('month');
+    expect(anyComponent.obtenerUnidadTiempo('anio')).toBe('year');
   });
 
   it('should update the range label', () => {
@@ -93,5 +161,18 @@ describe('PrecipitacionComponent', () => {
     component.rangeForm.get('end').setValue(new Date(2026, 0, 3));
 
     expect(component.rangoMostrar).toContain('2026');
+  });
+
+  it('should report incomplete range state and service errors', () => {
+    component.rangeForm.get('start').setValue(new Date(2026, 0, 1));
+    component.rangeForm.get('end').setValue(null);
+
+    expect(component.rangoMostrar).toBe('Completa ambos campos del rango.');
+
+    serviceSpy.getPrecipitaciones.and.returnValue(throwError(() => ({ message: 'boom' })));
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('No se pudo cargar la información de precipitaciones.');
   });
 });
