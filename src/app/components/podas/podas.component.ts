@@ -74,7 +74,6 @@ export class PodasComponent implements OnInit {
       this.estadoPodas.filterPredicate = (poda, filter: string) => {
 
         const filtros = JSON.parse(filter);
-         console.log('Filtro aplicado:', filtros, 'Fila:', poda.id_poda);
         // ===== FECHA =====
         const fecha = poda.finPodaDate;
         let cumpleFecha = true;
@@ -131,13 +130,10 @@ export class PodasComponent implements OnInit {
         this.estadoPodas.data = this.podas;
 
         this.cargando = false;
-        console.log("PODAS cargadas en datasource :", this.estadoPodas.data);
       }, 
       error => {
-        console.log("Error en el consumo de podas: ", error);
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible."
         }
@@ -149,24 +145,20 @@ export class PodasComponent implements OnInit {
     .queryParamMap
     .subscribe(params => {
       this.nombreLoteParams = params.get('lote');
-      console.log("Parametro por URL: ", this.nombreLoteParams)
     });    
 
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
         this.lotes.push({nombre_lote:'TODOS'});
-        console.log("lotes desde podas", this.lotes)
         this.cargando = false;
       },
       error => {
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
-        console.log(error);
       });
       if(this.nombreLoteParams != null) {
         this.procesoPodas.get('nombreLote').setValue(this.nombreLoteParams);
@@ -209,7 +201,6 @@ export class PodasComponent implements OnInit {
       ? estadosBusqueda.encontro
       : estadosBusqueda.noEncontro;
 
-      console.log('Filtros enviados:', filtros);
   }
 
 }

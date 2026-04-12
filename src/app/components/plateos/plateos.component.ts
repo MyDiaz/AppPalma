@@ -74,7 +74,6 @@ export class PlateosComponent implements OnInit {
       this.estadoPlateos.filterPredicate = (plateos, filter: string) => {
 
         const filtros = JSON.parse(filter);
-        console.log('Filtro aplicado:', filtros, 'Fila:', plateos.id_plateos);
         // ===== FECHA =====
         const fecha = plateos.finPlateoDate;
         let cumpleFecha = true;
@@ -131,13 +130,10 @@ export class PlateosComponent implements OnInit {
         this.estadoPlateos.data = this.plateos;
 
         this.cargando = false;
-        console.log("PLATEOS cargadas en datasource :", this.estadoPlateos.data);
       }, 
       error => {
-        console.log("Error en el consumo de plateos.", error);
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status: ", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible."
         }
@@ -149,24 +145,20 @@ export class PlateosComponent implements OnInit {
     .queryParamMap
     .subscribe(params => {
       this.nombreLoteParams = params.get('lote');
-      console.log("parametro por URL ", this.nombreLoteParams)
     });    
 
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
         this.lotes.push({nombre_lote:'TODOS'});
-        console.log("lotes desde plateos", this.lotes)
         this.cargando = false;
       },
       error => {
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
-        console.log(error);
       });
       if(this.nombreLoteParams != null) {
         this.procesoPlateos.get('nombreLote').setValue(this.nombreLoteParams);
@@ -209,7 +201,6 @@ export class PlateosComponent implements OnInit {
       ? estadosBusqueda.encontro
       : estadosBusqueda.noEncontro;
 
-      console.log('Filtros enviados:', filtros);
   }
 
 
