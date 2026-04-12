@@ -86,6 +86,26 @@ describe('UsuariosComponent', () => {
     expect(component.cargando).toBe(false);
   });
 
+  it('should expose validation helpers for both forms', () => {
+    component.actualizarUsuarioForm = new FormBuilder().group({
+      nombre_usuario: ['x'],
+      telefono: ['3000000000'],
+      correo: ['test@example.com'],
+    });
+    component.actualizarUsuarioForm.get('nombre_usuario').markAsTouched();
+    component.actualizarUsuarioForm.get('nombre_usuario').setErrors({ required: true });
+
+    component.cambiarContrasenaForm = new FormBuilder().group({
+      contrasena_actual: ['12345678'],
+      contrasena_nueva: ['short'],
+    });
+    component.cambiarContrasenaForm.get('contrasena_nueva').markAsTouched();
+    component.cambiarContrasenaForm.get('contrasena_nueva').setErrors({ minlength: true });
+
+    expect(component.nombreUsuarioNoValido).toBe(true);
+    expect(component.contrasenaUsuarioNoValido).toBe(true);
+  });
+
   it('should update the profile on success', () => {
     spyOn(Swal, 'fire').and.returnValue(Promise.resolve({} as any));
     component.usuario = { nombre_usuario: 'Usuario Prueba' };

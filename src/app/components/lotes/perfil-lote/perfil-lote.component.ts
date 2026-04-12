@@ -48,7 +48,7 @@ export class PerfilLoteComponent implements OnInit {
   }
 
   initMap() {
-    if (this.lote["mapa"] == null || this.lote["mapa"] == undefined || this.lote["mapa"] == "") {
+    if (!this.lote?.mapa) {
       return;
     }
     this.map = new google.maps.Map(document.getElementById("map"), {
@@ -117,6 +117,6 @@ export class PerfilLoteComponent implements OnInit {
   }
 
   isStringEmpty(str: string | null | undefined): boolean {
-    return !str || str.trim() === '';
+    return !str?.trim();
   }
 }

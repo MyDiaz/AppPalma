@@ -54,6 +54,16 @@ describe('ListadoEnfermedadesComponent', () => {
     expect(component.hayEnfermedades).toBe(true);
   });
 
+  it('should keep both lists empty when the backend returns no data', () => {
+    enfermedadesServiceSpy.getEnfermedadesEtapas.and.returnValue(of([]));
+    enfermedadesServiceSpy.getEnfermedades.and.returnValue(of([]));
+
+    component.cargarEnfermedades();
+
+    expect(component.hayEnfermedadesEtapas).toBe(false);
+    expect(component.hayEnfermedades).toBe(false);
+  });
+
   it('should edit and validate the selected enfermedad', () => {
     component.NombreEnfermedadForm = new FormControl({
       nombre_enfermedad: 'enfermedad-Rayo',
@@ -62,6 +72,14 @@ describe('ListadoEnfermedadesComponent', () => {
     expect(component.esValido()).toBe(true);
     component.editarEnfermedad();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['editar-enfermedad', 'Rayo']);
+  });
+
+  it('should keep validation false when nothing is selected', () => {
+    component.NombreEnfermedadForm = new FormControl({
+      nombre_enfermedad: null,
+    }) as any;
+
+    expect(component.esValido()).toBe(false);
   });
 
   it('should edit an etapa enfermedad and validate empty selections', () => {
@@ -97,6 +115,20 @@ describe('ListadoEnfermedadesComponent', () => {
     expect(enfermedadesServiceSpy.eliminarEnfermedad).toHaveBeenCalledWith('Rayo');
     expect(enfermedadesServiceSpy.getEnfermedadesEtapas).toHaveBeenCalledTimes(2);
     expect(enfermedadesServiceSpy.getEnfermedades).toHaveBeenCalledTimes(2);
+  }));
+
+  it('should not delete when confirmation is rejected', fakeAsync(() => {
+    component.NombreEnfermedadForm = new FormControl({
+      nombre_enfermedad: 'enfermedad-Rayo',
+    }) as any;
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: false } as any)
+    );
+
+    component.eliminarEnfermedad();
+    tick();
+
+    expect(enfermedadesServiceSpy.eliminarEnfermedad).not.toHaveBeenCalled();
   }));
 
   it('should surface delete and load errors', fakeAsync(() => {

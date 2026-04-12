@@ -91,6 +91,32 @@ describe('FormularioLoteComponent', () => {
     expect(component.NuevoLoteForm.get('mapa').value).toBe(file);
   });
 
+  it('should expose validation getters and handle empty file input', () => {
+    component.id_lote = undefined as any;
+    component.crearFormulario();
+    component.NuevoLoteForm.get('nombre_lote').markAsTouched();
+    component.NuevoLoteForm.get('nombre_lote').setErrors({ required: true });
+    component.NuevoLoteForm.get('año_siembra').markAsTouched();
+    component.NuevoLoteForm.get('año_siembra').setErrors({ required: true });
+    component.NuevoLoteForm.get('hectareas').markAsTouched();
+    component.NuevoLoteForm.get('hectareas').setErrors({ required: true });
+    component.NuevoLoteForm.get('numero_palmas').markAsTouched();
+    component.NuevoLoteForm.get('numero_palmas').setErrors({ required: true });
+    component.NuevoLoteForm.get('material_siembra').markAsTouched();
+    component.NuevoLoteForm.get('material_siembra').setErrors({ required: true });
+
+    expect(component.nombreLoteNoValido).toBe(true);
+    expect(component.AnoSiembraNoValido).toBe(true);
+    expect(component.HectareasNoValido).toBe(true);
+    expect(component.NumeroPalmasNoValido).toBe(true);
+    expect(component.MaterialSiembraNoValido).toBe(true);
+
+    component.handleFileInput({ target: { files: [] } });
+
+    expect(component.archivoMapa).toBeNull();
+    expect(component.NuevoLoteForm.get('mapa').value).toBeUndefined();
+  });
+
   it('should save a new lot when confirmed', fakeAsync(() => {
     component.id_lote = undefined as any;
     component.crearFormulario();

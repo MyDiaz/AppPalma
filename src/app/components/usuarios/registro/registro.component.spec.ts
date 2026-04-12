@@ -91,6 +91,41 @@ describe('RegistroComponent', () => {
     expect(component.contrasenaUsuarioNoValido).toBe(true);
   });
 
+  it('should expose the remaining validation helpers', () => {
+    component.NuevoUserForm.get('nombre_usuario').markAsTouched();
+    component.NuevoUserForm.get('nombre_usuario').setErrors({ required: true });
+    component.NuevoUserForm.get('telefono').markAsTouched();
+    component.NuevoUserForm.get('telefono').setErrors({ required: true });
+    component.NuevoUserForm.get('rol').markAsTouched();
+    component.NuevoUserForm.get('rol').setErrors({ pattern: true });
+    component.NuevoUserForm.get('correo').setErrors({ email: true });
+    component.NuevoUserForm.get('cargo_empresa').markAsTouched();
+    component.NuevoUserForm.get('cargo_empresa').setErrors({ pattern: true });
+
+    expect(component.nombreUsuarioNoValido).toBe(true);
+    expect(component.telefonoNoValido).toBe(true);
+    expect(component.rolNoValido).toBe(true);
+    expect(component.emailNoValido).toBe(true);
+    expect(component.cargoNoValido).toBe(true);
+  });
+
+  it('should treat password branches differently for new and existing users', () => {
+    component.usuarioNuevo = true;
+    component.NuevoUserForm.get('contrasena_usuario').setValue(null);
+    expect(component.contrasenaUsuarioNoValido).toBe(true);
+
+    component.NuevoUserForm.get('contrasena_usuario').setValue('1234567');
+    component.NuevoUserForm.get('contrasena_usuario').markAsTouched();
+    expect(component.contrasenaUsuarioNoValido).toBe(true);
+
+    component.usuarioNuevo = false;
+    component.NuevoUserForm.get('contrasena_usuario').setValue('1234567');
+    expect(component.contrasenaUsuarioNoValido).toBe(true);
+
+    component.NuevoUserForm.get('contrasena_usuario').setValue(null);
+    expect(component.contrasenaUsuarioNoValido).toBe(false);
+  });
+
   it('should register a new user when confirmed', fakeAsync(() => {
     component.NuevoUserForm.setValue({
       cc_usuario: '1001001',
@@ -111,6 +146,27 @@ describe('RegistroComponent', () => {
     tick();
 
     expect(registrarSpy).toHaveBeenCalled();
+  }));
+
+  it('should not register when confirmation is rejected', fakeAsync(() => {
+    component.NuevoUserForm.setValue({
+      cc_usuario: '1001001',
+      nombre_usuario: 'Usuario Nuevo',
+      telefono: '3000000000',
+      correo: 'nuevo@example.com',
+      rol: 'admin',
+      cargo_empresa: 'Administrador',
+      contrasena_usuario: '12345678',
+    });
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: false } as any)
+    );
+
+    const registrarSpy = spyOn(component, 'registrarUsuarioNuevo').and.stub();
+    component.guardar();
+    tick();
+
+    expect(registrarSpy).not.toHaveBeenCalled();
   }));
 
   it('should update an existing user when confirmed', fakeAsync(() => {

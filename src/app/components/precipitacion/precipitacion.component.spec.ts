@@ -175,6 +175,50 @@ describe('PrecipitacionComponent', () => {
     expect(component.bandera_error).toBe(true);
     expect(component.mensaje_error).toBe('No se pudo cargar la información de precipitaciones.');
   });
+  it('should cover precipitation fallbacks and chart edge cases', () => {
+    const anyComponent = component as any;
+
+    const registros = anyComponent.normalizarPrecipitaciones([
+      { fecha: new Date(2026, 0, 1), milimetros: '1' },
+      { date: new Date(2026, 0, 2), valor: 2 },
+      { dia: new Date(2026, 0, 3), mm: 3 },
+      { createdAt: new Date(2026, 0, 4), precipitacion: 4 },
+      { fecha: 'invalid-date', milimetros: 'nope' },
+    ]);
+
+    expect(registros.map((registro: any) => registro.milimetros)).toEqual([1, 2, 3, 4]);
+
+    component.rangeForm.get('granularity').setValue(null);
+    expect(anyComponent.obtenerGranularidadSeleccionada()).toBe('dia');
+
+    component.rangeForm.get('start').setValue(new Date(2026, 0, 1));
+    component.rangeForm.get('end').setValue(new Date(2026, 0, 4));
+    anyComponent.registrosActuales = registros;
+    anyComponent.aplicarResumen();
+    expect(component.encontro).toBe(true);
+
+    const chartModule = require('chart.js');
+    let capturedConfig: any;
+    spyOn(chartModule, 'Chart').and.callFake(function (_ctx: any, config: any) {
+      capturedConfig = config;
+      return { destroy: jasmine.createSpy('destroy') } as any;
+    } as any);
+    const canvas = { getContext: jasmine.createSpy('getContext').and.returnValue({}) } as any;
+    spyOn(document, 'getElementById').and.returnValue(canvas);
+
+    anyComponent.lluviaChart = null;
+    anyComponent.actualizarGraficoPrecipitacion([], 'dia');
+    anyComponent.actualizarGraficoPrecipitacion([{ x: new Date(2026, 0, 1), y: 5 }], 'dia');
+
+    const titleCallback = capturedConfig.options.tooltips.callbacks.title;
+    expect(titleCallback([undefined as any])).toBe('');
+    expect(titleCallback([{ index: 10 }])).toBe('');
+    expect(titleCallback([{ index: 0 }])).not.toBe('');
+    expect(titleCallback([{ xLabel: 'invalid' }])).toBe('');
+    expect(titleCallback([{ xLabel: '2026-01-01T00:00:00Z' }])).not.toBe('');
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+  });
+
   it('should handle missing form controls and empty chart surfaces', () => {
     const anyComponent = component as any;
     const getSpy = spyOn(component.rangeForm, 'get').and.returnValue(null as any);

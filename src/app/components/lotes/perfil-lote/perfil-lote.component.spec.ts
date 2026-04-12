@@ -96,6 +96,35 @@ describe('PerfilLoteComponent', () => {
     expect(component.mensaje_error).toBe('Servicio no disponible');
   });
 
+  it('should initialize the map when the lote has map data', () => {
+    const mapSetCenterSpy = jasmine.createSpy('setCenter');
+    const listenerSpy = jasmine.createSpy('addListener').and.callFake((_layer, _event, handler) => {
+      handler.call({ map: { setCenter: mapSetCenterSpy } });
+    });
+    const mapSpy = jasmine.createSpy('Map').and.returnValue({ setCenter: mapSetCenterSpy } as any);
+    const kmlSpy = jasmine.createSpy('KmlLayer').and.returnValue({
+      getDefaultViewport: () => ({ getCenter: () => ({ lat: 0, lng: 0 }) }),
+    } as any);
+    const googleSpy = {
+      maps: {
+        Map: mapSpy,
+        KmlLayer: kmlSpy,
+        event: { addListener: listenerSpy },
+      },
+    } as any;
+    (window as any).google = googleSpy;
+    spyOn(document, 'getElementById').and.returnValue({} as any);
+
+    component.lote = { mapa: 'mapa' };
+    component.kmlUrl = 'http://example.com/mapa';
+    component.initMap();
+
+    expect(mapSpy).toHaveBeenCalled();
+    expect(kmlSpy).toHaveBeenCalled();
+    expect(listenerSpy).toHaveBeenCalled();
+    expect(mapSetCenterSpy).toHaveBeenCalled();
+  });
+
   it('should report non-network load errors and cancel deletes', fakeAsync(() => {
     loteServiceSpy.getLote.and.returnValue(
       throwError({ status: 500, error: { message: 'boom-detail' } })
