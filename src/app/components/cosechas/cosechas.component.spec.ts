@@ -62,4 +62,27 @@ describe('CosechasComponent', () => {
     expect(component.estadoCosechas.filteredData.length).toBe(1);
     expect(component.filtradas).toBe('encontro');
   });
+
+  it('should mark no results when filters do not match', () => {
+    component.ngOnInit();
+    component.cosechas = [
+      {
+        nombre_lote: 'Lote 2',
+        finCosechaDate: new Date('2026-01-10T00:00:00Z'),
+        inicioCosechaDate: new Date('2026-01-01T00:00:00Z'),
+        estado_cosecha: 'FINALIZADA',
+      },
+    ];
+    component.estadoCosechas.data = component.cosechas;
+    component.procesoCosechas.get('nombreLote').setValue('Lote 1');
+    component.procesoCosechas.get('activas').setValue(true);
+    component.procesoCosechas.get('finalizadas').setValue(false);
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoCosechas();
+
+    expect(component.estadoCosechas.filteredData.length).toBe(0);
+    expect(component.filtradas).toBe('noEncontro');
+  });
 });

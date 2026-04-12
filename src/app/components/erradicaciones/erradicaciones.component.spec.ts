@@ -50,4 +50,21 @@ describe('ErradicacionesComponent', () => {
     expect(component.estadoErradicaciones.data.length).toBe(1);
     expect(component.filtradas).toBe('encontro');
   });
+
+  it('should mark no results and keep the table empty when filters do not match', () => {
+    component.erradicaciones = [
+      {
+        nombre_lote: 'Lote 2',
+        fecha_erradicacion: '2026-01-10T00:00:00Z',
+      },
+    ];
+    component.procesoErradicaciones.get('nombreLote').setValue('Lote 1');
+    component.range.get('start').setValue(new Date('2025-12-01'));
+    component.range.get('end').setValue(new Date('2026-12-31'));
+
+    component.filtroEstadoErradicaciones();
+
+    expect(component.estadoErradicaciones.data.length).toBe(0);
+    expect(component.filtradas).toBe('noEncontro');
+  });
 });
