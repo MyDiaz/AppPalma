@@ -86,6 +86,33 @@ describe('EstadoFitosanitarioComponent', () => {
     );
   });
 
+  it('should build filtered charts without etapas when none are configured', () => {
+    component.registroEnfermedadesLote = [
+      {
+        nombre_lote: 'Lote 1',
+        fecha_registro_enfermedad: '2026-01-01T00:00:00Z',
+        nombre_enfermedad: 'rayo',
+        etapa_enfermedad: 'inicial',
+      },
+      {
+        nombre_lote: 'Lote 1',
+        fecha_registro_enfermedad: '2026-01-02T00:00:00Z',
+        nombre_enfermedad: 'rayo',
+        etapa_enfermedad: 'avanzado',
+      },
+    ] as any;
+    component.etapasEnfermedades = [] as any;
+    component.yearSeleccionado = '2026';
+    component.mesSeleccionado = '0';
+    component.enfermedadSeleccionada = 'rayo';
+
+    const createChartFiltradoSpy = spyOn(component, 'createChartFiltrado').and.stub();
+
+    component.cambiarChart();
+
+    expect(createChartFiltradoSpy).toHaveBeenCalledWith(jasmine.any(Array), ['rayo'], false);
+  });
+
   it('should build the unfiltered chart when no enfermedad is selected', () => {
     component.registroEnfermedadesLote = [
       {
@@ -103,5 +130,14 @@ describe('EstadoFitosanitarioComponent', () => {
     component.cambiarChart();
 
     expect(component.createChart).toHaveBeenCalledWith(component.registroEnfermedadesLote);
+  });
+
+  it('should initialize the empty state message on ngOnInit', () => {
+    component.ngOnInit();
+
+    expect(component.estadoCargaMensaje).toBe('No hay registros de enfermedades para este lote.');
+    expect(component.totalpalmas).toBe(0);
+    expect(component.casosacumulados).toBe(0);
+    expect(component.createChart).toHaveBeenCalledWith([]);
   });
 });
