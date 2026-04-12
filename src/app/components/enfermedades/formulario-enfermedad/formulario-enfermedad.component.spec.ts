@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { EnfermedadesService } from 'src/app/Servicios/enfermedades.service';
@@ -60,6 +60,13 @@ describe('FormularioEnfermedadComponent', () => {
     expect(component.TratamientoEtapaEnfermedad.length).toBe(1);
   });
 
+  it('should keep the initial row when trying to delete the first one', () => {
+    component.borrarFila();
+
+    expect(component.etapasEnfermedad.length).toBe(1);
+    expect(component.TratamientoEtapaEnfermedad.length).toBe(1);
+  });
+
   it('should create a simple enfermedad after confirmation', fakeAsync(() => {
     component.NuevaEnfermedadForm.setValue({
       nombre_enfermedad: 'Rayo',
@@ -76,4 +83,42 @@ describe('FormularioEnfermedadComponent', () => {
     expect(enfermedadesServiceSpy.postEnfermedad).toHaveBeenCalled();
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-enfermedad');
   }));
+
+  it('should create a disease with etapas after confirmation', fakeAsync(() => {
+    component.NuevaEnfermedadEtapasForm.setControl(
+      'etapas_enfermedad',
+      new FormArray([new FormControl('Inicial')])
+    );
+    component.NuevaEnfermedadEtapasForm.setControl(
+      'tratamiento_etapa_enfermedad',
+      new FormArray([new FormControl('Tratamiento inicial')])
+    );
+    component.NuevaEnfermedadEtapasForm.get('nombre_enfermedad').setValue('Rayo');
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: true } as any)
+    );
+
+    component.guardarEnfermedadEtapas();
+    tick();
+    tick();
+
+    expect(enfermedadesServiceSpy.postEnfermedadEtapas).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        nombre_enfermedad: 'Rayo',
+      })
+    );
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-enfermedad');
+  }));
+
+  it('should report validation errors and go back to the list', () => {
+    component.NuevaEnfermedadForm.get('nombre_enfermedad').markAsTouched();
+    component.NuevaEnfermedadForm.get('procedimiento_tratamiento_enfermedad').markAsTouched();
+
+    expect(component.nombreEnfermedadNoValido).toBeTruthy();
+    expect(component.ProcedimientoTratamientoEnfermedadNoValido).toBeTruthy();
+
+    component.regresar();
+
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-enfermedad');
+  });
 });

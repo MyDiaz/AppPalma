@@ -53,6 +53,14 @@ describe('NavbarComponent', () => {
     expect(component.usuario.nombre_usuario).toBe('Usuario Prueba');
   });
 
+  it('should stop when no user id is available', () => {
+    authServiceStub.getIdUsuario.and.returnValue(null);
+
+    component.ngOnInit();
+
+    expect(usuariosServiceSpy.getUsuario).not.toHaveBeenCalled();
+  });
+
   it('should logout and navigate to login', () => {
     component.salir();
 

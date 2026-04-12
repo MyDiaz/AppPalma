@@ -167,4 +167,45 @@ describe('CosechasComponent', () => {
     expect(component.detalleCosecha.data[0].fecha_cosecha).toContain('2026');
     expect(component.mostrarTablaDetalle).toBe(true);
   });
+
+  it('should evaluate the filter predicate boundaries and handle load errors', () => {
+    component.ngOnInit();
+
+    const predicate = component.estadoCosechas.filterPredicate;
+    const cosechaActiva = {
+      nombre_lote: 'Lote 1',
+      inicioCosechaDate: new Date('2026-01-01T00:00:00Z'),
+      estado_cosecha: 'ACTIVA',
+    } as any;
+    const cosechaFinalizada = {
+      nombre_lote: 'Lote 1',
+      finCosechaDate: new Date('2026-01-10T00:00:00Z'),
+      estado_cosecha: 'FINALIZADA',
+    } as any;
+    const filtrosBase = JSON.stringify({
+      start: new Date('2025-12-01T00:00:00Z'),
+      end: new Date('2026-12-31T00:00:00Z'),
+      activas: true,
+      finalizadas: true,
+      nombreLote: 'Lote 1',
+    });
+
+    expect(predicate(cosechaActiva, filtrosBase)).toBe(true);
+    expect(predicate(cosechaFinalizada, filtrosBase)).toBe(true);
+    expect(
+      predicate(
+        { nombre_lote: 'Lote 2', inicioCosechaDate: new Date(), estado_cosecha: 'ACTIVA' } as any,
+        filtrosBase
+      )
+    ).toBe(false);
+
+    loteServiceSpy.getLotes.and.returnValue(
+      throwError({ error: { message: 'boom' }, status: 0 })
+    );
+    component = TestBed.createComponent(CosechasComponent).componentInstance;
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBe(true);
+    expect(component.mensaje_error).toBe('Servicio no disponible');
+  });
 });

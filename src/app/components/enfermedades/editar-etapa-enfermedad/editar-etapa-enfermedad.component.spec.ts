@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { EnfermedadesService } from 'src/app/Servicios/enfermedades.service';
 import { createActivatedRouteMock, createRouterSpy } from 'src/testing/spec-helpers';
 import Swal from 'sweetalert2';
@@ -65,6 +65,12 @@ describe('EditarEtapaEnfermedadComponent', () => {
 
   it('should update enfermedad etapas after confirmation', fakeAsync(() => {
     component.ngOnInit();
+    component.editarEnfermedadEtapaForm.setValue({
+      ids_etapas_enfermedad: [1],
+      nombre_enfermedad: 'Rayo',
+      etapas_enfermedad: ['Inicial'],
+      tratamientos_etapa_enfermedad: ['Tratamiento'],
+    });
     spyOn(Swal, 'fire').and.returnValue(
       Promise.resolve({ isConfirmed: true } as any)
     );
@@ -75,5 +81,35 @@ describe('EditarEtapaEnfermedadComponent', () => {
 
     expect(enfermedadesServiceSpy.actualizarEnfermedadConEtapas).toHaveBeenCalled();
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-enfermedad');
+  }));
+
+  it('should add rows, keep one row on delete, and surface update errors', fakeAsync(() => {
+    component.ngOnInit();
+    component.addEtapa();
+    component.borrarFila(1);
+
+    expect(component.IDsEnfermedad.length).toBe(1);
+    expect(component.etapasEnfermedad.length).toBe(1);
+    expect(component.tratamientosEtapa.length).toBe(1);
+
+    enfermedadesServiceSpy.actualizarEnfermedadConEtapas.and.returnValue(
+      throwError({ error: { message: 'boom' } })
+    );
+    component.editarEnfermedadEtapaForm.setValue({
+      ids_etapas_enfermedad: [1],
+      nombre_enfermedad: 'Rayo',
+      etapas_enfermedad: ['Inicial'],
+      tratamientos_etapa_enfermedad: ['Tratamiento'],
+    });
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: true } as any)
+    );
+
+    component.actualizarEnfermedad();
+    tick();
+    tick();
+
+    expect(enfermedadesServiceSpy.actualizarEnfermedadConEtapas).toHaveBeenCalled();
+    expect(routerSpy.navigateByUrl).not.toHaveBeenCalled();
   }));
 });

@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AgroquimicosService } from 'src/app/Servicios/agroquimicos.service';
 import { createRouterSpy } from 'src/testing/spec-helpers';
 import Swal from 'sweetalert2';
@@ -47,6 +47,7 @@ describe('ListadoAgroquimicosComponent', () => {
   it('should create and load agroquimicos', () => {
     expect(component).toBeTruthy();
     expect(component.hayProducto).toBe(true);
+    expect(component.agroquimicos.length).toBe(1);
   });
 
   it('should validate and navigate to edit page', () => {
@@ -57,6 +58,25 @@ describe('ListadoAgroquimicosComponent', () => {
     expect(component.esValido()).toBe(true);
     component.editarAgroquimico();
     expect(routerSpy.navigate).toHaveBeenCalledWith(['nuevo-agroquimico', '1']);
+  });
+
+  it('should keep validation false when no product is selected', () => {
+    component.NombreAgroquimicoForm = new FormControl({
+      id_producto_agroquimico: null,
+    }) as any;
+
+    expect(component.esValido()).toBe(false);
+  });
+
+  it('should mark the service as unavailable when the request fails', () => {
+    agroquimicosServiceSpy.getAgroquimicos.and.returnValue(
+      throwError({ error: { mensaje: 'boom' }, status: 0 })
+    );
+
+    component.cargarAgroquimicos();
+
+    expect(component.bandera).toBe(true);
+    expect(component.mensajeError).toBe('Servicio no disponible');
   });
 
   it('should delete the selected agroquimico after confirmation', fakeAsync(() => {
@@ -74,5 +94,20 @@ describe('ListadoAgroquimicosComponent', () => {
 
     expect(agroquimicosServiceSpy.eliminarAgroquimico).toHaveBeenCalledWith('1');
     expect(agroquimicosServiceSpy.getAgroquimicos).toHaveBeenCalledTimes(2);
+  }));
+
+  it('should not delete when confirmation is rejected', fakeAsync(() => {
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: false } as any)
+    );
+    component.NombreAgroquimicoForm = new FormControl({
+      id_producto_agroquimico: '1',
+      nombre_comun_plaga: 'Plaga 1',
+    }) as any;
+
+    component.eliminarAgroquimico();
+    tick();
+
+    expect(agroquimicosServiceSpy.eliminarAgroquimico).not.toHaveBeenCalled();
   }));
 });

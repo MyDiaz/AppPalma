@@ -5,10 +5,13 @@ import { createAuthServiceStub } from 'src/testing/spec-helpers';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  let authServiceStub: ReturnType<typeof createAuthServiceStub>;
+
   beforeEach(async () => {
+    authServiceStub = createAuthServiceStub();
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      providers: [{ provide: AuthService, useValue: createAuthServiceStub() }],
+      providers: [{ provide: AuthService, useValue: authServiceStub }],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
@@ -23,5 +26,17 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('AppPalma');
+  });
+
+  it('should mirror auth state changes', () => {
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+
+    app.ngOnInit();
+    expect(app.estaAutenticado).toBeFalsy();
+
+    authServiceStub.isLoggedIn.next(true);
+
+    expect(app.estaAutenticado).toBeTruthy();
   });
 });

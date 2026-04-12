@@ -79,4 +79,57 @@ describe('NuevoAgroquimicosComponent', () => {
     expect(agroquimicosServiceSpy.postAgroquimico).toHaveBeenCalled();
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-agroquimicos');
   }));
+
+  it('should expose validation flags and update an existing product', fakeAsync(() => {
+    component.agroquimicoForm.get('nombre_producto_agroquimico').markAsTouched();
+    component.agroquimicoForm.get('tipo_producto_agroquimico').markAsTouched();
+    component.agroquimicoForm.get('clase_producto').markAsTouched();
+    component.agroquimicoForm.get('presentacion_producto_agroquimico').markAsTouched();
+    component.agroquimicoForm.get('ingrediente_activo_producto_agroquimico').markAsTouched();
+    component.agroquimicoForm.get('periodo_carencia_producto_agroquimico').markAsTouched();
+
+    expect(component.nombreProductoAgroquimicoNoValido).toBeTruthy();
+    expect(component.tipoProductoAgroquimicoNoValido).toBeTruthy();
+    expect(component.claseProductoNoValido).toBeTruthy();
+    expect(component.presentacionProductoAgroquimicoNoValido).toBeTruthy();
+    expect(component.ingredienteActivoProductoAgroquimicoNoValido).toBeTruthy();
+    expect(component.periodoCarenciaProductoAgroquimicoNoValido).toBeTruthy();
+
+    component.IDAgroquimico = '1';
+    component.hayProducto = true;
+    component.agroquimicoAEditar = {
+      nombre_producto_agroquimico: 'Producto 1',
+      tipo_producto_agroquimico: 'Tipo 1',
+      clase_producto: 'Clase 1',
+      presentacion_producto_agroquimico: 'Caja',
+      ingrediente_activo_producto_agroquimico: 'Activo 1',
+      periodo_carencia_producto_agroquimico: '7',
+    };
+    component.crearFormularioAgroquímicos();
+    component.agroquimicoForm.setValue({
+      nombre_producto_agroquimico: 'Producto 1',
+      tipo_producto_agroquimico: 'Tipo 1',
+      clase_producto: 'Clase 1',
+      presentacion_producto_agroquimico: 'Caja',
+      ingrediente_activo_producto_agroquimico: 'Activo 1',
+      periodo_carencia_producto_agroquimico: '7',
+    });
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: true } as any)
+    );
+
+    component.actualizarProducto();
+    tick();
+    tick();
+
+    expect(agroquimicosServiceSpy.actualizarAgroquimico).toHaveBeenCalledWith(
+      '1',
+      jasmine.objectContaining({
+        nombre_producto_agroquimico: 'Producto%201',
+        tipo_producto_agroquimico: 'Tipo%201',
+      })
+    );
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-agroquimicos');
+    expect(component.regresar).toBeDefined();
+  }));
 });

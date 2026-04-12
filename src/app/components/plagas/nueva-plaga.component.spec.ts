@@ -74,4 +74,39 @@ describe('NuevaPlagaComponent', () => {
     expect(plagasServiceSpy.postPlaga).toHaveBeenCalled();
     expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-plagas');
   }));
+
+  it('should update a plaga and keep the form helpers working', fakeAsync(() => {
+    component.nombrePlaga = 'Plaga 1';
+    component.plagaEditar = [
+      {
+        id_etapa_plaga: 1,
+        nombre_etapa_plaga: 'Etapa 1',
+        procedimiento_etapa_plaga: 'Tratamiento',
+      },
+    ];
+    component.crearFormularioPlagas();
+    component.NuevaPlagaForm.setValue({
+      ids_etapas_plaga: [1],
+      nombre_comun_plaga: 'Plaga 1',
+      nombre_etapa_plaga: ['Etapa 1'],
+      procedimiento_etapa_plaga: ['Tratamiento'],
+    });
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: true } as any)
+    );
+
+    component.addID();
+    component.borrarFila();
+    component.actualizarPlaga();
+    tick();
+    tick();
+
+    expect(plagasServiceSpy.putPlaga).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        nombre_comun_plaga: 'Plaga%201',
+      }),
+      'Plaga 1'
+    );
+    expect(routerSpy.navigateByUrl).toHaveBeenCalledWith('listado-plagas');
+  }));
 });

@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { LoteService } from 'src/app/Servicios/lote.service';
 import { createRouterSpy } from 'src/testing/spec-helpers';
 import { LotesComponent } from './lotes.component';
@@ -43,6 +43,28 @@ describe('LotesComponent', () => {
     expect(component).toBeTruthy();
     expect(component.totalLotes).toBe(2);
     expect(component.totalPalmas).toBe(25);
+  });
+
+  it('should tolerate malformed palm counts and surface load errors', () => {
+    loteServiceSpy.getLotes.and.returnValue(
+      of([
+        { nombre_lote: 'Lote 3', numero_palmas: 'abc' } as any,
+        { nombre_lote: 'Lote 4', numero_palmas: null } as any,
+      ])
+    );
+    component.ngOnInit();
+
+    expect(component.totalLotes).toBe(2);
+    expect(component.totalPalmas).toBe(0);
+
+    loteServiceSpy.getLotes.and.returnValue(
+      throwError({ status: 0, error: { message: 'boom' } })
+    );
+    component = TestBed.createComponent(LotesComponent).componentInstance;
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBeTruthy();
+    expect(component.mensaje_error).toBe('Servicio no disponible');
   });
 
   it('should navigate to the lote and create new lotes', () => {

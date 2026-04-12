@@ -176,8 +176,12 @@ export class RendimientoProductivoComponent implements OnInit {
     return latest_date;
   }
 
+  private createPdfDocument() {
+    return new jsPDF({ orientation: "portrait", format: "a4" });
+  }
+
   crearPdf() {
-    const doc = new jsPDF({ orientation: "portrait", format: "a4" });
+    const doc = this.createPdfDocument();
 
     // Titulo
     doc.setFontSize(36);

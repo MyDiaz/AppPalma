@@ -53,6 +53,59 @@ describe('EstadoFitosanitarioComponent', () => {
     expect(anyComponent.normalizeLoteName('Lote%')).toBe('lote%');
   });
 
+  it('should build the main chart from the current disease list', () => {
+    const chartModule = require('chart.js');
+    const chartSpy = spyOn(chartModule, 'Chart').and.callFake(function () {
+      return { destroy: jasmine.createSpy('destroy') };
+    } as any);
+    const canvas = {
+      getContext: jasmine.createSpy('getContext').and.returnValue({}),
+    } as any;
+    component.enfermedades = [{ nombre: 'rayo' }] as any;
+    component.chart = { destroy: jasmine.createSpy('destroy') } as any;
+    spyOn(document, 'getElementById').and.returnValue(canvas);
+    (component.createChart as any).and.callThrough();
+
+    component.createChart([
+      {
+        nombre_enfermedad: 'rayo',
+        etapa_enfermedad: 'inicial',
+      },
+      {
+        nombre_enfermedad: 'rayo',
+        etapa_enfermedad: 'avanzado',
+      },
+    ] as any);
+
+    expect(component.graficosData.rayo.length).toBe(2);
+    expect(chartSpy).toHaveBeenCalled();
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+  });
+
+  it('should build the filtered chart for etapas', () => {
+    const chartModule = require('chart.js');
+    const chartSpy = spyOn(chartModule, 'Chart').and.callFake(function () {
+      return { destroy: jasmine.createSpy('destroy') };
+    } as any);
+    const canvas = {
+      getContext: jasmine.createSpy('getContext').and.returnValue({}),
+    } as any;
+    spyOn(document, 'getElementById').and.returnValue(canvas);
+
+    component.createChartFiltrado(
+      [
+        { etapa_enfermedad: 'inicial' },
+        { etapa_enfermedad: 'avanzado' },
+        { etapa_enfermedad: 'inicial' },
+      ] as any,
+      ['inicial', 'avanzado'],
+      true
+    );
+
+    expect(chartSpy).toHaveBeenCalled();
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+  });
+
   it('should build filtered charts by enfermedad and etapas', () => {
     component.registroEnfermedadesLote = [
       {

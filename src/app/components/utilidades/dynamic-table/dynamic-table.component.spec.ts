@@ -17,11 +17,37 @@ describe('DynamicTableComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DynamicTableComponent);
     component = fixture.componentInstance;
-    component.columns = [];
+    component.columns = [
+      { columnDef: 'id', header: 'ID' } as any,
+      { columnDef: 'name', header: 'Nombre' } as any,
+    ];
     component.dataSource = new MatTableDataSource([]);
+    component.mostrarPaginador = true;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should map displayed columns on init', () => {
+    component.ngOnInit();
+
+    expect(component.displayedColumns).toEqual(['id', 'name']);
+  });
+
+  it('should replace the datasource when updateData is called', () => {
+    component.updateData([{ id: 1 }]);
+
+    expect(component.dataSource.data).toEqual([{ id: 1 }]);
+  });
+
+  it('should toggle selection and emit the clicked row', () => {
+    const row = { id: 1 };
+    const emitSpy = spyOn(component.rowSelected, 'emit');
+
+    component.onRowClick(row);
+
+    expect(component.selection.isSelected(row)).toBe(true);
+    expect(emitSpy).toHaveBeenCalledWith(row);
   });
 });

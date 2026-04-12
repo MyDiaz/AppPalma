@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CensosService } from 'src/app/Servicios/censos.service';
 import { LoteService } from 'src/app/Servicios/lote.service';
 import { createActivatedRouteMock } from 'src/testing/spec-helpers';
@@ -81,5 +81,34 @@ describe('CensosComponent', () => {
 
     expect(component.estadoCensos.data.length).toBe(1);
     expect(component.filtradas).toBe('encontro');
+  });
+
+  it('should tolerate unselected states and surface load errors', () => {
+    component.censos = [
+      {
+        nombre_lote: 'Lote 1',
+        fechaCenso: new Date('2026-01-01T00:00:00Z'),
+        estado_censo: 'PENDIENTE POR FUMIGAR',
+      },
+    ];
+    component.procesoCensos = new FormControl({
+      nombreLote: 'TODOS',
+      fumigado: false,
+      eliminado: false,
+      pend_fumigar: false,
+    }) as any;
+
+    component.filtroEstadoCensos();
+
+    expect(component.estadoCensos.data.length).toBe(1);
+
+    censosServiceSpy.getCensos.and.returnValue(
+      throwError({ status: 0, error: { message: 'boom' } })
+    );
+    component = TestBed.createComponent(CensosComponent).componentInstance;
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBeTruthy();
+    expect(component.mensaje_error).toBe('Servicio no disponible');
   });
 });

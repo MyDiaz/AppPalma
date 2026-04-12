@@ -206,4 +206,37 @@ describe('PrecipitacionComponent', () => {
     expect(anyComponent.actualizarGraficoPrecipitacion([], 'dia')).toBeUndefined();
     expect(destroySpy).toHaveBeenCalled();
   });
+
+  it('should build precipitation charts and exercise tooltip branches', () => {
+    const anyComponent = component as any;
+    const chartModule = require('chart.js');
+    let capturedConfig: any;
+    const destroySpy = jasmine.createSpy('destroy');
+    spyOn(chartModule, 'Chart').and.callFake(function (_ctx: any, config: any) {
+      capturedConfig = config;
+      return { destroy: destroySpy } as any;
+    } as any);
+
+    const canvas = {
+      getContext: jasmine.createSpy('getContext').and.returnValue({}),
+    } as any;
+    spyOn(document, 'getElementById').and.returnValue(canvas);
+
+    anyComponent.lluviaChart = { destroy: jasmine.createSpy('destroy') };
+
+    anyComponent.actualizarGraficoPrecipitacion(
+      [{ x: new Date(2026, 0, 1), y: 5 }],
+      'mes'
+    );
+
+    const titleCallback = capturedConfig.options.tooltips.callbacks.title;
+    expect(titleCallback([])).toBe('');
+    expect(titleCallback([{ index: 0 }])).not.toBe('');
+    expect(titleCallback([{ xLabel: '2026-01-01T00:00:00Z' }])).not.toBe('');
+
+    anyComponent.actualizarGraficoPrecipitacion([], 'dia');
+
+    expect(destroySpy).toHaveBeenCalled();
+    expect(canvas.getContext).toHaveBeenCalledWith('2d');
+  });
 });

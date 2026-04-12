@@ -2,7 +2,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { EnfermedadesService } from 'src/app/Servicios/enfermedades.service';
 import { createRouterSpy } from 'src/testing/spec-helpers';
 import Swal from 'sweetalert2';
@@ -64,6 +64,24 @@ describe('ListadoEnfermedadesComponent', () => {
     expect(routerSpy.navigate).toHaveBeenCalledWith(['editar-enfermedad', 'Rayo']);
   });
 
+  it('should edit an etapa enfermedad and validate empty selections', () => {
+    component.NombreEnfermedadForm = new FormControl({
+      nombre_enfermedad: 'etapa-Rayo',
+    }) as any;
+
+    expect(component.esValido()).toBe(true);
+    component.editarEnfermedad();
+    expect(routerSpy.navigate).toHaveBeenCalledWith([
+      'editar-etapa-enfermedad',
+      'Rayo',
+    ]);
+
+    component.NombreEnfermedadForm = new FormControl({
+      nombre_enfermedad: null,
+    }) as any;
+    expect(component.esValido()).toBeFalsy();
+  });
+
   it('should delete the selected enfermedad after confirmation', fakeAsync(() => {
     component.NombreEnfermedadForm = new FormControl({
       nombre_enfermedad: 'enfermedad-Rayo',
@@ -79,5 +97,31 @@ describe('ListadoEnfermedadesComponent', () => {
     expect(enfermedadesServiceSpy.eliminarEnfermedad).toHaveBeenCalledWith('Rayo');
     expect(enfermedadesServiceSpy.getEnfermedadesEtapas).toHaveBeenCalledTimes(2);
     expect(enfermedadesServiceSpy.getEnfermedades).toHaveBeenCalledTimes(2);
+  }));
+
+  it('should surface delete and load errors', fakeAsync(() => {
+    enfermedadesServiceSpy.getEnfermedadesEtapas.and.returnValue(
+      throwError({ status: 0, error: { mensaje: 'boom' } })
+    );
+    component.cargarEnfermedades();
+
+    expect(component.bandera).toBeTruthy();
+    expect(component.mensajeError).toBe('Servicio no disponible');
+
+    component.NombreEnfermedadForm = new FormControl({
+      nombre_enfermedad: 'etapa-Rayo',
+    }) as any;
+    enfermedadesServiceSpy.eliminarEnfermedad.and.returnValue(
+      throwError({ error: { message: 'boom-delete' } })
+    );
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: true } as any)
+    );
+
+    component.eliminarEnfermedad();
+    tick();
+    tick();
+
+    expect(enfermedadesServiceSpy.eliminarEnfermedad).toHaveBeenCalledWith('Rayo');
   }));
 });

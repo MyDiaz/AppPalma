@@ -207,4 +207,51 @@ describe('RendimientoProductivoComponent', () => {
     expect(anyComponent.getMonthName(11)).toBe('Diciembre');
     expect(anyComponent.getMonthName(99)).toBe('Mes desconocido');
   });
+
+  it('should generate a pdf summary with filtered rows', () => {
+    const fakeDoc = {
+      setFontSize: jasmine.createSpy('setFontSize'),
+      text: jasmine.createSpy('text'),
+      addImage: jasmine.createSpy('addImage'),
+      addPage: jasmine.createSpy('addPage'),
+      setFont: jasmine.createSpy('setFont'),
+      setFillColor: jasmine.createSpy('setFillColor'),
+      setDrawColor: jasmine.createSpy('setDrawColor'),
+      rect: jasmine.createSpy('rect'),
+      setTextColor: jasmine.createSpy('setTextColor'),
+      save: jasmine.createSpy('save'),
+      internal: {
+        pageSize: {
+          getWidth: jasmine.createSpy('getWidth').and.returnValue(297),
+        },
+      },
+    } as any;
+    const anyComponent = component as any;
+    spyOn(anyComponent, 'createPdfDocument').and.returnValue(fakeDoc);
+    spyOn(document, 'getElementById').and.returnValue({} as any);
+
+    component.censosFiltered = [
+      {
+        fecha_registro_censo_productivo: new Date(2026, 0, 1),
+        nombre_lote: 'Lote muy largo para saltar linea',
+        cantidad_palmas_leidas: 10,
+        cantidad_flores_femeninas: 1,
+        cantidad_flores_masculinas: 2,
+        cantidad_racimos_verdes: 3,
+        cantidad_racimos_pintones: 4,
+        cantidad_racimos_sobremaduros: 5,
+        cantidad_racimos_maduros: 6,
+        nombre_usuario: 'Usuario 1',
+      } as any,
+    ];
+    component.loteSeleccionado = 'Todos';
+    component.yearSeleccionado = '2026';
+    component.mesSeleccionado = '0';
+
+    component.crearPdf();
+
+    expect(fakeDoc.save).toHaveBeenCalledWith('Rendimiento_Productivo.pdf');
+    expect(fakeDoc.addImage).toHaveBeenCalled();
+    expect(fakeDoc.text).toHaveBeenCalledWith('Rendimiento productivo', 15, 35);
+  });
 });

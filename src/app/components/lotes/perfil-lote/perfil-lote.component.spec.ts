@@ -1,7 +1,7 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { LoteService } from 'src/app/Servicios/lote.service';
 import { createActivatedRouteMock, createRouterSpy } from 'src/testing/spec-helpers';
 import Swal from 'sweetalert2';
@@ -78,5 +78,41 @@ describe('PerfilLoteComponent', () => {
 
     expect(loteServiceSpy.deleteLote).toHaveBeenCalledWith('Lote 1');
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/lotes']);
+  }));
+
+  it('should return early when there is no map and surface load errors', () => {
+    component.lote = { mapa: '' };
+    component.initMap();
+
+    expect(component.map).toBeUndefined();
+
+    loteServiceSpy.getLote.and.returnValue(
+      throwError({ status: 0, error: { message: 'boom' } })
+    );
+    component = TestBed.createComponent(PerfilLoteComponent).componentInstance;
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBeTruthy();
+    expect(component.mensaje_error).toBe('Servicio no disponible');
+  });
+
+  it('should report non-network load errors and cancel deletes', fakeAsync(() => {
+    loteServiceSpy.getLote.and.returnValue(
+      throwError({ status: 500, error: { message: 'boom-detail' } })
+    );
+    component = TestBed.createComponent(PerfilLoteComponent).componentInstance;
+    component.ngOnInit();
+
+    expect(component.bandera_error).toBeTruthy();
+    expect(component.mensaje_error).toBe('boom-detail');
+
+    spyOn(Swal, 'fire').and.returnValue(
+      Promise.resolve({ isConfirmed: false } as any)
+    );
+    component.nombre_lote = 'Lote 1';
+    component.eliminarLote();
+    tick();
+
+    expect(loteServiceSpy.deleteLote).not.toHaveBeenCalled();
   }));
 });
