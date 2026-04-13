@@ -111,7 +111,7 @@ export class ListadoEnfermedadesComponent implements OnInit {
       enfermedad = this.NombreEnfermedadForm.value.nombre_enfermedad.replace('etapa-', '');
     }
     Swal.fire({
-      text: 'EstÃ¡s seguro de eliminar la enfermedad?',
+      text: 'Estás seguro de eliminar la enfermedad?',
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true,
@@ -122,7 +122,7 @@ export class ListadoEnfermedadesComponent implements OnInit {
             console.log(resp);
             Swal.fire({
               title: this.NombreEnfermedadForm.value.nombre_enfermedad.replace('enfermedad-', ''),
-              html: 'Se eliminÃ³ correctamente la enfermedad',
+              html: 'Se eliminó correctamente la enfermedad',
               icon: 'success',
             });
             this.cargarEnfermedades();

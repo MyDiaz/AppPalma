@@ -56,7 +56,7 @@ export class ListadoPlagasComponent implements OnInit {
 
   eliminarPlaga(): void {
     Swal.fire({
-      text: 'EstÃ¡s seguro de eliminar la plaga?',
+      text: 'Estás seguro de eliminar la plaga?',
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true,

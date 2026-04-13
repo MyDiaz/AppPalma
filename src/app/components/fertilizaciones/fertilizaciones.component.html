@@ -48,7 +48,7 @@
                     <div class="col-md-4">
                         <mat-form-field appearance="fill" >
                             <mat-label>Seleccione un lote</mat-label>
-                            <!-- <mat-select > NingÃºn </mat-select> -->
+                            <!-- <mat-select > Ningún </mat-select> -->
                             <mat-select formControlName="nombreLote" >
                             <mat-option [value]="lote.nombre_lote" *ngFor="let lote of lotes" (click)="filtroEstadoFertilizaciones()">{{ lote.nombre_lote }}</mat-option>
                             </mat-select>

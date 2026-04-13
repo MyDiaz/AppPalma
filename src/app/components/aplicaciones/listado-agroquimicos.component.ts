@@ -87,7 +87,7 @@ export class ListadoAgroquimicosComponent implements OnInit {
 
   eliminarAgroquimico(): void {
     Swal.fire({
-      text: 'EstÃ¡s seguro de eliminar el producto agroquÃ­mico?',
+      text: 'Estás seguro de eliminar el producto agroquí­mico?',
       icon: 'question',
       showCancelButton: true,
       showConfirmButton: true,
