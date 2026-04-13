@@ -1,31 +1,42 @@
-import { TestBed, async } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
+import { AuthService } from './Servicios/auth.service';
+import { createAuthServiceStub } from 'src/testing/spec-helpers';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
+  let authServiceStub: ReturnType<typeof createAuthServiceStub>;
+
+  beforeEach(async () => {
+    authServiceStub = createAuthServiceStub();
+    await TestBed.configureTestingModule({
+      declarations: [AppComponent],
+      providers: [{ provide: AuthService, useValue: authServiceStub }],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  }));
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
+    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
-  it(`should have as title 'AppPalma'`, () => {
+  it('should have the expected title', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
+    const app = fixture.componentInstance;
     expect(app.title).toEqual('AppPalma');
   });
 
-  it('should render title', () => {
+  it('should mirror auth state changes', () => {
     const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('AppPalma app is running!');
+    const app = fixture.componentInstance;
+
+    app.ngOnInit();
+    expect(app.estaAutenticado).toBeFalsy();
+
+    authServiceStub.isLoggedIn.next(true);
+
+    expect(app.estaAutenticado).toBeTruthy();
   });
 });

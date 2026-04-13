@@ -57,11 +57,13 @@ export class UsuariosComponent implements OnInit {
   }
 
   get nombreUsuarioNoValido() {
-    return this.actualizarUsuarioForm.get('nombre_usuario').invalid && this.actualizarUsuarioForm.get('nombre_usuario').touched
+    const control = this.actualizarUsuarioForm.get('nombre_usuario');
+    return control.invalid && control.touched;
   }
 
   get contrasenaUsuarioNoValido() {
-    return this.actualizarUsuarioForm.get('contrasena_nueva').invalid && this.actualizarUsuarioForm.get('contrasena_nueva').touched
+    const control = this.cambiarContrasenaForm?.get('contrasena_nueva');
+    return !!control && control.invalid && control.touched;
   }
 
   actualizarUsuario() {

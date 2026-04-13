@@ -50,12 +50,12 @@
         </div>
         <div *ngIf="hayProducto" class="row mt-2">
             <div class="col-6">
-                <button type="submit" class="btn btn-outline-danger btn-block" (click)="eliminarAgroquimico()" [disabled]="!esValido()"> 
+                <button type="submit" class="btn btn-outline-danger btn-block" [disabled]="!esValido()"> 
                     <i class="fas fa-trash"></i> Eliminar 
                 </button>
             </div>
             <div class="col-6">
-                <button type="button" class="btn btn-outline-warning btn-block" (click)="editarAgroquimico()" (click)="editarAgroquimico()" [disabled]="!esValido()">
+                <button type="button" class="btn btn-outline-warning btn-block" (click)="editarAgroquimico()" [disabled]="!esValido()">
                     <i class="fas fa-pencil-alt"></i> Editar 
                 </button>
             </div>

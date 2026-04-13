@@ -22,34 +22,28 @@ export class CensoProductivoComponent implements OnInit {
     this._viajesService.getCensoProductivo().subscribe(
       data => {
         this.censos_productivos = data;
-        console.log("censos-productivos", this.censos_productivos);
         this.cargando = false;
       },
       error => {
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
-        console.log(error);
       }
     )
 
     this._loteService.getLotes().subscribe(
       data => {
         this.lotes = data;
-        console.log("lotes desde censo-productivo", this.lotes);
         this.cargando = false;
       },
       error => {
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
-        console.log(error);
       });
 
     

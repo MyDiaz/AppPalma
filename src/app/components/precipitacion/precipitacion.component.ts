@@ -95,7 +95,7 @@ export class PrecipitacionComponent implements OnInit, OnDestroy {
     const diasTotales = this.calcularDiasInclusivos(inicio, fin);
     const acumulado = registrosEnRango.reduce((sum, registro) => sum + registro.milimetros, 0);
     const diasConLluvia = registrosEnRango.filter((registro) => registro.milimetros > 0).length;
-    const promedioDiario = diasTotales ? acumulado / diasTotales : 0;
+    const promedioDiario = acumulado / diasTotales;
     const granularidad = this.obtenerGranularidadSeleccionada();
     this.encontro = registrosEnRango.length > 0;
     if (this.encontro) {

@@ -64,6 +64,7 @@ export class ViajesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cargando = true;
     this._viajesService.getViajes().subscribe(
       data => {
         this.viajes = data.map( element => { 
@@ -73,20 +74,16 @@ export class ViajesComponent implements OnInit {
           return element
         });
         this.cargando = false;
-        console.log("VIAJES: ", this.viajes)
       }, 
       error => {
-        console.log("Error en el consumo de viajes", error);
         this.bandera_error = true;
         this.mensaje_error = error.error.message;
-        console.log("error.status", error.status);
         if( error.status == 0 ){
           this.mensaje_error = "Servicio no disponible"
         }
+        this.cargando = false;
       }
     );
-    this.cargando = true;
-    console.log('VIAJES', this.viajes)
 
     // this.activatedRoute
     // .queryParamMap
@@ -121,8 +118,6 @@ export class ViajesComponent implements OnInit {
   }
 
   filtroEstadoViajes(){
-    console.log("start", this.range.get('start').value, " end ", this.range.get('end').value)
-    console.log("this.selectedOption", this.selectedOption);
     this.estadoViaje.data = this.viajes.filter(viaje => {
       return (this.range.get('start').value == null || viaje.diaViajeDate >= this.range.get('start').value) &&
       (this.range.get('end').value == null || (viaje.diaViajeDate <= this.range.get('end').value)) 
@@ -134,11 +129,6 @@ export class ViajesComponent implements OnInit {
     }else{
       this.filtradas = estadosBusqueda.noEncontro
     }
-    console.log(this.filtradas)
-  
-    //this.cosechas = this.estadoCosechas
-    console.log("this.estadoViajes :", this.estadoViaje.data)
-    //console.log("procesoCosechas", this.procesoCosechas.value)
   }
 
   submit(){}
