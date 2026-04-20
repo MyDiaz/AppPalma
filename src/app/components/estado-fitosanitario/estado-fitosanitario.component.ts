@@ -39,13 +39,11 @@ export class EstadoFitosanitarioComponent implements OnInit {
   totalPalmasPorLote: TotalPalmsByLoteRow[] = [];
   totalpalmas: number = 0;
   totalsanas: number = 0;
-  totalentratamiento: number = 0;
   palmasSanas: number = 0;
   totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
   pendientesPorTratar: number = 0;
   registrosEnTratamiento = 0;
-  registrosDadasDeAlta = 0;
   registrosGlobal: RegistroEnfermedad[] = [];
   erradicacionesGlobal: any[] = [];
   registrosAgroquimicos: any[] = [];
@@ -59,10 +57,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   casosacumulados: number;
   incidenciareal: number;
   incidenciaacumulada: number;
-  casosFiltrados: number = 0;
-  incidenciaFiltrada: number = 0;
   estadoCargaMensaje: string = "";
-  estadoActualCards: ResumenCard[] = [];
   vistaMensualCards: ResumenCard[] = [];
   activePalms: ActivePalmRow[] = [];
   activePalmsGlobal: ActivePalmRow[] = [];
@@ -175,7 +170,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
 
     this.actualizarCatalogoEnfermedades(registrosFiltrados);
     this.actualizarEtapasDesdeRegistros(registrosFiltrados);
-    this.actualizarEstadoActual();
+    this.activePalms = this.obtenerPalmasActivasFiltradas();
     this.cambiarChart();
   }
 
@@ -220,71 +215,8 @@ export class EstadoFitosanitarioComponent implements OnInit {
       const palmas = Number(lote?.total_palmas ?? 0);
       return total + (isNaN(palmas) ? 0 : palmas);
     }, 0);
-    this.actualizarPalmasSanas();
   }
 
-  private actualizarPalmasSanas(): void {
-    const pendientes = this.pendientesPorTratar ?? 0;
-    const enTratamiento = this.registrosEnTratamiento ?? 0;
-    const pendientesErradicar = this.totalpendientesporerradicar ?? 0;
-    const erradicadas = this.erradicacionesFiltradasCount ?? 0;
-    const suma = pendientes + enTratamiento + pendientesErradicar + erradicadas;
-    const resultado = (this.totalpalmas ?? 0) - suma;
-    this.palmasSanas = resultado > 0 ? resultado : 0;
-  }
-
-  private actualizarEstadoActual(): void {
-    const activePalms = this.obtenerPalmasActivasFiltradas();
-    const palmasTotales = this.totalpalmas ?? 0;
-    this.activePalms = activePalms;
-
-    const pendientesPorErradicar = activePalms.filter(
-      (item) => item.estado === "pendiente_por_erradicar"
-    ).length;
-    const enTratamiento = activePalms.filter(
-      (item) => item.estado === "en_tratamiento"
-    ).length;
-    const pendientesPorTratar = activePalms.filter(
-      (item) => item.estado === "pendiente_por_tratar"
-    ).length;
-    const palmasEnfermas =
-      enTratamiento + pendientesPorTratar + pendientesPorErradicar;
-    const palmasSanas = Math.max(palmasTotales - palmasEnfermas, 0);
-
-    this.estadoActualCards = [
-      {
-        label: "Total de palmas",
-        value: palmasTotales,
-        description: "Cantidad total de palmas sembradas en el lote seleccionado.",
-      },
-      {
-        label: "Palmas sanas",
-        value: palmasSanas,
-        description: "Palmas sin estado activo reportado en el lote seleccionado.",
-      },
-      {
-        label: "Palmas en tratamiento",
-        value: enTratamiento,
-        description: "Palmas con tratamiento activo y que aún no han recibido alta.",
-      },
-      {
-        label: "Palmas pendientes por tratar",
-        value: pendientesPorTratar,
-        description: "Palmas enfermas que requieren tratamiento pero aún no lo han iniciado.",
-      },
-      {
-        label: "Palmas pendientes por erradicar",
-        value: pendientesPorErradicar,
-        description: "Palmas enfermas que deben retirarse porque la enfermedad no tiene cura.",
-      },
-    ];
-
-    this.totalpalmas = palmasTotales;
-    this.registrosEnTratamiento = enTratamiento;
-    this.pendientesPorTratar = pendientesPorTratar;
-    this.totalpendientesporerradicar = pendientesPorErradicar;
-    this.palmasSanas = palmasSanas;
-  }
 
   private obtenerPalmasActivasFiltradas(): ActivePalmRow[] {
     if (!Array.isArray(this.activePalmsGlobal)) {
@@ -364,16 +296,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
       }
     });
     this.etapasEnfermedades = Array.from(etapasMap.values());
-  }
-
-  private calcularRegistrosDadasDeAlta(
-    registros: RegistroEnfermedad[]
-  ): number {
-    if (!Array.isArray(registros) || registros.length === 0) {
-      return 0;
-    }
-    return registros.filter((registro) => registro.dada_de_alta === true)
-      .length;
   }
 
   private contarPendientesPorErradicar(
@@ -482,17 +404,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
     this.monthlyChartData = lengths;
   }
 
-  private actualizarResumenFiltrado(data: RegistroEnfermedad[]) {
-    const cantidad = data?.length ?? 0;
-    this.casosFiltrados = cantidad;
-    if (this.totalpalmas && this.totalpalmas > 0) {
-      this.incidenciaFiltrada = parseFloat(
-        ((cantidad * 100) / this.totalpalmas).toFixed(2)
-      );
-    } else {
-      this.incidenciaFiltrada = 0;
-    }
-  }
   private actualizarGraficoMensualFiltrado(
     data: any[],
     etiquetas: string[],
@@ -571,17 +482,10 @@ export class EstadoFitosanitarioComponent implements OnInit {
       this.contarPendientesPorErradicar(registros);
   }
 
-  private actualizarDadasDeAlta(registros: RegistroEnfermedad[]) {
-    this.registrosDadasDeAlta = this.calcularRegistrosDadasDeAlta(registros);
-  }
-
   private actualizarTarjetasFiltradas(registros: RegistroEnfermedad[]) {
     this.actualizarEnTratamiento();
-    this.actualizarDadasDeAlta(registros);
     this.actualizarPendientePorErradicar(registros);
     this.actualizarPendientesPorTratarDesdeRegistros(registros);
-    this.actualizarResumenFiltrado(registros);
-    this.actualizarPalmasSanas();
   }
 
   private construirVistaMensualCards(registrosMes: RegistroEnfermedad[]): void {

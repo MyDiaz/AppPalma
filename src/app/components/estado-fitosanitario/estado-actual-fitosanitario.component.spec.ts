@@ -49,4 +49,42 @@ describe("EstadoActualFitosanitarioComponent", () => {
     expect(component.formatFechaRegistro("")).toBe("-");
     expect(component.formatEstadoActivo("en_tratamiento")).toBe("En tratamiento");
   });
+
+  it("should derive summary cards from totalPalmas and activePalms", () => {
+    component.totalPalmas = 10;
+    component.activePalms = [
+      {
+        nombre_lote: "Lote 1",
+        id_palma: 1,
+        nombre_enfermedad: "Rayo",
+        etapa_enfermedad: "Inicial",
+        fecha: "2026-01-01",
+        estado: "en_tratamiento",
+      },
+      {
+        nombre_lote: "Lote 1",
+        id_palma: 2,
+        nombre_enfermedad: "Rayo",
+        etapa_enfermedad: "Intermedia",
+        fecha: "2026-01-02",
+        estado: "pendiente_por_tratar",
+      },
+      {
+        nombre_lote: "Lote 1",
+        id_palma: 3,
+        nombre_enfermedad: "PC",
+        etapa_enfermedad: "Avanzada",
+        fecha: "2026-01-03",
+        estado: "pendiente_por_erradicar",
+      },
+    ];
+
+    expect(component.cards).toEqual([
+      jasmine.objectContaining({ label: "Total de palmas", value: 10 }),
+      jasmine.objectContaining({ label: "Palmas sanas", value: 7 }),
+      jasmine.objectContaining({ label: "Palmas en tratamiento", value: 1 }),
+      jasmine.objectContaining({ label: "Palmas pendientes por tratar", value: 1 }),
+      jasmine.objectContaining({ label: "Palmas pendientes por erradicar", value: 1 }),
+    ]);
+  });
 });

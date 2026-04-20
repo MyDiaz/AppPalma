@@ -10,9 +10,9 @@
     <hr />
 
     <app-estado-actual-fitosanitario
-        [cards]="estadoActualCards"
         [lotes]="lotesErradicaciones"
         [loteSeleccionado]="loteErradicacionesSeleccionado"
+        [totalPalmas]="totalpalmas"
         [activePalms]="activePalms"
         (loteSeleccionadoChange)="aplicarFiltroLote($event)"
     ></app-estado-actual-fitosanitario>

@@ -20,9 +20,9 @@ import { ActivePalmRow, ResumenCard } from "./estado-fitosanitario.types";
 export class EstadoActualFitosanitarioComponent
   implements AfterViewInit, OnChanges
 {
-  @Input() cards: ResumenCard[] = [];
   @Input() lotes: string[] = [];
   @Input() loteSeleccionado: string = "Todos";
+  @Input() totalPalmas = 0;
   @Input() activePalms: ActivePalmRow[] = [];
 
   @Output() loteSeleccionadoChange = new EventEmitter<string>();
@@ -47,6 +47,49 @@ export class EstadoActualFitosanitarioComponent
 
   onLoteChange(value: string): void {
     this.loteSeleccionadoChange.emit(value || "Todos");
+  }
+
+  get cards(): ResumenCard[] {
+    const pendientesPorErradicar = this.activePalms.filter(
+      (item) => item.estado === "pendiente_por_erradicar"
+    ).length;
+    const enTratamiento = this.activePalms.filter(
+      (item) => item.estado === "en_tratamiento"
+    ).length;
+    const pendientesPorTratar = this.activePalms.filter(
+      (item) => item.estado === "pendiente_por_tratar"
+    ).length;
+    const palmasEnfermas =
+      enTratamiento + pendientesPorTratar + pendientesPorErradicar;
+    const palmasSanas = Math.max(this.totalPalmas - palmasEnfermas, 0);
+
+    return [
+      {
+        label: "Total de palmas",
+        value: this.totalPalmas,
+        description: "Cantidad total de palmas sembradas en el lote seleccionado.",
+      },
+      {
+        label: "Palmas sanas",
+        value: palmasSanas,
+        description: "Palmas sin estado activo reportado en el lote seleccionado.",
+      },
+      {
+        label: "Palmas en tratamiento",
+        value: enTratamiento,
+        description: "Palmas con tratamiento activo y que aun no han recibido alta.",
+      },
+      {
+        label: "Palmas pendientes por tratar",
+        value: pendientesPorTratar,
+        description: "Palmas enfermas que requieren tratamiento pero aun no lo han iniciado.",
+      },
+      {
+        label: "Palmas pendientes por erradicar",
+        value: pendientesPorErradicar,
+        description: "Palmas enfermas que deben retirarse porque la enfermedad no tiene cura.",
+      },
+    ];
   }
 
   getCardTooltip(card: ResumenCard): string {
