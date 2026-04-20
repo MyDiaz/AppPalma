@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Router } from "@angular/router";
+import { MapsAPILoader } from "@agm/core";
 import { LoteService } from "../../../Servicios/lote.service";
 import Swal from "sweetalert2";
 
@@ -16,12 +17,13 @@ export class PerfilLoteComponent implements OnInit {
   nombre_lote: string;
   bandera_error: boolean = false;
   mensaje_error: string;
-  map: google.maps.Map<HTMLElement>;
+  map?: google.maps.Map;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private _loteService: LoteService,
-    private router: Router
+    private router: Router,
+    private mapsAPILoader: MapsAPILoader
   ) {
     this.activatedRoute.paramMap.subscribe((params) => {
       this.nombre_lote = params.get("id");
@@ -51,24 +53,32 @@ export class PerfilLoteComponent implements OnInit {
     if (!this.lote?.mapa) {
       return;
     }
-    this.map = new google.maps.Map(document.getElementById("map"), {
-      zoom: 16,
-      mapTypeId: "satellite",
-    });
-
-    var layer1 = new google.maps.KmlLayer({
-      url: this.kmlUrl,
-      preserveViewport: true,
-      map: this.map,
-    });
-    google.maps.event.addListener(
-      layer1,
-      "defaultviewport_changed",
-      function () {
-        var getCenter = layer1.getDefaultViewport().getCenter();
-        this.map.setCenter(getCenter);
+    this.mapsAPILoader.load().then(() => {
+      const mapElement = document.getElementById("map");
+      if (!mapElement || !(window as any).google?.maps) {
+        return;
       }
-    );
+
+      this.map = new google.maps.Map(mapElement, {
+        zoom: 16,
+        mapTypeId: "satellite",
+      });
+
+      const layer1 = new google.maps.KmlLayer({
+        url: this.kmlUrl,
+        preserveViewport: true,
+        map: this.map,
+      });
+
+      google.maps.event.addListener(
+        layer1,
+        "defaultviewport_changed",
+        function () {
+          const getCenter = layer1.getDefaultViewport().getCenter();
+          this.map.setCenter(getCenter);
+        }
+      );
+    });
   }
 
   verRegistros(donde: string) {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute } from "@angular/router";
 import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
 import { AgroquimicosService } from "src/app/Servicios/agroquimicos.service";
@@ -16,8 +17,10 @@ import {
   TotalPalmsByLoteRow,
 } from "./estado-fitosanitario.types";
 //import { Router } from '@angular/router';
-import { jsPDF } from "jspdf";
 import { forkJoin } from "rxjs";
+import {
+  EstadoFitosanitarioPdfService,
+} from "./estado-fitosanitario-pdf.service";
 
 @Component({
   selector: "app-estado-fitosanitario",
@@ -66,6 +69,7 @@ export class EstadoFitosanitarioComponent implements OnInit {
   monthlyChartLabels: string[] = [];
   monthlyChartData: number[] = [];
   incidenciasMensuales: IncidenciaMensualRow[] = [];
+  private loteFiltradoDesdeRuta = "Todos";
 
   private normalizeLoteName(value: string): string {
     const safe = (value || "").trim().toLowerCase();
@@ -79,10 +83,15 @@ export class EstadoFitosanitarioComponent implements OnInit {
   constructor(
     private _enfermedadesService: EnfermedadesService,
     private _erradicacionesService: ErradicacionesService,
-    private _agroquimicosService: AgroquimicosService
+    private _agroquimicosService: AgroquimicosService,
+    private activatedRoute: ActivatedRoute,
+    private _estadoFitosanitarioPdfService: EstadoFitosanitarioPdfService
   ) {}
 
   ngOnInit() {
+    this.loteFiltradoDesdeRuta =
+      this.activatedRoute.snapshot.queryParamMap.get("lote") || "Todos";
+    this.loteErradicacionesSeleccionado = this.loteFiltradoDesdeRuta;
     this.estadoCargaMensaje = "Cargando datos del lote...";
     this.cargarDatosGenerales();
   }
@@ -355,12 +364,6 @@ export class EstadoFitosanitarioComponent implements OnInit {
       }
     });
     this.etapasEnfermedades = Array.from(etapasMap.values());
-  }
-
-  private calcularCantidadRegistrosPendientes(
-    registros: RegistroEnfermedad[]
-  ): number {
-    return registros?.length ?? 0;
   }
 
   private calcularRegistrosDadasDeAlta(
@@ -777,61 +780,20 @@ export class EstadoFitosanitarioComponent implements OnInit {
   }
 
   crearPdf() {
-    const doc = new jsPDF();
-
-    const xCol1 = 15;
-    let xCol2 = 115;
-    const yLine1 = 85;
-    const lineOffset = 20;
-    let col1Offset = 60;
-    let col2Offset = 40;
-
-    doc.setFontSize(36);
-    doc.text("Estado Fitosanitario", 45, 35);
-    doc.setFontSize(24);
-    doc.text(`Lote: ${this.nombreLoteParams}`, 20, 60);
-
-    // Conteo de palmas
-    doc.setFontSize(14);
-    doc.text("Total de palmas:", xCol1, yLine1);
-    doc.text("Sanas:", xCol2, yLine1);
-    doc.text("Pendientes por tratar:", xCol1, yLine1 + lineOffset);
-    doc.text("En tratamiento:", xCol2, yLine1 + lineOffset);
-    doc.text("Pendiente por erradicar:", xCol1, yLine1 + 2 * lineOffset);
-    doc.text("Erradicadas:", xCol2, yLine1 + 2 * lineOffset);
-    doc.setFontSize(11);
-    doc.text(`${this.totalpalmas}`, xCol1 + col1Offset, yLine1);
-    doc.text(`${this.totalsanas}`, xCol2 + col2Offset, yLine1);
-    doc.text(
-      `${this.pendientesPorTratar}`,
-      xCol1 + col1Offset,
-      yLine1 + lineOffset
-    );
-    doc.text(`${this.registrosEnTratamiento}`, xCol2 + col2Offset, yLine1 + lineOffset);
-    doc.text(`${this.totalpendientesporerradicar}`, xCol1 + col1Offset, yLine1 + 2 * lineOffset);
-    doc.text(`${this.totalerradicadas}`, xCol2 + col2Offset, yLine1 + 2 * lineOffset);
-
-    // Grafica
     const canvas = document.getElementById("myChart") as HTMLCanvasElement;
-    doc.addImage(canvas, 'PNG', 15, 160, 180, 100);
-
-    // Conteo de enfermedades e incidencias
-    doc.addPage();
-    const yLine4 = 30;
-    xCol2 = 95;
-    col1Offset = 50;
-    col2Offset = 65;
-    doc.setFontSize(14);
-    doc.text("Casos totales:", xCol1, yLine4);
-    doc.text("Incidencia real (%):", xCol2, yLine4);
-    doc.text("Casos acumulados:", xCol1, yLine4 + lineOffset);
-    doc.text("Incidencia acumulada (%):", xCol2, yLine4 + lineOffset);
-    doc.setFontSize(11);
-    doc.text(`${this.registroEnfermedadesLote.length}`, xCol1 + col1Offset, yLine4);
-    doc.text(`${this.incidenciareal}`, xCol2 + col2Offset, yLine4);
-    doc.text(`${this.casosacumulados}`, xCol1 + col1Offset, yLine4 + lineOffset);
-    doc.text(`${this.incidenciaacumulada}`, xCol2 + col2Offset, yLine4 + lineOffset);
-
-    doc.save(`Estado_Fitosanitario-${this.nombreLoteParams}.pdf`);
+    this._estadoFitosanitarioPdfService.generarPdf({
+      nombreLoteParams: this.nombreLoteParams,
+      totalpalmas: this.totalpalmas,
+      totalsanas: this.totalsanas,
+      pendientesPorTratar: this.pendientesPorTratar,
+      registrosEnTratamiento: this.registrosEnTratamiento,
+      totalpendientesporerradicar: this.totalpendientesporerradicar,
+      totalerradicadas: this.totalerradicadas,
+      registroEnfermedadesLoteLength: this.registroEnfermedadesLote.length,
+      incidenciareal: this.incidenciareal,
+      casosacumulados: this.casosacumulados,
+      incidenciaacumulada: this.incidenciaacumulada,
+      chartCanvas: canvas,
+    });
   }
 }
