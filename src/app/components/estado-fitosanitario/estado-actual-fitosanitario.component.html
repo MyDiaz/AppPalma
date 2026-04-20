@@ -1,0 +1,73 @@
+<section class="report-section">
+  <div class="section-header">
+    <div>
+      <h4 class="section-title">Estado actual</h4>
+    </div>
+    <div class="section-controls">
+      <label class="filter-label" for="loteSelect">Lote</label>
+      <select
+        id="loteSelect"
+        class="form-control form-control-sm"
+        [ngModel]="loteSeleccionado"
+        (ngModelChange)="onLoteChange($event)"
+      >
+        <option value="Todos">Todos</option>
+        <option *ngFor="let lote of lotes" [value]="lote">{{ lote }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="cards-grid cards-grid-top">
+    <article
+      class="summary-card summary-card-current"
+      *ngFor="let card of cards"
+    >
+      <span class="summary-card-tooltip">{{ getCardTooltip(card) }}</span>
+      <p class="summary-card-label">{{ card.label }}</p>
+      <p class="summary-card-value">{{ card.value }}</p>
+    </article>
+  </div>
+
+  <div class="top-chart-panel">
+    <div class="top-chart-grid">
+      <div class="top-chart-canvas">
+        <h6 class="top-chart-title">Sanas vs. enfermas</h6>
+        <canvas #overviewChart></canvas>
+      </div>
+      <div class="top-chart-canvas">
+        <h6 class="top-chart-title">Palmas enfermas</h6>
+        <canvas #diseaseChart></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-scroll">
+    <table class="table table-sm table-hover detail-table">
+      <thead>
+        <tr>
+          <th>Lote</th>
+          <th>ID palma</th>
+          <th>Enfermedad</th>
+          <th>Estado enfermedad</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let palma of activePalms">
+          <td>{{ palma.nombre_lote }}</td>
+          <td>{{ palma.id_palma }}</td>
+          <td>{{ palma.nombre_enfermedad }}</td>
+          <td>{{ palma.etapa_enfermedad }}</td>
+          <td>{{ formatFechaRegistro(palma.fecha) }}</td>
+          <td>{{ formatEstadoActivo(palma.estado) }}</td>
+        </tr>
+        <tr *ngIf="activePalms.length === 0">
+          <td colspan="6" class="text-center">
+            No hay palmas activas para el lote seleccionado.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

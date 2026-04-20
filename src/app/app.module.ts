@@ -22,6 +22,8 @@ import { LotesComponent } from "./components/lotes/lotes.component";
 import { NavbarComponent } from "./components/shared/navbar/navbar.component";
 import { PalmaComponent } from "./components/palma/palma.component";
 import { EstadoFitosanitarioComponent } from "./components/estado-fitosanitario/estado-fitosanitario.component";
+import { EstadoActualFitosanitarioComponent } from "./components/estado-fitosanitario/estado-actual-fitosanitario.component";
+import { VistaMensualFitosanitarioComponent } from "./components/estado-fitosanitario/vista-mensual-fitosanitario.component";
 import { EstadoProductivoComponent } from "./components/estado-productivo/estado-productivo.component";
 import { RegistroPlagasComponent } from "./components/plagas/registro-plagas.component";
 import { AplicacionesComponent } from "./components/aplicaciones/aplicaciones.component";
@@ -84,6 +86,8 @@ registerLocaleData(localeEs);
     NavbarComponent,
     PalmaComponent,
     EstadoFitosanitarioComponent,
+    EstadoActualFitosanitarioComponent,
+    VistaMensualFitosanitarioComponent,
     EstadoProductivoComponent,
     RegistroPlagasComponent,
     AplicacionesComponent,

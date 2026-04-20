@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { MapsAPILoader } from '@agm/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { LoteService } from 'src/app/Servicios/lote.service';
@@ -30,6 +31,7 @@ describe('PerfilLoteComponent', () => {
         { provide: ActivatedRoute, useValue: createActivatedRouteMock({ params: { id: 'Lote 1' } }) },
         { provide: LoteService, useValue: loteServiceSpy },
         { provide: Router, useValue: routerSpy },
+        { provide: MapsAPILoader, useValue: { load: () => Promise.resolve() } },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -96,7 +98,7 @@ describe('PerfilLoteComponent', () => {
     expect(component.mensaje_error).toBe('Servicio no disponible');
   });
 
-  it('should initialize the map when the lote has map data', () => {
+  it('should initialize the map when the lote has map data', fakeAsync(() => {
     const mapSetCenterSpy = jasmine.createSpy('setCenter');
     const listenerSpy = jasmine.createSpy('addListener').and.callFake((_layer, _event, handler) => {
       handler.call({ map: { setCenter: mapSetCenterSpy } });
@@ -118,12 +120,13 @@ describe('PerfilLoteComponent', () => {
     component.lote = { mapa: 'mapa' };
     component.kmlUrl = 'http://example.com/mapa';
     component.initMap();
+    flushMicrotasks();
 
     expect(mapSpy).toHaveBeenCalled();
     expect(kmlSpy).toHaveBeenCalled();
     expect(listenerSpy).toHaveBeenCalled();
     expect(mapSetCenterSpy).toHaveBeenCalled();
-  });
+  }));
 
   it('should report non-network load errors and cancel deletes', fakeAsync(() => {
     loteServiceSpy.getLote.and.returnValue(

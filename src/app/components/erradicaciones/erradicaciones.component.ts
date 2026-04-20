@@ -44,6 +44,13 @@ export class ErradicacionesComponent implements OnInit {
   ];
 
 
+  columnsErradicacionesDetalle = [
+    { columnDef: "id_palma", header: "ID Palma" },
+    { columnDef: "nombre_lote", header: "Lote" },
+    { columnDef: "fecha_presentacion", header: "Fecha de erradicación" },
+    { columnDef: "causa_erradicacion", header: "Causa" },
+  ];
+
   lotes: any[] = [];
 
   constructor(

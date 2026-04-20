@@ -1,0 +1,154 @@
+.report-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%);
+  border: 1px solid #d8e5de;
+  box-shadow: 0 16px 40px rgba(34, 62, 52, 0.08);
+}
+
+.report-section-accent {
+  background: linear-gradient(180deg, #fbfdfb 0%, #eef5f1 100%);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.section-title {
+  margin: 0;
+  color: #16382d;
+}
+
+.section-copy {
+  margin: 0.35rem 0 0;
+  color: #4a6358;
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #335547;
+}
+
+.cards-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.cards-grid-monthly {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.summary-card {
+  min-height: 150px;
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(38, 77, 61, 0.12);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: help;
+}
+
+.summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(34, 62, 52, 0.12);
+}
+
+.summary-card-monthly {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f6f3 100%);
+}
+
+.summary-card-label {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #335547;
+}
+
+.summary-card-value {
+  margin: 0.75rem 0;
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 700;
+  color: #16382d;
+}
+
+.summary-card-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #6a8378;
+}
+
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.chart-panel,
+.table-panel {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #ffffff;
+  border: 1px solid #d8e5de;
+}
+
+.chart-panel {
+  min-width: 280px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.panel-title {
+  margin: 0;
+  color: #16382d;
+}
+
+.panel-copy {
+  margin: 0.25rem 0 0;
+  color: #587064;
+}
+
+.incidencias-table {
+  margin-bottom: 0;
+}
+
+.incidencias-table thead th {
+  border-bottom: 0;
+  background: #eaf2ee;
+  color: #244538;
+  font-weight: 700;
+}
+
+.incidencias-table tbody td {
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .report-section {
+    padding: 1rem;
+  }
+
+  .summary-card {
+    min-height: 130px;
+  }
+}

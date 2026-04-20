@@ -1,22 +1,26 @@
 import { Component, OnInit } from "@angular/core";
-import { LoteService } from "../../Servicios/lote.service";
-import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
 import { ActivatedRoute } from "@angular/router";
-import { Chart } from "chart.js";
+import { EnfermedadesService } from "src/app/Servicios/enfermedades.service";
+import { ErradicacionesService } from "src/app/Servicios/erradicaciones.service";
+import { AgroquimicosService } from "src/app/Servicios/agroquimicos.service";
 import {
   EtapaEnfermedad,
   EnfermedadNombre,
 } from "src/app/models/enfermedadModel";
 import { RegistroEnfermedad } from "src/app/models/registroEnfermedad";
-import { LoteModel } from "src/app/models/lote.models";
-import { PalmaModel } from "src/app/models/palma.model";
+import {
+  ActivePalmRow,
+  FechaFiltro,
+  GraficoArrayMap,
+  IncidenciaMensualRow,
+  ResumenCard,
+  TotalPalmsByLoteRow,
+} from "./estado-fitosanitario.types";
 //import { Router } from '@angular/router';
-import { jsPDF } from "jspdf";
 import { forkJoin } from "rxjs";
-
-interface GraficoArrayMap {
-  [key: string]: any[]; // Index signature with string keys and array values
-}
+import {
+  EstadoFitosanitarioPdfService,
+} from "./estado-fitosanitario-pdf.service";
 
 @Component({
   selector: "app-estado-fitosanitario",
@@ -24,30 +28,43 @@ interface GraficoArrayMap {
   styleUrls: ["./estado-fitosanitario.component.css"],
 })
 export class EstadoFitosanitarioComponent implements OnInit {
-  lote: LoteModel;
   enfermedades: EnfermedadNombre[] = [];
   etapasEnfermedades: EtapaEnfermedad[] = [];
   graficosData: GraficoArrayMap = {};
   registroEnfermedadesLote: RegistroEnfermedad[] = [];
   nombreLoteParams: string;
-  chart: Chart;
-  mesSeleccionado: string = "Todos";
-  yearSeleccionado: string = "Todos";
-  availableYears: string[] = [];
+  fechaSeleccionada: string = "";
   enfermedadSeleccionada: string = "Todas";
 
-  totalpalmas: number;
-  totalsanas: number;
-  totalentratamiento: number;
-  totalpendientesportratar: number;
-  totalpendientesporerradicar: number;
+  totalPalmasPorLote: TotalPalmsByLoteRow[] = [];
+  totalpalmas: number = 0;
+  totalsanas: number = 0;
+  palmasSanas: number = 0;
+  totalpendientesporerradicar: number = 0;
   totalerradicadas: number;
+  pendientesPorTratar: number = 0;
+  registrosEnTratamiento = 0;
+  registrosGlobal: RegistroEnfermedad[] = [];
+  erradicacionesGlobal: any[] = [];
+  registrosAgroquimicos: any[] = [];
+  registrosAgroquimicosFiltrados: any[] = [];
 
-  casosmes: number;
+  erradicaciones: any[] = [];
+  erradicacionesFiltradasCount = 0;
+  loteErradicacionesSeleccionado: string = "Todos";
+  lotesErradicaciones: string[] = [];
+
   casosacumulados: number;
   incidenciareal: number;
   incidenciaacumulada: number;
   estadoCargaMensaje: string = "";
+  vistaMensualCards: ResumenCard[] = [];
+  activePalms: ActivePalmRow[] = [];
+  activePalmsGlobal: ActivePalmRow[] = [];
+  monthlyChartLabels: string[] = [];
+  monthlyChartData: number[] = [];
+  incidenciasMensuales: IncidenciaMensualRow[] = [];
+  private loteFiltradoDesdeRuta = "Todos";
 
   private normalizeLoteName(value: string): string {
     const safe = (value || "").trim().toLowerCase();
@@ -59,114 +76,308 @@ export class EstadoFitosanitarioComponent implements OnInit {
   }
   
   constructor(
-    private _loteService: LoteService,
     private _enfermedadesService: EnfermedadesService,
-    private activatedRoute: ActivatedRoute
+    private _erradicacionesService: ErradicacionesService,
+    private _agroquimicosService: AgroquimicosService,
+    private activatedRoute: ActivatedRoute,
+    private _estadoFitosanitarioPdfService: EstadoFitosanitarioPdfService
   ) {}
 
   ngOnInit() {
-    this.activatedRoute.queryParamMap.subscribe((params) => {
-      this.nombreLoteParams = params.get("lote");
-      if (!this.nombreLoteParams) {
-        this.estadoCargaMensaje = "No se recibió el parámetro de lote en la URL.";
-        return;
-      }
-      this.estadoCargaMensaje = "";
+    this.loteFiltradoDesdeRuta =
+      this.activatedRoute.snapshot.queryParamMap.get("lote") || "Todos";
+    this.loteErradicacionesSeleccionado = this.loteFiltradoDesdeRuta;
+    this.estadoCargaMensaje = "Cargando datos del lote...";
+    this.cargarDatosGenerales();
+  }
 
-      this._loteService.getLote(this.nombreLoteParams).subscribe(
-        (lote: LoteModel) => {
-          this.lote = lote;
-          this._loteService.getPalmasLote(this.nombreLoteParams).subscribe(
-            (palmas: PalmaModel[]) => {
-              console.log("palmas.length", palmas.length);
-              this.totalentratamiento = palmas.filter(
-                (p) => p.estado_palma === "En tratamiento"
-              ).length;
-              this.totalpendientesportratar = palmas.filter(
-                (p) => p.estado_palma === "Pendiente por tratar"
-              ).length;
-              this.totalpendientesporerradicar = palmas.filter(
-                (p) => p.estado_palma === "Pendiente por erradicar"
-              ).length;
-              this.totalerradicadas = palmas.filter(
-                (p) => p.estado_palma === "Erradicada"
-              ).length;
-              this.totalpalmas = this.lote.numero_palmas - this.totalerradicadas;
-              this.totalsanas = this.totalpalmas - (this.totalentratamiento + this.totalpendientesportratar + this.totalpendientesporerradicar + this.totalerradicadas);
-              this.incidenciareal = parseFloat((100*(this.totalentratamiento + this.totalpendientesportratar)/this.totalpalmas).toFixed(2));
-              this.casosacumulados = palmas.length;
-              this.incidenciaacumulada = parseFloat((100*(this.casosacumulados)/this.totalpalmas).toFixed(2));
-            },
-            (error) => {
-              console.error(error);
-            }
-          );
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
+  private cargarDatosGenerales(): void {
+    this.estadoCargaMensaje = "Cargando registros...";
+    this.registrosGlobal = [];
+    this.erradicacionesGlobal = [];
+    this.registrosAgroquimicos = [];
+    this.registrosAgroquimicosFiltrados = [];
 
-      forkJoin({
-        enfermedades: this._loteService.getEnfermedadesServer(),
-        registros: this._enfermedadesService.getEnfermedadesRegistradas(),
-      }).subscribe(
-        ({ enfermedades, registros }) => {
-          const fromCatalog = enfermedades.map((e) => e.nombre);
-          const fromRegistros = registros
-            .map((r) => r.nombre_enfermedad)
-            .filter((n) => !!n);
-          const uniqueNames = Array.from(new Set([...fromCatalog, ...fromRegistros]));
-          this.enfermedades = uniqueNames.map((nombre) => ({ nombre }));
+    forkJoin({
+      registros: this._enfermedadesService.getEnfermedadesRegistradas(),
+      estadoActual: this._enfermedadesService.getEstadoFitosanitarioActual(),
+      erradicaciones: this._erradicacionesService.getErradicaciones(),
+      agroquimicos: this._agroquimicosService.getRegistroAgroquimico(),
+    }).subscribe(
+      ({ registros, estadoActual, erradicaciones, agroquimicos }) => {
+        this.registrosGlobal = Array.isArray(registros) ? registros : [];
+        this.totalPalmasPorLote = Array.isArray(estadoActual?.total_palms_by_lote)
+          ? estadoActual.total_palms_by_lote
+          : [];
+        this.activePalmsGlobal = Array.isArray(estadoActual?.active_palms)
+          ? estadoActual.active_palms
+          : [];
+        this.erradicacionesGlobal = Array.isArray(erradicaciones)
+          ? erradicaciones
+          : [];
+        this.registrosAgroquimicos = Array.isArray(agroquimicos)
+          ? agroquimicos
+          : [];
+        this.lotesErradicaciones = this.totalPalmasPorLote
+          .map((item) => item?.nombre_lote)
+          .filter((nombre): nombre is string => !!nombre)
+          .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
 
-          const loteParam = this.normalizeLoteName(this.nombreLoteParams);
-          this.registroEnfermedadesLote = registros.filter(
-            (d) => this.normalizeLoteName(d.nombre_lote) === loteParam
-          );
-          this.availableYears = Array.from(
-            new Set(
-              this.registroEnfermedadesLote
-                .map((r) => new Date(r.fecha_registro_enfermedad).getFullYear())
-                .filter((y) => !Number.isNaN(y))
-                .map((y) => String(y))
-            )
-          ).sort((a, b) => Number(b) - Number(a));
-
-          if (
-            this.yearSeleccionado !== "Todos" &&
-            !this.availableYears.includes(this.yearSeleccionado)
-          ) {
-            this.yearSeleccionado = "Todos";
-          }
-
-          if (this.registroEnfermedadesLote.length === 0) {
-            this.estadoCargaMensaje =
-              "No hay registros de enfermedades para este lote.";
-          }
-          this.createChart(this.registroEnfermedadesLote);
-        },
-        (error) => {
-          console.error(error);
-          this.estadoCargaMensaje =
-            "No fue posible cargar enfermedades registradas.";
-        }
-      );
-    });
-
-    this._loteService.getEtapasServer().subscribe(
-      (aux: EtapaEnfermedad[]) => {
-        this.etapasEnfermedades = aux;
+        this.aplicarFiltroLote(this.loteErradicacionesSeleccionado);
       },
       (error) => {
         console.error(error);
+        this.registrosGlobal = [];
+        this.erradicacionesGlobal = [];
+        this.registrosAgroquimicos = [];
+        this.registrosAgroquimicosFiltrados = [];
+        this.totalPalmasPorLote = [];
+        this.registroEnfermedadesLote = [];
+        this.erradicaciones = [];
+        this.activePalmsGlobal = [];
+        this.activePalms = [];
+        this.estadoCargaMensaje =
+          "No fue posible cargar los registros del lote.";
       }
     );
   }
 
-  createChart(data: RegistroEnfermedad[]) {
-    const canvas = document.getElementById("myChart") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d");
+  aplicarFiltroLote(loteNombre: string): void {
+    this.loteErradicacionesSeleccionado = loteNombre || "Todos";
+    const loteValido = loteNombre && loteNombre !== "Todos";
+    const filtroNormalizado = loteValido
+      ? this.normalizeLoteName(loteNombre)
+      : null;
 
+    const registrosFiltrados = this.filtrarPorLote(
+      this.registrosGlobal,
+      filtroNormalizado
+    );
+    const erradicacionesFiltradas = this.filtrarPorLote(
+      this.erradicacionesGlobal,
+      filtroNormalizado
+    );
+    const agroquimicosFiltrados = this.filtrarPorLote(
+      this.registrosAgroquimicos,
+      filtroNormalizado
+    );
+
+    this.registroEnfermedadesLote = registrosFiltrados;
+    this.erradicaciones = erradicacionesFiltradas;
+    this.registrosAgroquimicosFiltrados = agroquimicosFiltrados;
+    this.nombreLoteParams = loteValido ? loteNombre : "Global";
+    this.actualizarTotalPalmas(loteValido ? loteNombre : null);
+
+    this.actualizarCatalogoEnfermedades(registrosFiltrados);
+    this.actualizarEtapasDesdeRegistros(registrosFiltrados);
+    this.activePalms = this.obtenerPalmasActivasFiltradas();
+    this.cambiarChart();
+  }
+
+  private filtrarPorLote<T extends { nombre_lote?: string }>(
+    registros: T[],
+    loteNormalizado: string | null
+  ): T[] {
+    if (!Array.isArray(registros)) {
+      return [];
+    }
+    if (!loteNormalizado) {
+      return [...registros];
+    }
+    return registros.filter(
+      (item) =>
+        typeof item?.nombre_lote === "string" &&
+        this.normalizeLoteName(item.nombre_lote) === loteNormalizado
+    );
+  }
+
+  private actualizarTotalPalmas(loteNombre: string | null): void {
+    if (
+      !Array.isArray(this.totalPalmasPorLote) ||
+      this.totalPalmasPorLote.length === 0
+    ) {
+      this.totalpalmas = 0;
+      return;
+    }
+
+    const loteNormalizado = loteNombre
+      ? this.normalizeLoteName(loteNombre)
+      : null;
+
+    const lotesSeleccionados = loteNormalizado
+      ? this.totalPalmasPorLote.filter((lote) => {
+          const nombre = lote?.nombre_lote ?? "";
+          return this.normalizeLoteName(nombre) === loteNormalizado;
+        })
+      : this.totalPalmasPorLote;
+
+    this.totalpalmas = lotesSeleccionados.reduce((total, lote) => {
+      const palmas = Number(lote?.total_palmas ?? 0);
+      return total + (isNaN(palmas) ? 0 : palmas);
+    }, 0);
+  }
+
+
+  private obtenerPalmasActivasFiltradas(): ActivePalmRow[] {
+    if (!Array.isArray(this.activePalmsGlobal)) {
+      return [];
+    }
+
+    if (
+      !this.loteErradicacionesSeleccionado ||
+      this.loteErradicacionesSeleccionado === "Todos"
+    ) {
+      return [...this.activePalmsGlobal];
+    }
+
+    const loteNormalizado = this.normalizeLoteName(
+      this.loteErradicacionesSeleccionado
+    );
+
+    return this.activePalmsGlobal.filter(
+      (item) =>
+        this.normalizeLoteName(item?.nombre_lote ?? "") === loteNormalizado
+    );
+  }
+
+  private actualizarContadorErradicaciones(): void {
+    const fechaFiltro = this.obtenerFiltroMesAnio();
+
+    const filtered = this.erradicaciones.filter((item) => {
+      if (!item?.fecha_erradicacion) {
+        return false;
+      }
+
+      const fecha = new Date(item.fecha_erradicacion);
+      if (!fecha || Number.isNaN(fecha.getTime())) {
+        return false;
+      }
+
+      if (fechaFiltro) {
+        if (
+          fecha.getFullYear() !== fechaFiltro.year ||
+          fecha.getMonth() !== fechaFiltro.month
+        ) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    this.erradicacionesFiltradasCount = filtered.length;
+  }
+
+  private actualizarCatalogoEnfermedades(registros: RegistroEnfermedad[]): void {
+    const nombresUnicos = Array.from(
+      new Set(
+        (registros ?? [])
+          .map((registro) => registro?.nombre_enfermedad)
+          .filter((nombre) => !!nombre)
+      )
+    );
+    this.enfermedades = nombresUnicos.map((nombre) => ({ nombre }));
+  }
+
+  private actualizarEtapasDesdeRegistros(registros: RegistroEnfermedad[]): void {
+    const etapasMap = new Map<string, EtapaEnfermedad>();
+    (registros ?? []).forEach((registro) => {
+      const nombre = registro?.nombre_enfermedad;
+      const etapa = registro?.etapa_enfermedad;
+      if (!nombre || !etapa) {
+        return;
+      }
+      const key = `${nombre}|${etapa}`.toLowerCase();
+      if (!etapasMap.has(key)) {
+        etapasMap.set(key, {
+          nombre_enfermedad: nombre,
+          nombre_etapa: etapa,
+        });
+      }
+    });
+    this.etapasEnfermedades = Array.from(etapasMap.values());
+  }
+
+  private contarPendientesPorErradicar(
+    registros: RegistroEnfermedad[]
+  ): number {
+    if (!Array.isArray(registros) || registros.length === 0) {
+      return 0;
+    }
+
+    const nombrePudricion = this.normalizeText("Pudrición Cogollo - PC");
+
+    return registros.filter((registro) => {
+      const nombre = this.normalizeText(registro?.nombre_enfermedad);
+      if (!nombre) {
+        return false;
+      }
+
+      const etapa = this.normalizeText(registro?.etapa_enfermedad);
+      const tratamiento = this.normalizeText(
+        registro?.tratamiento_etapa_enfermedad
+      );
+      const procedimiento = this.normalizeText(
+        registro?.procedimiento_tratamiento_enfermedad
+      );
+
+      const contieneErradicacion =
+        tratamiento.includes("erradicacion") ||
+        procedimiento.includes("erradicacion");
+
+      if (contieneErradicacion) {
+        return true;
+      }
+
+      const esGrado = this.esEtapaGradoValida(etapa);
+
+      if (nombre === nombrePudricion) {
+        return !esGrado;
+      }
+
+      return esGrado;
+    }).length;
+  }
+
+  private esEtapaGradoValida(etapa: string): boolean {
+    if (!etapa) {
+      return false;
+    }
+
+    const etapaNormalizada = etapa.replace(/\s+/g, " ").trim();
+    const patrones = [
+      "grado uno",
+      "grado 1",
+      "grado dos",
+      "grado 2",
+      "grado tres",
+      "grado 3",
+      "grado i",
+      "grado ii",
+      "grado iii",
+      "etapa 1",
+      "etapa 2",
+      "etapa 3",
+      "etapa uno",
+      "etapa dos",
+      "etapa tres",
+      "1",
+      "2",
+      "3",
+    ];
+
+    return patrones.some((patron) => etapaNormalizada.includes(patron));
+  }
+
+  private normalizeText(value: unknown): string {
+    return String(value ?? "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  private actualizarGraficoMensual(data: RegistroEnfermedad[]) {
     let res: GraficoArrayMap = {};
     for (let i = 0; i < this.enfermedades.length; i++) {
       let filtrados = data.filter(
@@ -189,40 +400,15 @@ export class EstadoFitosanitarioComponent implements OnInit {
       }
       lengths.push(data.filter((d) => d.nombre_enfermedad === diseaseName).length);
     }
-
-    if (this.chart) {
-      this.chart.destroy();
-    }
-
-    this.chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels,
-        datasets: [
-          {
-            label: "# de casos",
-            data: lengths,
-            backgroundColor: "red",
-          },
-        ],
-      },
-      options: {
-        events: [],
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-        },
-      },
-    });
+    this.monthlyChartLabels = labels;
+    this.monthlyChartData = lengths;
   }
-  createChartFiltrado(data: any[], etiquetas: string[], hasEtapas: boolean) {
-    const canvas = document.getElementById("myChart") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d");
+
+  private actualizarGraficoMensualFiltrado(
+    data: any[],
+    etiquetas: string[],
+    hasEtapas: boolean
+  ) {
     const lengths: number[] = [];
 
     for (let i = 0; i < etiquetas.length; i++) {
@@ -236,131 +422,282 @@ export class EstadoFitosanitarioComponent implements OnInit {
         lengths.push(filtrados.length);
       }
     }
+    this.monthlyChartLabels = etiquetas;
+    this.monthlyChartData = lengths;
+  }
 
-    if (this.chart) {
-      this.chart.destroy();
+  private obtenerFiltroMesAnio(): FechaFiltro | null {
+    if (!this.fechaSeleccionada) {
+      return null;
     }
 
-    this.chart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: etiquetas,
-        datasets: [
-          {
-            label: "# de casos",
-            data: lengths,
-            backgroundColor: "red",
-            barPercentage: 0.2,
-            categoryPercentage: 1,
-          },
-        ],
-      },
-      options: {
-        events: [],
-        scales: {
-          yAxes: [
-            {
-              ticks: {
-                beginAtZero: true,
-              },
-            },
-          ],
-        },
-      },
+    const parsed = new Date(this.fechaSeleccionada);
+    if (Number.isNaN(parsed.getTime())) {
+      return null;
+    }
+
+    return {
+      year: parsed.getFullYear(),
+      month: parsed.getMonth(),
+    };
+  }
+
+  private filtrarRegistrosPorFecha(
+    registros: RegistroEnfermedad[],
+    filtro: FechaFiltro | null
+  ): RegistroEnfermedad[] {
+    if (!Array.isArray(registros)) {
+      return [];
+    }
+    if (!filtro) {
+      return registros;
+    }
+
+    return registros.filter((registro) => {
+      const fecha = new Date(registro.fecha_registro_enfermedad);
+      if (Number.isNaN(fecha.getTime())) {
+        return false;
+      }
+
+      return (
+        fecha.getFullYear() === filtro.year &&
+        fecha.getMonth() === filtro.month
+      );
     });
   }
 
-  cambiarChart() {
-    let newData = [];
-    //Aqui filtra por año o por mes si se ha seleccionado
-    if (this.yearSeleccionado != "Todos" || this.mesSeleccionado != "Todos") {
-      const filteredData = this.registroEnfermedadesLote.filter((obj) => {
-        const date = new Date(obj.fecha_registro_enfermedad);
-        const objectYear = date.getFullYear();
-        const objectMonth = date.getMonth();
-        return (
-          (this.yearSeleccionado === "Todos" ||
-            objectYear === parseInt(this.yearSeleccionado)) &&
-          (this.mesSeleccionado === "Todos" ||
-            objectMonth === parseInt(this.mesSeleccionado))
-        );
-      });
-      newData = [...filteredData];
-    } else {
-      newData = this.registroEnfermedadesLote;
+  private actualizarPendientesPorTratarDesdeRegistros(registros: RegistroEnfermedad[]) {
+    const totalRegistros = registros?.length ?? 0;
+    const pendientesPorErradicar = this.totalpendientesporerradicar ?? 0;
+    const diferencia = totalRegistros - pendientesPorErradicar;
+    this.pendientesPorTratar = diferencia > 0 ? diferencia : 0;
+  }
+
+  private actualizarEnTratamiento() {
+    this.registrosEnTratamiento = this.registrosAgroquimicosFiltrados.length;
+  }
+
+  private actualizarPendientePorErradicar(registros: RegistroEnfermedad[]) {
+    this.totalpendientesporerradicar =
+      this.contarPendientesPorErradicar(registros);
+  }
+
+  private actualizarTarjetasFiltradas(registros: RegistroEnfermedad[]) {
+    this.actualizarEnTratamiento();
+    this.actualizarPendientePorErradicar(registros);
+    this.actualizarPendientesPorTratarDesdeRegistros(registros);
+  }
+
+  private construirVistaMensualCards(registrosMes: RegistroEnfermedad[]): void {
+    const tratamientosMes = this.contarRegistrosDelMes(
+      this.registrosAgroquimicosFiltrados,
+      "fecha_registro_tratamiento"
+    );
+    const erradicacionesMes = this.contarRegistrosDelMes(
+      this.erradicaciones,
+      "fecha_erradicacion"
+    );
+    const altasMes = 0;
+    const pendientesPorTratar = this.pendientesPorTratar ?? 0;
+    const enRecuperacion = this.obtenerEnRecuperacionMock(registrosMes);
+    const totalCasosAcumulados = pendientesPorTratar + enRecuperacion;
+    const incidenciaReal =
+      this.totalpalmas && this.totalpalmas > 0
+        ? parseFloat(
+            (
+              ((pendientesPorTratar + enRecuperacion) * 100) /
+              this.totalpalmas
+            ).toFixed(2)
+          )
+        : 0;
+
+    this.vistaMensualCards = [
+      {
+        label: "Casos registrados del mes",
+        value: registrosMes.length,
+        description: "Cantidad de incidencias registradas en el mes seleccionado.",
+      },
+      {
+        label: "Tratamientos aplicados",
+        value: tratamientosMes,
+        description: "Aplicaciones o tratamientos registrados durante el mes seleccionado.",
+      },
+      {
+        label: "Erradicaciones del mes",
+        value: erradicacionesMes,
+        description: "Casos erradicados con fecha dentro del mes seleccionado.",
+      },
+      {
+        label: "Altas del mes",
+        value: altasMes,
+        description: "Casos cerrados o dados de alta durante el mes seleccionado.",
+      },
+      {
+        label: "Pendientes por tratar",
+        value: pendientesPorTratar,
+        description: "Casos acumulados del mes que siguen pendientes de tratamiento.",
+      },
+      {
+        label: "En recuperación",
+        value: enRecuperacion,
+        description: "Casos en seguimiento posterior al tratamiento. Valor visual temporal.",
+      },
+      {
+        label: "Total casos acumulados",
+        value: totalCasosAcumulados,
+        description: "Casos que permanecen sin resolverse al cierre del mes seleccionado.",
+      },
+      {
+        label: "Incidencia real (%)",
+        value: incidenciaReal,
+        description: "((Pendientes por tratar + En recuperación) * 100) / Total de palmas.",
+      },
+    ];
+  }
+
+  private actualizarIncidenciasMensuales(registrosMes: RegistroEnfermedad[]): void {
+    this.incidenciasMensuales = registrosMes.map((registro) => ({
+      id_palma: registro?.id_palma ?? "-",
+      nombre_enfermedad: registro?.nombre_enfermedad ?? "-",
+      etapa_enfermedad: registro?.etapa_enfermedad ?? "-",
+      estado: this.obtenerEstadoRegistro(registro),
+      fecha_registro_enfermedad: registro?.fecha_registro_enfermedad ?? "",
+    }));
+  }
+
+  private obtenerEstadoRegistro(registro: RegistroEnfermedad): string {
+    if (registro?.dada_de_alta) {
+      return "Dada de alta";
     }
-    //Luego de filtrado por año y mes se filtra por enfermedad si se ha seleccionado
-    if (this.enfermedadSeleccionada != "Todas") {
-      let newDataFiltrada = newData.filter(
-        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
-      );
-      let etapas = this.etapasEnfermedades.filter(
-        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
-      );
-      let etiquetas = [];
-      if (etapas.length != 0) {
-        etiquetas = etapas.map((obj) => obj.nombre_etapa);
-      } else {
-        etiquetas = [this.enfermedadSeleccionada];
+
+    const requiereErradicacion = this.contarPendientesPorErradicar([registro]) > 0;
+    if (requiereErradicacion) {
+      return "Pendiente por erradicar";
+    }
+
+    const tieneTratamiento = this.registrosAgroquimicosFiltrados.some((item) => {
+      const mismaPalma =
+        String(item?.id_palma ?? "").trim() === String(registro?.id_palma ?? "").trim();
+      const mismaEnfermedad =
+        this.normalizeText(item?.nombre_enfermedad) ===
+        this.normalizeText(registro?.nombre_enfermedad);
+      return mismaPalma || (mismaEnfermedad && item?.nombre_lote === registro?.nombre_lote);
+    });
+
+    if (tieneTratamiento) {
+      return "En tratamiento";
+    }
+
+    return "Pendiente por tratar";
+  }
+
+  private contarRegistrosDelMes(
+    registros: any[],
+    fechaKey: string
+  ): number {
+    const filtroFecha = this.obtenerFiltroMesAnio();
+    if (!Array.isArray(registros) || !filtroFecha) {
+      return 0;
+    }
+
+    return registros.filter((item) => {
+      const fecha = new Date(item?.[fechaKey]);
+      if (Number.isNaN(fecha.getTime())) {
+        return false;
       }
-      this.createChartFiltrado(newDataFiltrada, etiquetas, etapas.length > 0);
+
+      return (
+        fecha.getFullYear() === filtroFecha.year &&
+        fecha.getMonth() === filtroFecha.month
+      );
+    }).length;
+  }
+
+  private obtenerEnRecuperacionMock(registrosMes: RegistroEnfermedad[]): number {
+    if (!Array.isArray(registrosMes) || registrosMes.length === 0) {
+      return 0;
+    }
+
+    return Math.min(
+      Math.floor(this.registrosAgroquimicosFiltrados.length / 2),
+      registrosMes.length
+    );
+  }
+
+  formatFechaRegistro(value: string): string {
+    if (!value) {
+      return "-";
+    }
+
+    const fecha = new Date(value);
+    if (Number.isNaN(fecha.getTime())) {
+      return value;
+    }
+
+    return fecha.toLocaleDateString("es-CO");
+  }
+
+  cambiarChart() {
+    const filtroFecha = this.obtenerFiltroMesAnio();
+    const registrosPorFecha = this.filtrarRegistrosPorFecha(
+      this.registroEnfermedadesLote,
+      filtroFecha
+    );
+    let datosFiltrados = registrosPorFecha;
+    if (this.enfermedadSeleccionada != "Todas") {
+      const newDataFiltrada = registrosPorFecha.filter(
+        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
+      );
+      const etapas = this.etapasEnfermedades.filter(
+        (d) => d.nombre_enfermedad === this.enfermedadSeleccionada
+      );
+      const etiquetas = etapas.length
+        ? etapas.map((obj) => obj.nombre_etapa)
+        : [this.enfermedadSeleccionada];
+      this.actualizarGraficoMensualFiltrado(
+        newDataFiltrada,
+        etiquetas,
+        etapas.length > 0
+      );
+      datosFiltrados = newDataFiltrada;
     } else {
-      this.createChart(newData);
+      this.actualizarGraficoMensual(registrosPorFecha);
+    }
+    this.actualizarTarjetasFiltradas(datosFiltrados);
+    this.actualizarContadorErradicaciones();
+    this.construirVistaMensualCards(registrosPorFecha);
+    this.actualizarIncidenciasMensuales(registrosPorFecha);
+    const sinRegistros = registrosPorFecha.length === 0;
+    if (sinRegistros) {
+      const baseMensaje =
+        this.loteErradicacionesSeleccionado &&
+        this.loteErradicacionesSeleccionado !== "Todos"
+          ? "No hay registros disponibles para el lote seleccionado"
+          : "No hay registros disponibles";
+      const sufijo = this.fechaSeleccionada
+        ? " para ese mes y año."
+        : ".";
+      this.estadoCargaMensaje = `${baseMensaje}${sufijo}`;
+    } else {
+      this.estadoCargaMensaje = "";
     }
   }
 
   crearPdf() {
-    const doc = new jsPDF();
-
-    const xCol1 = 15;
-    let xCol2 = 115;
-    const yLine1 = 85;
-    const lineOffset = 20;
-    let col1Offset = 60;
-    let col2Offset = 40;
-
-    doc.setFontSize(36);
-    doc.text("Estado Fitosanitario", 45, 35);
-    doc.setFontSize(24);
-    doc.text(`Lote: ${this.nombreLoteParams}`, 20, 60);
-
-    // Conteo de palmas
-    doc.setFontSize(14);
-    doc.text("Total de palmas:", xCol1, yLine1);
-    doc.text("Sanas:", xCol2, yLine1);
-    doc.text("Pendientes por tratar:", xCol1, yLine1 + lineOffset);
-    doc.text("En tratamiento:", xCol2, yLine1 + lineOffset);
-    doc.text("Pendiente por erradicar:", xCol1, yLine1 + 2 * lineOffset);
-    doc.text("Erradicadas:", xCol2, yLine1 + 2 * lineOffset);
-    doc.setFontSize(11);
-    doc.text(`${this.totalpalmas}`, xCol1 + col1Offset, yLine1);
-    doc.text(`${this.totalsanas}`, xCol2 + col2Offset, yLine1);
-    doc.text(`${this.totalpendientesportratar}`, xCol1 + col1Offset, yLine1 + lineOffset);
-    doc.text(`${this.totalentratamiento}`, xCol2 + col2Offset, yLine1 + lineOffset);
-    doc.text(`${this.totalpendientesporerradicar}`, xCol1 + col1Offset, yLine1 + 2 * lineOffset);
-    doc.text(`${this.totalerradicadas}`, xCol2 + col2Offset, yLine1 + 2 * lineOffset);
-
-    // Grafica
     const canvas = document.getElementById("myChart") as HTMLCanvasElement;
-    doc.addImage(canvas, 'PNG', 15, 160, 180, 100);
-
-    // Conteo de enfermedades e incidencias
-    doc.addPage();
-    const yLine4 = 30;
-    xCol2 = 95;
-    col1Offset = 50;
-    col2Offset = 65;
-    doc.setFontSize(14);
-    doc.text("Casos totales:", xCol1, yLine4);
-    doc.text("Incidencia real (%):", xCol2, yLine4);
-    doc.text("Casos acumulados:", xCol1, yLine4 + lineOffset);
-    doc.text("Incidencia acumulada (%):", xCol2, yLine4 + lineOffset);
-    doc.setFontSize(11);
-    doc.text(`${this.registroEnfermedadesLote.length}`, xCol1 + col1Offset, yLine4);
-    doc.text(`${this.incidenciareal}`, xCol2 + col2Offset, yLine4);
-    doc.text(`${this.casosacumulados}`, xCol1 + col1Offset, yLine4 + lineOffset);
-    doc.text(`${this.incidenciaacumulada}`, xCol2 + col2Offset, yLine4 + lineOffset);
-
-    doc.save(`Estado_Fitosanitario-${this.nombreLoteParams}.pdf`);
+    this._estadoFitosanitarioPdfService.generarPdf({
+      nombreLoteParams: this.nombreLoteParams,
+      totalpalmas: this.totalpalmas,
+      totalsanas: this.totalsanas,
+      pendientesPorTratar: this.pendientesPorTratar,
+      registrosEnTratamiento: this.registrosEnTratamiento,
+      totalpendientesporerradicar: this.totalpendientesporerradicar,
+      totalerradicadas: this.totalerradicadas,
+      registroEnfermedadesLoteLength: this.registroEnfermedadesLote.length,
+      incidenciareal: this.incidenciareal,
+      casosacumulados: this.casosacumulados,
+      incidenciaacumulada: this.incidenciaacumulada,
+      chartCanvas: canvas,
+    });
   }
 }

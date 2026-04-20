@@ -1,108 +1,34 @@
 <div class="container">
-    <div class="row mt-5 mb-3">
-        <div class="col-md-9">
-            <h3> Estado fitosanitario </h3>
+    <div class="row mt-5 mb-3 align-items-center">
+        <div class="col-md-8">
+            <h3 class="mb-0">Estado fitosanitario</h3>
         </div>
-        <div class="col-md-3">
-            <app-fecha> </app-fecha>
+        <div class="col-md-4 text-end">
+            <app-fecha></app-fecha>
         </div>
     </div>
-    <div class="row" style="width: 50%; gap: 5px;">
-        <div class="datosgenerales">
-            <div class="card">
-                <p>Total de palmas</p>
-                <p>{{this.totalpalmas}}</p>
-            </div>
-            <div class="card">
-                <p>Sanas</p>
-                <p>{{this.totalsanas}}</p>
-            </div>
-            <div class="card">
-                <p>En tratamiento</p>
-                <p>{{this.totalentratamiento}}</p>
-            </div>
-            <div class="card">
-                <p>Pendientes por tratar</p>
-                <p>{{this.totalpendientesportratar}}</p>
-            </div>
-            <div class="card" style="width: 250px;">
-                <p>Pendiente por erradicar</p>
-                <p>{{this.totalpendientesporerradicar}}</p>
-            </div>
-            <div class="card">
-                <p>Erradicadas</p>
-                <p>{{this.totalerradicadas}}</p>
-            </div>
-        </div>
-       
-    </div>
-    <br/>
-    <div class="form row ">
-        <select class="col-1 form-control form-control-sm mr-2" [(ngModel)]="mesSeleccionado">
-            <option value="Todos">---</option>
-            <option value="0">Enero</option>
-            <option value="1">Febrero</option>
-            <option value="2">Marzo</option>
-            <option value="3">Abril</option>
-            <option value="4">Mayo</option>
-            <option value="5">Junio</option>
-            <option value="6">Julio</option>
-            <option value="7">Agosto</option>
-            <option value="8">Septiembre</option>
-            <option value="9">Octubre</option>
-            <option value="10">Noviembre</option>
-            <option value="11">Diciembre</option>
-        </select>
-        <select class="col-1 form-control form-control-sm mr-2" [(ngModel)]="yearSeleccionado">
-            <option value="Todos"> --- </option>
-            <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
-        </select>
-        <select class="col-2 form-control form-control-sm" [(ngModel)]="enfermedadSeleccionada">
-            <option value="Todas"> --- </option>
-            <option *ngFor="let option of enfermedades" [value]="option.nombre">{{ option.nombre }}</option>
-        </select>
-        <br>
+    <hr />
 
-        <button class="ml-3 btn btn-info btn-sm font-weight-bold" (click)="cambiarChart()"> Consultar </button>
-    </div>
-    <div  class="results">
-        <div style="width: 600px;">
-            <p class="text-muted mb-2" *ngIf="estadoCargaMensaje">{{ estadoCargaMensaje }}</p>
-            <canvas id="myChart"></canvas>
-        </div>
-        <div style="display: flex; gap: 10px; flex-direction: column;">
-            <div class="card-row">
-                <div class="row-text" style="background-color: #619885;">
-                    <!-- <p>{{mesSeleccionado == "Todos" }} Casos de mes</p>
-                    <p style="font-size: 20px;">{{enfermedades.length}}</p> -->
-                    <p *ngIf="mesSeleccionado != 'Todos' ">
-                       Casos de mes
-                    </p>
-                    <p *ngIf="mesSeleccionado == 'Todos' && yearSeleccionado != 'Todos' ">
-                        Casos del año
-                    </p> 
-                    <p *ngIf="mesSeleccionado == 'Todos' && yearSeleccionado == 'Todos' ">
-                        Casos totales
-                    </p> 
-                    <p style="font-size: 20px;">{{registroEnfermedadesLote.length}}</p>
-                </div>
-                <div class="row-text" style="background-color: #466067;">
-                    <p>Incidencia real (%)</p>
-                    <p style="font-size: 20px;">{{incidenciareal}}</p>
-                </div>
-            </div>
-            <div class="card-row">
-                <div class="row-text" style="background-color: #856a6a;">
-                    <p>Casos acumulados</p>
-                    <p style="font-size: 20px;">{{casosacumulados}}</p>
-                </div>
-                <div class="row-text" style="background-color: #6ca6a3;">
-                    <p>Incidencia acumulada (%)</p>
-                    <p style="font-size: 20px;">{{incidenciaacumulada}}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <app-estado-actual-fitosanitario
+        [lotes]="lotesErradicaciones"
+        [loteSeleccionado]="loteErradicacionesSeleccionado"
+        [totalPalmas]="totalpalmas"
+        [activePalms]="activePalms"
+        (loteSeleccionadoChange)="aplicarFiltroLote($event)"
+    ></app-estado-actual-fitosanitario>
 
-    <button class="ml-3 btn btn-info btn-sm font-weight-bold generar-pdf" (click)="crearPdf()"> Generar PDF </button>
+    <app-vista-mensual-fitosanitario
+        [cards]="vistaMensualCards"
+        [fechaSeleccionada]="fechaSeleccionada"
+        [enfermedadSeleccionada]="enfermedadSeleccionada"
+        [enfermedades]="enfermedades"
+        [estadoCargaMensaje]="estadoCargaMensaje"
+        [chartLabels]="monthlyChartLabels"
+        [chartData]="monthlyChartData"
+        [incidenciasMensuales]="incidenciasMensuales"
+        (fechaSeleccionadaChange)="fechaSeleccionada = $event"
+        (enfermedadSeleccionadaChange)="enfermedadSeleccionada = $event"
+        (consultar)="cambiarChart()"
+        (generarPdf)="crearPdf()"
+    ></app-vista-mensual-fitosanitario>
 </div>
