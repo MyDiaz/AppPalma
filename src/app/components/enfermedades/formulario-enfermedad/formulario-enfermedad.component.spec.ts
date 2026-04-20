@@ -41,6 +41,7 @@ describe('FormularioEnfermedadComponent', () => {
 
   it('should create and manage dynamic etapa rows', () => {
     expect(component).toBeTruthy();
+    expect(component.noEtapas).toBe(true);
     const etapasIniciales = component.etapasEnfermedad.length;
 
     component.addEtapa();

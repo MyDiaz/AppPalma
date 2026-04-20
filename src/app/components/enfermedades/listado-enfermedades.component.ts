@@ -16,7 +16,7 @@ export class ListadoEnfermedadesComponent implements OnInit {
   enfermedades: any[] = [];
   hayEnfermedades = false;
   bandera = false;
-  cargando = false;
+  cargando = true;
   mensajeError = '';
 
   constructor(private enfermedadesService: EnfermedadesService, private router: Router) {
@@ -36,6 +36,7 @@ export class ListadoEnfermedadesComponent implements OnInit {
     this.enfermedades = [];
     this.enfermedadesEtapas = [];
     this.cargando = true;
+    this.mensajeError = '';
     this.getEtapasyEnfermedades();
   }
 
@@ -70,8 +71,8 @@ export class ListadoEnfermedadesComponent implements OnInit {
           enfermedad => !enfermedadesConEtapas.has((enfermedad as any).nombre_enfermedad)
         );
         this.enfermedades = filteredData;
-        this.cargando = false;
         this.hayEnfermedades = this.enfermedades.length > 0;
+        this.cargando = false;
       },
       err => {
         this.bandera = true;

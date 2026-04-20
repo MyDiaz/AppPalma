@@ -45,9 +45,10 @@ describe('NuevaPlagaComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(component.hayPlaga).toBe(false);
+    expect(plagasServiceSpy.getPlaga).not.toHaveBeenCalled();
   });
 
-  it('should mark the edit branch and surface constructor errors', async () => {
+  it('should mark the edit branch and surface init errors', async () => {
     const errorSpy = jasmine.createSpyObj('PlagasService', ['getPlaga']);
     errorSpy.getPlaga.and.returnValue(throwError(() => 'boom'));
     await TestBed.resetTestingModule()
@@ -70,6 +71,7 @@ describe('NuevaPlagaComponent', () => {
 
     const errorFixture = TestBed.createComponent(NuevaPlagaComponent);
     const errorComponent = errorFixture.componentInstance;
+    errorFixture.detectChanges();
 
     expect(errorComponent.hayPlaga).toBeTruthy();
     expect(errorComponent.bandera).toBeTruthy();

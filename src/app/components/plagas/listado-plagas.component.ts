@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 export class ListadoPlagasComponent implements OnInit {
   NombrePlagaForm: FormGroup;
   plagas: any[] = [];
-  cargando = false;
+  cargando = true;
   hayPlagas = false;
   bandera = false;
   mensajeError = '';

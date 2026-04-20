@@ -25,7 +25,9 @@ export class NuevaPlagaComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.crearFormularioPlagas();
+  }
 
+  ngOnInit() {
     this.activatedRoute.paramMap.subscribe((params) => {
       this.nombrePlaga = params.get("nombre_comun_plaga");
       if (this.nombrePlaga) this.hayPlaga = true;
@@ -43,8 +45,6 @@ export class NuevaPlagaComponent implements OnInit {
       }
     );
   }
-
-  ngOnInit() {}
 
   crearFormularioPlagas() {
     if (this.nombrePlaga) {

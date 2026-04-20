@@ -23,6 +23,7 @@ export class FormularioEnfermedadComponent implements OnInit {
     private router:Router) { 
       this.crearFormularioEnfermedadEtapas();
       this.crearFormularioEnfermedad();
+      this.noEtapas = true;
   }
 
   //  VALIDACIONES PARA ENFERMEDAD CON ETAPAS
