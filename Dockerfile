@@ -10,6 +10,9 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-# CMD ["ng", "serve", "--prod", "--host", "0.0.0.0", "--publicHost", "joanchilocal.sigpa"]
-CMD ["ng", "serve", "--prod", "--host", "0.0.0.0", "--publicHost", "simon.uis.edu.co"]
 
+ENV BASE_HREF=/sigpa
+CMD ng serve --prod --host 0.0.0.0 --port 3000 --publicHost "simon.uis.edu.co" --base-href "$BASE_HREF"
+
+# RUN node scripts/ng-build.js build --prod
+# CMD ["node", "server.js"]
