@@ -14,30 +14,39 @@ describe("EstadoFitosanitarioPdfService", () => {
   it("should generate and save the pdf", () => {
     const doc = {
       setFontSize: jasmine.createSpy("setFontSize"),
+      setFont: jasmine.createSpy("setFont"),
+      setTextColor: jasmine.createSpy("setTextColor"),
+      setFillColor: jasmine.createSpy("setFillColor"),
+      setDrawColor: jasmine.createSpy("setDrawColor"),
       text: jasmine.createSpy("text"),
+      rect: jasmine.createSpy("rect"),
+      roundedRect: jasmine.createSpy("roundedRect"),
+      line: jasmine.createSpy("line"),
       addImage: jasmine.createSpy("addImage"),
       addPage: jasmine.createSpy("addPage"),
       save: jasmine.createSpy("save"),
+      splitTextToSize: jasmine
+        .createSpy("splitTextToSize")
+        .and.callFake((text: string) => [text]),
     } as any;
     const canvas = {} as HTMLCanvasElement;
 
     service.generarPdf({
       nombreLoteParams: "Lote 1",
-      totalpalmas: 10,
-      totalsanas: 7,
-      pendientesPorTratar: 2,
-      registrosEnTratamiento: 1,
-      totalpendientesporerradicar: 0,
-      totalerradicadas: 0,
-      registroEnfermedadesLoteLength: 3,
-      incidenciareal: 30,
-      casosacumulados: 4,
-      incidenciaacumulada: 40,
       chartCanvas: canvas,
+      monthlyChartCanvas: canvas,
     }, doc);
 
-    expect(doc.text).toHaveBeenCalledWith("Estado Fitosanitario", 45, 35);
-    expect(doc.addImage).toHaveBeenCalledWith(canvas, "PNG", 15, 160, 180, 100);
+    expect(doc.text).toHaveBeenCalledWith("Estado fitosanitario", 12, 20);
+    expect(doc.text).toHaveBeenCalledWith("Vista mensual", 12, 20);
+    expect(doc.addImage).toHaveBeenCalledWith(
+      canvas,
+      "PNG",
+      jasmine.any(Number),
+      jasmine.any(Number),
+      jasmine.any(Number),
+      jasmine.any(Number)
+    );
     expect(doc.save).toHaveBeenCalledWith("Estado_Fitosanitario-Lote 1.pdf");
   });
 });

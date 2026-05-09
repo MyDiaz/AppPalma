@@ -14,6 +14,7 @@ import {
   IncidenciaMensualRow,
   ResumenCard,
 } from "./estado-fitosanitario.types";
+import { formatFechaRegistro } from "./estado-fitosanitario.helpers";
 
 @Component({
   selector: "app-vista-mensual-fitosanitario",
@@ -23,8 +24,9 @@ import {
 export class VistaMensualFitosanitarioComponent
   implements AfterViewInit, OnChanges
 {
-  @Input() cards: ResumenCard[] = [];
-  @Input() fechaSeleccionada = "";
+  @Input() mainCards: ResumenCard[] = [];
+  @Input() evolutionCards: ResumenCard[] = [];
+  @Input() fechaSeleccionada = this.obtenerMesActual();
   @Input() enfermedadSeleccionada = "Todas";
   @Input() enfermedades: Array<{ nombre: string }> = [];
   @Input() estadoCargaMensaje = "";
@@ -54,14 +56,12 @@ export class VistaMensualFitosanitarioComponent
   }
 
   onFechaChange(value: string): void {
-    this.fechaSeleccionadaChange.emit(value || "");
+    this.fechaSeleccionadaChange.emit(value || this.obtenerMesActual());
+    this.consultar.emit();
   }
 
   onEnfermedadChange(value: string): void {
     this.enfermedadSeleccionadaChange.emit(value || "Todas");
-  }
-
-  onConsultar(): void {
     this.consultar.emit();
   }
 
@@ -70,16 +70,7 @@ export class VistaMensualFitosanitarioComponent
   }
 
   formatFechaRegistro(value: string): string {
-    if (!value) {
-      return "-";
-    }
-
-    const fecha = new Date(value);
-    if (Number.isNaN(fecha.getTime())) {
-      return value;
-    }
-
-    return fecha.toLocaleDateString("es-CO");
+    return formatFechaRegistro(value);
   }
 
   private renderChart(): void {
@@ -120,5 +111,11 @@ export class VistaMensualFitosanitarioComponent
         },
       },
     });
+  }
+
+  private obtenerMesActual(): string {
+    const today = new Date();
+    const month = `${today.getMonth() + 1}`.padStart(2, "0");
+    return `${today.getFullYear()}-${month}`;
   }
 }

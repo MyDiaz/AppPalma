@@ -11,6 +11,11 @@ import {
 } from "@angular/core";
 import { Chart } from "chart.js";
 import { ActivePalmRow, ResumenCard } from "./estado-fitosanitario.types";
+import {
+  buildCurrentStateCards,
+  formatEstadoActivo,
+  formatFechaRegistro,
+} from "./estado-fitosanitario.helpers";
 
 @Component({
   selector: "app-estado-actual-fitosanitario",
@@ -50,46 +55,7 @@ export class EstadoActualFitosanitarioComponent
   }
 
   get cards(): ResumenCard[] {
-    const pendientesPorErradicar = this.activePalms.filter(
-      (item) => item.estado === "pendiente_por_erradicar"
-    ).length;
-    const enTratamiento = this.activePalms.filter(
-      (item) => item.estado === "en_tratamiento"
-    ).length;
-    const pendientesPorTratar = this.activePalms.filter(
-      (item) => item.estado === "pendiente_por_tratar"
-    ).length;
-    const palmasEnfermas =
-      enTratamiento + pendientesPorTratar + pendientesPorErradicar;
-    const palmasSanas = Math.max(this.totalPalmas - palmasEnfermas, 0);
-
-    return [
-      {
-        label: "Total de palmas",
-        value: this.totalPalmas,
-        description: "Cantidad total de palmas sembradas en el lote seleccionado.",
-      },
-      {
-        label: "Palmas sanas",
-        value: palmasSanas,
-        description: "Palmas sin estado activo reportado en el lote seleccionado.",
-      },
-      {
-        label: "Palmas en tratamiento",
-        value: enTratamiento,
-        description: "Palmas con tratamiento activo y que aun no han recibido alta.",
-      },
-      {
-        label: "Palmas pendientes por tratar",
-        value: pendientesPorTratar,
-        description: "Palmas enfermas que requieren tratamiento pero aun no lo han iniciado.",
-      },
-      {
-        label: "Palmas pendientes por erradicar",
-        value: pendientesPorErradicar,
-        description: "Palmas enfermas que deben retirarse porque la enfermedad no tiene cura.",
-      },
-    ];
+    return buildCurrentStateCards(this.activePalms, this.totalPalmas);
   }
 
   getCardTooltip(card: ResumenCard): string {
@@ -110,26 +76,11 @@ export class EstadoActualFitosanitarioComponent
   }
 
   formatFechaRegistro(value: string): string {
-    if (!value) {
-      return "-";
-    }
-
-    const fecha = new Date(value);
-    if (Number.isNaN(fecha.getTime())) {
-      return value;
-    }
-
-    return fecha.toLocaleDateString("es-CO");
+    return formatFechaRegistro(value);
   }
 
   formatEstadoActivo(estado: ActivePalmRow["estado"]): string {
-    const labelMap: { [key in ActivePalmRow["estado"]]: string } = {
-      en_tratamiento: "En tratamiento",
-      pendiente_por_tratar: "Pendiente por tratar",
-      pendiente_por_erradicar: "Pendiente por erradicar",
-    };
-
-    return labelMap[estado] ?? estado;
+    return formatEstadoActivo(estado);
   }
 
   private renderCharts(): void {
