@@ -6,6 +6,7 @@ import { LoteService } from "src/app/Servicios/lote.service";
 import { LoteModel } from "src/app/models/lote.models";
 import { DatePipe } from "@angular/common";
 import { jsPDF } from "jspdf";
+import { ActivatedRoute } from "@angular/router";
 
 @Component({
   selector: "app-rendimiento-productivo",
@@ -30,10 +31,16 @@ export class RendimientoProductivoComponent implements OnInit {
   constructor(
     private _censosProductivosService: CensosProductivosService,
     private loteService: LoteService,
-    public datepipe: DatePipe
+    public datepipe: DatePipe,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    const loteParam = this.activatedRoute.snapshot.queryParamMap.get("lote");
+    if (loteParam) {
+      this.loteSeleccionado = loteParam;
+    }
+
     this.loteService.getLotes().subscribe((lotes: LoteModel[]) => {
       this.lotes = lotes;
     });

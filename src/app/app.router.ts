@@ -11,7 +11,6 @@ import { ListadoAgroquimicosComponent } from "./components/aplicaciones/listado-
 import { ListadoEnfermedadesComponent } from "./components/enfermedades/listado-enfermedades.component";
 import { RendimientoProductivoComponent } from "./components/rendimiento-productivo/rendimiento-productivo.component";
 import { EstadoFitosanitarioComponent } from "./components/estado-fitosanitario/estado-fitosanitario.component";
-import { EstadoProductivoComponent } from "./components/estado-productivo/estado-productivo.component";
 import { AplicacionesComponent } from "./components/aplicaciones/aplicaciones.component";
 import { RegistroPlagasComponent } from "./components/plagas/registro-plagas.component";
 import { NuevaPlagaComponent } from "./components/plagas/nueva-plaga.component";
@@ -61,11 +60,6 @@ const APP_ROUTES: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: "lote/:id/estado-productivo",
-    component: EstadoProductivoComponent,
-    canActivate: [AuthGuard],
-  },
-  {
     path: "lote/:id/aplicaciones",
     component: AplicacionesComponent,
     canActivate: [AuthGuard],
@@ -78,11 +72,6 @@ const APP_ROUTES: Routes = [
   {
     path: "estado-fitosanitario",
     component: EstadoFitosanitarioComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: "estado-productivo",
-    component: EstadoProductivoComponent,
     canActivate: [AuthGuard],
   },
   {

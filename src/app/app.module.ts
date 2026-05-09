@@ -24,7 +24,6 @@ import { PalmaComponent } from "./components/palma/palma.component";
 import { EstadoFitosanitarioComponent } from "./components/estado-fitosanitario/estado-fitosanitario.component";
 import { EstadoActualFitosanitarioComponent } from "./components/estado-fitosanitario/estado-actual-fitosanitario.component";
 import { VistaMensualFitosanitarioComponent } from "./components/estado-fitosanitario/vista-mensual-fitosanitario.component";
-import { EstadoProductivoComponent } from "./components/estado-productivo/estado-productivo.component";
 import { RegistroPlagasComponent } from "./components/plagas/registro-plagas.component";
 import { AplicacionesComponent } from "./components/aplicaciones/aplicaciones.component";
 import { FechaComponent } from "./components/utilidades/fecha/fecha.component";
@@ -88,7 +87,6 @@ registerLocaleData(localeEs);
     EstadoFitosanitarioComponent,
     EstadoActualFitosanitarioComponent,
     VistaMensualFitosanitarioComponent,
-    EstadoProductivoComponent,
     RegistroPlagasComponent,
     AplicacionesComponent,
     FechaComponent,
