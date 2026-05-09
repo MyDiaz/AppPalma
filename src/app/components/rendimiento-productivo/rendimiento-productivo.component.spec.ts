@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { CensosProductivosService } from 'src/app/Servicios/censos-productivos.service';
 import { LoteService } from 'src/app/Servicios/lote.service';
@@ -31,6 +32,14 @@ describe('RendimientoProductivoComponent', () => {
           useValue: censosProductivosServiceSpy,
         },
         { provide: LoteService, useValue: loteServiceSpy },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: convertToParamMap({}),
+            },
+          },
+        },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -141,6 +150,15 @@ describe('RendimientoProductivoComponent', () => {
     component.ngOnInit();
 
     expect(component.years[0]).toBe(2000);
+  });
+
+  it('should use the lote query param as the initial lote filter', () => {
+    const route = TestBed.inject(ActivatedRoute);
+    (route.snapshot as any).queryParamMap = convertToParamMap({ lote: 'Lote 1' });
+
+    component.ngOnInit();
+
+    expect(component.loteSeleccionado).toBe('Lote 1');
   });
 
   it('should keep working when the censo request fails', () => {
