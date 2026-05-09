@@ -1,10 +1,14 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { respuesta } from "../models/resp.model";
 import { map } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { environment } from "../../environments/environment";
-import { CurrentStateResponse } from "../components/estado-fitosanitario/estado-fitosanitario.types";
+import {
+  CurrentStateResponse,
+  MonthlyFitosanitarioSummaryParams,
+  MonthlyFitosanitarioSummaryResponse,
+} from "../components/estado-fitosanitario/estado-fitosanitario.types";
 
 @Injectable({
   providedIn: "root",
@@ -89,6 +93,27 @@ export class EnfermedadesService {
     return this.http
       .get<CurrentStateResponse>(
         `${environment.url}/registro-enfermedades/estado-fitosanitario`
+      )
+      .pipe(map((data) => data));
+  }
+
+  getInformeMensualFitosanitario(
+    params: MonthlyFitosanitarioSummaryParams
+  ): Observable<MonthlyFitosanitarioSummaryResponse> {
+    let httpParams = new HttpParams();
+    (Object.keys(params || {}) as Array<
+      keyof MonthlyFitosanitarioSummaryParams
+    >).forEach((key) => {
+      const value = params[key];
+      if (value !== undefined && value !== null && value !== "") {
+        httpParams = httpParams.set(key, String(value));
+      }
+    });
+
+    return this.http
+      .get<MonthlyFitosanitarioSummaryResponse>(
+        `${environment.url}/registro-enfermedades/informe-mensual`,
+        { params: httpParams }
       )
       .pipe(map((data) => data));
   }

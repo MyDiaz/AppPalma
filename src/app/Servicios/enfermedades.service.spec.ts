@@ -160,6 +160,73 @@ describe('EnfermedadesService', () => {
     req.flush(response);
   });
 
+  it('should get current fitosanitario state', () => {
+    const response = {
+      total_palms_by_lote: [{ nombre_lote: 'Lote 1', total_palmas: 10 }],
+      active_palms: [],
+    };
+
+    service.getEstadoFitosanitarioActual().subscribe((result) => {
+      expect(result).toEqual(response as any);
+    });
+
+    const req = httpMock.expectOne(
+      `${environment.url}/registro-enfermedades/estado-fitosanitario`
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush(response);
+  });
+
+  it('should get monthly fitosanitario report with filters', () => {
+    const response = {
+      total_casos_mes: 2,
+      total_casos_acumulados: 3,
+      incidencia_real: 20,
+      incidencia_acumulada: 30,
+      evolucion: {
+        pendientes_por_tratar: 1,
+        en_recuperacion: 1,
+        pendientes_por_erradicar: 2,
+        reincidencia: 0,
+        de_alta: 1,
+        eliminada: 1,
+      },
+      registros: [
+        {
+          id_palma: 10,
+          nombre_enfermedad: 'Anillo rojo',
+          id_registro_enfermedad: 1,
+          etapa_enfermedad: 'Etapa 1',
+          nombre_lote: 'Lote A',
+          fecha_registro_enfermedad: '2026-04-20T00:00:00.000Z',
+          observacion_registro_enfermedad: 'Observacion',
+        },
+      ],
+    };
+
+    service
+      .getInformeMensualFitosanitario({
+        mes: '2026-01',
+        lote: 'Lote 1',
+        enfermedad: 'Rayo',
+      })
+      .subscribe((result) => {
+        expect(result).toEqual(response as any);
+      });
+
+    const req = httpMock.expectOne((request) => {
+      return (
+        request.url ===
+          `${environment.url}/registro-enfermedades/informe-mensual` &&
+        request.params.get('mes') === '2026-01' &&
+        request.params.get('lote') === 'Lote 1' &&
+        request.params.get('enfermedad') === 'Rayo'
+      );
+    });
+    expect(req.request.method).toBe('GET');
+    req.flush(response);
+  });
+
   it('should get registro enfermedad images', () => {
     const response = [{ id: 'img-1' }];
 

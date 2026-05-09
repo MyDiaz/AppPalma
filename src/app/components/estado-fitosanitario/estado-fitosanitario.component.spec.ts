@@ -26,7 +26,8 @@ class EstadoActualStubComponent {
   template: "",
 })
 class VistaMensualStubComponent {
-  @Input() cards: unknown[] = [];
+  @Input() mainCards: unknown[] = [];
+  @Input() evolutionCards: unknown[] = [];
   @Input() fechaSeleccionada = "";
   @Input() enfermedadSeleccionada = "Todas";
   @Input() enfermedades: Array<{ nombre: string }> = [];
@@ -124,7 +125,65 @@ describe("EstadoFitosanitarioComponent", () => {
     },
   ];
 
+  const informeMensual = {
+    total_casos_mes: 2,
+    total_casos_acumulados: 3,
+    incidencia_real: 20,
+    incidencia_acumulada: 30,
+    evolucion: {
+      pendientes_por_tratar: 1,
+      en_recuperacion: 1,
+      pendientes_por_erradicar: 2,
+      reincidencia: 0,
+      de_alta: 1,
+      eliminada: 1,
+    },
+    registros: [
+      {
+        nombre_lote: "Lote 1",
+        fecha_registro_enfermedad: "2026-01-01T00:00:00",
+        nombre_enfermedad: "Rayo",
+        etapa_enfermedad: "Inicial",
+        id_palma: 1,
+      },
+      {
+        nombre_lote: "Lote 1",
+        fecha_registro_enfermedad: "2026-01-15T00:00:00",
+        nombre_enfermedad: "Rayo",
+        etapa_enfermedad: "Avanzado",
+        id_palma: 2,
+      },
+    ],
+  };
+
+  let enfermedadesServiceMock: {
+    getEnfermedadesRegistradas: jasmine.Spy;
+    getEnfermedades: jasmine.Spy;
+    getEstadoFitosanitarioActual: jasmine.Spy;
+    getInformeMensualFitosanitario: jasmine.Spy;
+  };
+
   beforeEach(async () => {
+    enfermedadesServiceMock = {
+      getEnfermedadesRegistradas: jasmine
+        .createSpy("getEnfermedadesRegistradas")
+        .and.returnValue(of(enfermedadesRegistradas)),
+      getEnfermedades: jasmine
+        .createSpy("getEnfermedades")
+        .and.returnValue(
+          of([
+            { nombre_enfermedad: "Rayo" },
+            { nombre_enfermedad: "Pudricion Cogollo - PC" },
+          ])
+        ),
+      getEstadoFitosanitarioActual: jasmine
+        .createSpy("getEstadoFitosanitarioActual")
+        .and.returnValue(of(estadoActual)),
+      getInformeMensualFitosanitario: jasmine
+        .createSpy("getInformeMensualFitosanitario")
+        .and.returnValue(of(informeMensual)),
+    };
+
     await TestBed.configureTestingModule({
       declarations: [
         EstadoFitosanitarioComponent,
@@ -134,10 +193,7 @@ describe("EstadoFitosanitarioComponent", () => {
       providers: [
         {
           provide: EnfermedadesService,
-          useValue: {
-            getEnfermedadesRegistradas: () => of(enfermedadesRegistradas),
-            getEstadoFitosanitarioActual: () => of(estadoActual),
-          },
+          useValue: enfermedadesServiceMock,
         },
         {
           provide: ErradicacionesService,
@@ -172,7 +228,7 @@ describe("EstadoFitosanitarioComponent", () => {
     expect(component.loteErradicacionesSeleccionado).toBe("Lote 1");
     expect(component.nombreLoteParams).toBe("Lote 1");
     expect(component.totalpalmas).toBe(10);
-    expect(component.registroEnfermedadesLote.length).toBe(2);
+    expect(enfermedadesServiceMock.getEnfermedadesRegistradas).not.toHaveBeenCalled();
   });
 
   it("should pass the current state to the child report components", () => {
@@ -190,9 +246,30 @@ describe("EstadoFitosanitarioComponent", () => {
     expect(estadoActualStub.totalPalmas).toBe(10);
     expect(estadoActualStub.activePalms.length).toBe(2);
     expect(mensualStub.estadoCargaMensaje).toBe("");
-    expect(mensualStub.cards.length).toBe(8);
+    expect(mensualStub.mainCards.length).toBe(4);
+    expect(mensualStub.evolutionCards.length).toBe(6);
     expect(mensualStub.chartLabels.length).toBeGreaterThan(0);
     expect(mensualStub.incidenciasMensuales.length).toBe(2);
+  });
+
+  it("should request the monthly report with lote, mes and enfermedad filters", () => {
+    fixture.detectChanges();
+    const mensualStub = fixture.debugElement
+      .query(By.directive(VistaMensualStubComponent))
+      .componentInstance as VistaMensualStubComponent;
+
+    mensualStub.fechaSeleccionadaChange.emit("2026-01");
+    mensualStub.enfermedadSeleccionadaChange.emit("Rayo");
+    mensualStub.consultar.emit();
+    fixture.detectChanges();
+
+    expect(
+      enfermedadesServiceMock.getInformeMensualFitosanitario
+    ).toHaveBeenCalledWith({
+      mes: "2026-01",
+      lote: "Lote 1",
+      enfermedad: "Rayo",
+    });
   });
 
   it("should react to child events and forward actions", () => {

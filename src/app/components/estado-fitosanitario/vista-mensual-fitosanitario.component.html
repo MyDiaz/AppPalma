@@ -13,11 +13,10 @@
       <label class="filter-label" for="fechaSelect">Mes</label>
       <input
         id="fechaSelect"
-        type="date"
+        type="month"
         class="form-control form-control-sm"
         [ngModel]="fechaSeleccionada"
         (ngModelChange)="onFechaChange($event)"
-        placeholder="---"
       />
     </div>
     <div class="col-12 col-sm-6 col-lg-3">
@@ -36,15 +35,6 @@
     </div>
     <div class="col-12 col-sm-auto">
       <button
-        type="button"
-        class="btn btn-info btn-sm font-weight-bold"
-        (click)="onConsultar()"
-      >
-        Consultar
-      </button>
-    </div>
-    <div class="col-12 col-sm-auto">
-      <button
         class="btn btn-outline-info btn-sm font-weight-bold"
         (click)="onGenerarPdf()"
       >
@@ -53,16 +43,29 @@
     </div>
   </div>
 
-  <div class="cards-grid cards-grid-monthly">
+  <div class="cards-grid cards-grid-monthly monthly-main-cards">
     <article
       class="summary-card summary-card-monthly"
-      *ngFor="let card of cards"
-      [attr.title]="card.description"
+      *ngFor="let card of mainCards"
     >
+      <span class="summary-card-tooltip">{{ card.description }}</span>
       <p class="summary-card-label">{{ card.label }}</p>
       <p class="summary-card-value">{{ card.value }}</p>
-      <p class="summary-card-hint">Pasa el cursor para ver el detalle</p>
     </article>
+  </div>
+
+  <div class="evolution-panel">
+    <h5 class="panel-title evolution-title">Evolucion</h5>
+    <div class="cards-grid cards-grid-monthly monthly-evolution-cards">
+      <article
+        class="summary-card summary-card-monthly summary-card-evolution"
+        *ngFor="let card of evolutionCards"
+      >
+        <span class="summary-card-tooltip">{{ card.description }}</span>
+        <p class="summary-card-label">{{ card.label }}</p>
+        <p class="summary-card-value">{{ card.value }}</p>
+      </article>
+    </div>
   </div>
 
   <div class="results">
@@ -97,6 +100,7 @@
       <table class="table table-sm table-hover incidencias-table">
         <thead>
           <tr>
+            <th>Lote</th>
             <th>ID palma</th>
             <th>Enfermedad</th>
             <th>Etapa enfermedad</th>
@@ -106,6 +110,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let incidencia of incidenciasMensuales">
+            <td>{{ incidencia.nombre_lote }}</td>
             <td>{{ incidencia.id_palma }}</td>
             <td>{{ incidencia.nombre_enfermedad }}</td>
             <td>{{ incidencia.etapa_enfermedad }}</td>
@@ -113,7 +118,7 @@
             <td>{{ formatFechaRegistro(incidencia.fecha_registro_enfermedad) }}</td>
           </tr>
           <tr *ngIf="incidenciasMensuales.length === 0">
-            <td colspan="5" class="text-center">
+            <td colspan="6" class="text-center">
               No hay incidencias para los filtros actuales.
             </td>
           </tr>
