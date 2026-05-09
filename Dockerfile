@@ -11,7 +11,7 @@ RUN npm ci
 
 COPY . .
 
-ENV BASE_HREF=/sigpa
+ENV BASE_HREF=/sigpa/
 CMD ng serve --prod --host 0.0.0.0 --publicHost "simon.uis.edu.co" --base-href "$BASE_HREF"
 
 # RUN node scripts/ng-build.js build --prod
